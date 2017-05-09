@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baodanyun.websocket.dao.DoubaoFriendsMapper" >
+  <resultMap id="BaseResultMap" type="com.baodanyun.websocket.model.DoubaoFriends" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="jId" property="jid" jdbcType="VARCHAR" />
+    <result column="jName" property="jname" jdbcType="VARCHAR" />
+    <result column="friend_jId" property="friendJid" jdbcType="VARCHAR" />
+    <result column="friend_jName" property="friendJname" jdbcType="VARCHAR" />
+    <result column="friend_icon" property="friendIcon" jdbcType="VARCHAR" />
+    <result column="friend_type" property="friendType" jdbcType="VARCHAR" />
+    <result column="friend_group" property="friendGroup" jdbcType="VARCHAR" />
+    <result column="ct" property="ct" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, jId, jName, friend_jId, friend_jName, friend_icon, friend_type, friend_group, 
+    ct
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from doubaofriends
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByJid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from doubaofriends
+    where jId = #{jId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectBySelective" resultMap="BaseResultMap" parameterType="com.baodanyun.websocket.model.DoubaoFriends" >
+    select
+    <include refid="Base_Column_List" />
+    from doubaofriends
+    where 1= 1
+
+    <if test="id != null" >
+      and id =#{id,jdbcType=INTEGER}
+    </if>
+    <if test="jid != null" >
+      and jId = #{jid,jdbcType=VARCHAR}
+    </if>
+    <if test="jname != null" >
+      and jName = #{jname,jdbcType=VARCHAR}
+    </if>
+    <if test="friendJid != null" >
+      and friend_jId = #{friendJid,jdbcType=VARCHAR}
+    </if>
+    <if test="friendJname != null" >
+      and  friend_jName= #{friendJname,jdbcType=VARCHAR}
+    </if>
+
+    <if test="friendType != null" >
+      and friend_type=  #{friendType,jdbcType=VARCHAR}
+    </if>
+    <if test="friendGroup != null" >
+     and  friend_group= #{friendGroup,jdbcType=VARCHAR}
+    </if>
+
+  </select>
+
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from doubaofriends
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByFriendJname" parameterType="java.lang.String" >
+    delete from doubaofriends
+    where friend_jName= #{friendJname,jdbcType=VARCHAR}
+  </delete>
+
+
+  <insert id="insert" parameterType="com.baodanyun.websocket.model.DoubaoFriends" >
+    insert into doubaofriends (id, jId, jName, 
+      friend_jId, friend_jName, friend_icon, 
+      friend_type, friend_group, ct
+      )
+    values (#{id,jdbcType=INTEGER}, #{jid,jdbcType=VARCHAR}, #{jname,jdbcType=VARCHAR}, 
+      #{friendJid,jdbcType=VARCHAR}, #{friendJname,jdbcType=VARCHAR}, #{friendIcon,jdbcType=VARCHAR},
+      #{friendType,jdbcType=VARCHAR}, #{friendGroup,jdbcType=VARCHAR}, #{ct,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.baodanyun.websocket.model.DoubaoFriends" >
+    insert into doubaofriends
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="jid != null" >
+        jId,
+      </if>
+      <if test="jname != null" >
+        jName,
+      </if>
+      <if test="friendJid != null" >
+        friend_jId,
+      </if>
+      <if test="friendJname != null" >
+        friend_jName,
+      </if>
+      <if test="friendIcon != null" >
+        friend_icon,
+      </if>
+      <if test="friendType != null" >
+        friend_type,
+      </if>
+      <if test="friendGroup != null" >
+        friend_group,
+      </if>
+      <if test="ct != null" >
+        ct,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="jid != null" >
+        #{jid,jdbcType=VARCHAR},
+      </if>
+      <if test="jname != null" >
+        #{jname,jdbcType=VARCHAR},
+      </if>
+      <if test="friendJid != null" >
+        #{friendJid,jdbcType=VARCHAR},
+      </if>
+      <if test="friendJname != null" >
+        #{friendJname,jdbcType=VARCHAR},
+      </if>
+      <if test="friendIcon != null" >
+        #{friendIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="friendType != null" >
+        #{friendType,jdbcType=VARCHAR},
+      </if>
+      <if test="friendGroup != null" >
+        #{friendGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="ct != null" >
+        #{ct,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.baodanyun.websocket.model.DoubaoFriends" >
+    update doubaofriends
+    <set >
+      <if test="jid != null" >
+        jId = #{jid,jdbcType=VARCHAR},
+      </if>
+      <if test="jname != null" >
+        jName = #{jname,jdbcType=VARCHAR},
+      </if>
+      <if test="friendJid != null" >
+        friend_jId = #{friendJid,jdbcType=VARCHAR},
+      </if>
+      <if test="friendJname != null" >
+        friend_jName = #{friendJname,jdbcType=VARCHAR},
+      </if>
+      <if test="friendIcon != null" >
+        friend_icon = #{friendIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="friendType != null" >
+        friend_type = #{friendType,jdbcType=VARCHAR},
+      </if>
+      <if test="friendGroup != null" >
+        friend_group = #{friendGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="ct != null" >
+        ct = #{ct,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.baodanyun.websocket.model.DoubaoFriends" >
+    update doubaofriends
+    set jId = #{jid,jdbcType=VARCHAR},
+      jName = #{jname,jdbcType=VARCHAR},
+      friend_jId = #{friendJid,jdbcType=VARCHAR},
+      friend_jName = #{friendJname,jdbcType=VARCHAR},
+      friend_icon = #{friendIcon,jdbcType=VARCHAR},
+      friend_type = #{friendType,jdbcType=VARCHAR},
+      friend_group = #{friendGroup,jdbcType=VARCHAR},
+      ct = #{ct,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
