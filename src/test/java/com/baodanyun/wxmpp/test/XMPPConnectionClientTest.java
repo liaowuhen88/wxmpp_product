@@ -183,13 +183,11 @@ public class XMPPConnectionClientTest{
             }
 
             rosterPacket.addRosterItem(item);
-            rosterPacket.setFrom(to);
+
             ExtensionElement ex = new ExtensionElement() {
                 //用户信息元素名称
                 private String elementName = "need";
 
-                //用户昵称元素名称
-                 private String nameElement = "name";
                 @Override
                 public CharSequence toXML() {
 
@@ -217,14 +215,28 @@ public class XMPPConnectionClientTest{
 
                 @Override
                 public String getNamespace() {
-                    return "";
+                    return "com.zwc";
                 }
             };
             rosterPacket.addExtension(ex);
-            conn.createPacketCollectorAndSend(rosterPacket).nextResultOrThrow();
+
+            // 模拟客服添加欺骗账号
+            rosterPacket.setFrom(to);
+            conn.sendStanza(rosterPacket);
+
+            // 添加订阅
             Presence var11 = new Presence(Presence.Type.subscribe);
             var11.setTo(user);
+            var11.setFrom(to);
+
             conn.sendStanza(var11);
+
+            // 发送在线信息
+
+            Presence online = new Presence(Presence.Type.available);
+            online.setFrom(user);
+            online.setTo(to);
+            conn.sendStanza(online);
         }
 
 
@@ -241,13 +253,13 @@ public class XMPPConnectionClientTest{
         // 客服地址
         String to ="zwc@126xmpp";
         // 待伪装名称
-        String name ="ttt";
+        String name ="zwc33344555667777888999";
         // 真实名称
         String realName = agent+"_"+name;
         try{
             addFiends(realName,to);
         }catch (Exception e){
-
+            e.printStackTrace();
         }
 
         while(true){
