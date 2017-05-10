@@ -27,9 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class XMPPConnectionClientTest{
     protected static final Logger logger = LoggerFactory.getLogger(XMPPConnectionClientTest.class);
@@ -190,32 +188,23 @@ public class XMPPConnectionClientTest{
 
                 @Override
                 public CharSequence toXML() {
-
                     StringBuilder sb = new StringBuilder();
-
                     sb.append("<");
                     sb.append(elementName);
                     sb.append(">");
-
-
                     sb.append(true);
-
                     sb.append("</");
                     sb.append(elementName);
                     sb.append(">");
-
                     return sb.toString();
-
                 }
-
                 @Override
                 public String getElementName() {
                     return elementName;
                 }
-
                 @Override
                 public String getNamespace() {
-                    return "com.zwc";
+                    return  null;
                 }
             };
             rosterPacket.addExtension(ex);
@@ -797,6 +786,22 @@ public class XMPPConnectionClientTest{
             e.printStackTrace();
         }
     }*/
+
+    /**
+     * 查询会议室成员名字
+     * @param muc
+     */
+    public static List<String> findMulitUser(MultiUserChat muc){
+        List<String> listUser = new ArrayList<String>();
+        Iterator<String> it = muc.getOccupants().iterator();
+        //遍历出聊天室人员名称
+        while (it.hasNext()) {
+            // 聊天室成员名字
+            String name = it.next();
+            listUser.add(name);
+        }
+        return listUser;
+    }
 
 
 }
