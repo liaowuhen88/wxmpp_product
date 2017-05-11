@@ -1,6 +1,5 @@
 package com.baodanyun.websocket.service;
 
-import com.baodanyun.websocket.bean.XmppContentMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.DoubaoFriends;
@@ -15,7 +14,7 @@ import java.util.List;
 public interface DoubaoFriendsService {
     void dealFrinds(Msg msg) throws BusinessException;
 
-    void dealFrinds(Msg msg,XmppContentMsg xcg);
+    //void dealFrinds(Msg msg,XmppContentMsg xcg);
 
     int insert(DoubaoFriends df);
 

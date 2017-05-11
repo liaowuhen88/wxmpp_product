@@ -4,25 +4,32 @@ import com.baodanyun.websocket.bean.XmppAdapter;
 import com.baodanyun.websocket.bean.XmppContentMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
-import com.baodanyun.websocket.core.handle.InitConnectListener;
+import com.baodanyun.websocket.core.listener.InitChatManagerListener;
+import com.baodanyun.websocket.core.listener.InitConnectListener;
+import com.baodanyun.websocket.core.listener.UcInvitationListener;
+import com.baodanyun.websocket.core.listener.UcRosterListener;
 import com.baodanyun.websocket.exception.BusinessException;
-import com.baodanyun.websocket.factory.XMPPConnectionFactory;
 import com.baodanyun.websocket.model.DoubaoFriends;
 import com.baodanyun.websocket.service.DoubaoFriendsService;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.WebSocketService;
 import com.baodanyun.websocket.service.XmppService;
+import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
+import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterGroup;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,23 +230,62 @@ public class XmppServiceImpl implements XmppService {
         newChat.sendMessage(xmppMsg);
     }
 
-
-    public AbstractXMPPConnection getXMPPConnectionNew() {
-
-        return XMPPConnectionFactory.getXMPPConnectionNew();
-    }
-
     public AbstractXMPPConnection getInitConnectListenerXmpp(AbstractUser user) throws IOException, XMPPException, SmackException {
         //获取一个xmpp
-        AbstractXMPPConnection xmppConnection = this.getXMPPConnectionNew();
-        ConnectionListener connectionListener = new InitConnectListener(user,webSocketService,msgSendControl,doubaoFriendsService);
-        //初始化的连接监听器
-        xmppConnection.addConnectionListener(connectionListener);
+        AbstractXMPPConnection xmppConnection = this.getXMPPConnectionNew(user);
         xmppConnection.connect();
 
         return xmppConnection;
     }
 
+    @Override
+    public  AbstractXMPPConnection getXMPPConnectionNew(AbstractUser user) {
+        XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
+        builder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
+        //builder.setSendPresence(false);
+
+        XMPPTCPConnectionConfiguration config = builder.setServiceName(Config.xmppdomain).setHost(Config.xmppurl).setPort(Integer.valueOf(Config.xmppport)).build();
+        AbstractXMPPConnection connection = new XMPPTCPConnection(config);
+
+        connection.setFromMode(org.jivesoftware.smack.XMPPConnection.FromMode.UNCHANGED);
+
+        /*
+        设置默认连接策略
+         */
+        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
+        reconnectionManager.setFixedDelay(10);
+        reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
+        reconnectionManager.enableAutomaticReconnection();
+
+        ConnectionListener connectionListener = new InitConnectListener(user,webSocketService,msgSendControl,doubaoFriendsService);
+        //初始化的连接监听器
+        connection.addConnectionListener(connectionListener);
+
+        // 设置默认接收所有请求
+        Roster roster = Roster.getInstanceFor(connection);
+        roster.setRosterLoadedAtLogin(true);
+        roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
+
+        // 添加好友监听器
+        UcRosterListener ur = new UcRosterListener(msgSendControl,user);
+        roster.addRosterListener(ur);
+
+
+        // 添加群邀请监听器
+        final MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(connection);
+
+        UcInvitationListener ul = new UcInvitationListener(msgSendControl,user);
+        manager.addInvitationListener(ul);
+
+
+        // 增加消息监听
+        ChatManager chatmanager = ChatManager.getInstanceFor(connection);
+        ChatManagerListener chatManagerListener = new InitChatManagerListener(user,msgSendControl);
+        chatmanager.addChatListener(chatManagerListener);
+
+
+        return connection;
+    }
 
     public boolean login(AbstractUser user) throws SmackException, XMPPException, IOException {
         boolean isLoginDone = false;
@@ -258,7 +304,7 @@ public class XmppServiceImpl implements XmppService {
                 accountManager.createAccount(user.getLoginUsername(), user.getPassWord());
                 xmppConnection.disconnect();
 
-                createAccountConn  = this.getXMPPConnectionNew();
+                createAccountConn  = this.getXMPPConnectionNew(user);
                 InitConnectListener initConnectListenerWebVisitor = new InitConnectListener(user,webSocketService,msgSendControl,doubaoFriendsService);
                 createAccountConn.addConnectionListener(initConnectListenerWebVisitor);
                 createAccountConn.connect();

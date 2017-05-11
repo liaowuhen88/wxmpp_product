@@ -72,7 +72,7 @@ public interface XmppService {
      * 获取一个新连接
      * @return
      */
-    AbstractXMPPConnection getXMPPConnectionNew() ;
+    AbstractXMPPConnection getXMPPConnectionNew(AbstractUser user) ;
 
     AbstractXMPPConnection getInitConnectListenerXmpp(AbstractUser user) throws IOException, XMPPException, SmackException ;
 

@@ -23,8 +23,12 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
         Customer customer = (Customer) session.getHandshakeAttributes().get(Common.USER_KEY);
         webSocketService.saveSession(customer.getId(), session);
         //获取一个customerNode节点
-        userLifeCycleService.online(customer);
-
+        try{
+            userLifeCycleService.login(customer);
+            userLifeCycleService.online(customer);
+        }catch (Exception e){
+            userLifeCycleService.logout(customer);
+        }
     }
 
     @Override

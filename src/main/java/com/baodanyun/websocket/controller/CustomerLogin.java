@@ -66,7 +66,7 @@ public class CustomerLogin extends BaseController {
 
     }
 
-    @RequestMapping(value = "customerLogin")
+    /*@RequestMapping(value = "customerLogin")
     public ModelAndView customerLogin(LoginModel user, HttpServletRequest request, HttpServletResponse response) {
         //客服必须填写用户名 和 密码
         logger.info("user"+JSONUtil.toJson(user));
@@ -86,8 +86,33 @@ public class CustomerLogin extends BaseController {
             mv.addObject("msg",e.getMessage());
         }
         return mv;
-
     }
+*/
+
+
+    @RequestMapping(value = "customerLogin")
+    public ModelAndView customerLogin(LoginModel user, HttpServletRequest request, HttpServletResponse response) {
+        //客服必须填写用户名 和 密码
+        logger.info("user"+JSONUtil.toJson(user));
+        ModelAndView mv = new ModelAndView();
+        AbstractUser customer = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
+        try {
+            if (null == customer) {
+                customer = customerInit(user);
+                request.getSession().setAttribute(Common.USER_KEY, customer);
+            } else {
+                logger.info("jid[" + customer.getId() + "] is login");
+            }
+            mv.addObject("user",JSONUtil.toJson(customer));
+            mv.setViewName("/customer/chat");
+        } catch (BusinessException e) {
+            mv.setViewName("/index");
+            mv.addObject("msg",e.getMessage());
+        }
+        return mv;
+    }
+
+
 
     public Response getRespone(AbstractUser cu) {
         Response responseMsg = new Response();
@@ -128,4 +153,22 @@ public class CustomerLogin extends BaseController {
             throw new BusinessException("登录失败");
         }
     }
+
+    public Customer customerInit(LoginModel user) throws BusinessException {
+        Customer customer = new Customer();
+        if (StringUtils.isBlank(user.getUsername())) {
+            throw  new BusinessException("用户名密码不能为空");
+        }
+        if(StringUtils.isBlank(user.getPassword())){
+            customer.setPassWord("111111");
+        }else {
+            customer.setPassWord(user.getPassword());
+        }
+
+        customer.setLoginUsername(user.getUsername());
+        customer.setId(XMPPUtil.nameToJid(user.getUsername()));
+
+        return customer;
+    }
+
 }

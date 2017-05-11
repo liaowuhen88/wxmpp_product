@@ -49,8 +49,7 @@ public class DoubaoFriendsServiceImpl implements DoubaoFriendsService {
         }
     }
 
-    @Override
-    public void dealFrinds(Msg msg, XmppContentMsg xcg) {
+    private void dealFrinds(Msg msg, XmppContentMsg xcg) {
         String to = msg.getTo();
         String from = msg.getFrom();
         msg.setFrom(xcg.getRealFrom());

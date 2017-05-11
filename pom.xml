@@ -74,10 +74,10 @@
 				<weiXin.callback>https://test.17doubao.com/easemob</weiXin.callback>
 
 				<jdbc_driverClassName>com.mysql.jdbc.Driver</jdbc_driverClassName>
-				<jdbc_username>xmpp</jdbc_username>
-				<jdbc_password>vdVyS3jRzQGhPcdEU7EM</jdbc_password>
+				<jdbc_username>root</jdbc_username>
+				<jdbc_password>liaowuhen</jdbc_password>
 				<jdbc_url>
-					<![CDATA[jdbc:mysql://rm-2ze15w77o950l031o.mysql.rds.aliyuncs.com:3306/openfire_test?useUnicode=true&amp;characterEncoding=UTF-8]]></jdbc_url>
+					<![CDATA[jdbc:mysql://localhost:3306/openfire?useUnicode=true&amp;characterEncoding=UTF-8]]></jdbc_url>
 
 				<control.id>zwv11132</control.id>
 
@@ -609,6 +609,11 @@
 			<groupId>com.whalin</groupId>
 			<artifactId>Memcached-Java-Client</artifactId>
 			<version>3.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.woodstox</groupId>
+			<artifactId>woodstox-core-asl</artifactId>
+			<version>4.2.0</version>
 		</dependency>
 
 

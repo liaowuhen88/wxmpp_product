@@ -1,5 +1,6 @@
 package com.baodanyun.wxmpp.test;
 
+import com.baodanyun.websocket.core.listener.UcMessageListener;
 import com.baodanyun.websocket.factory.XMPPConnectionFactory;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.chat.ChatManager;
@@ -60,8 +61,9 @@ public class XMPPConnectionClientTest{
         conn.addConnectionListener(connectionListener);
         conn.connect();
 
-
     }
+
+
 
     /**
      * 登录 并且生成 chatManager,并且添加消息接收监听器
@@ -85,13 +87,62 @@ public class XMPPConnectionClientTest{
 
     }
 
+    public void login(String userName) throws XMPPException, IOException, SmackException {
+        if(login){
+            return ;
+        }
+        connect();
+
+
+        conn.login(userName,password);
+
+
+    }
+
+    @Test
+    public void loginKf() throws XMPPException, IOException, SmackException, InterruptedException {
+        if(login){
+            return ;
+        }
+        connect();
+
+        conn.login("zwc",password);
+
+        Thread.sleep(1000000);
+    }
+
+
+    /**
+     * 直接获取群失败
+     * @throws XMPPException
+     * @throws IOException
+     * @throws SmackException
+     */
+    @Test
+    public void getAllGroup() throws XMPPException, IOException, SmackException {
+
+        login();
+
+        Roster roster = Roster.getInstanceFor(conn);
+
+
+        Collection<RosterGroup> entriesGroup = roster.getGroups();
+        for(RosterGroup group: entriesGroup){
+            group(group);
+        }
+
+    }
+
+
 
     @Test
     public void getGroup() throws XMPPException, IOException, SmackException {
+        login();
         String frindName = "friends";
         Roster roster = Roster.getInstanceFor(conn);
+        roster.getEntries();
         //roster.addRosterListener(new Rost());
-        List<Presence> li = roster.getAllPresences("zwv11132@126xmpp");
+        List<Presence> li = roster.getAllPresences(username+"@126xmpp");
         RosterGroup group = roster.getGroup(frindName);
         /*Collection<RosterGroup> entriesGroup = roster.getGroups();
         for(RosterGroup group: entriesGroup){
@@ -100,8 +151,8 @@ public class XMPPConnectionClientTest{
         group(group);
     }
 
-
-    public void group( RosterGroup group){
+    public void group( RosterGroup group) throws XMPPException, IOException, SmackException {
+        login();
         Collection<RosterEntry> entries = group.getEntries();
         logger.info("---"+ group.getName());
         for (RosterEntry entry : entries) {
@@ -158,7 +209,8 @@ public class XMPPConnectionClientTest{
         String[] groups = new String[]{"friends"};
         String user = uname + "@126xmpp";
 
-        createAccount(uname);
+        login(uname);
+        //createAccount(uname);
 
         if (!conn.isAuthenticated()) {
             throw new SmackException.NotLoggedInException();
@@ -251,6 +303,7 @@ public class XMPPConnectionClientTest{
             e.printStackTrace();
         }
 
+        int i = 0;
         while(true){
 
             Thread.sleep(10000);
@@ -259,7 +312,7 @@ public class XMPPConnectionClientTest{
             msg.setFrom(realName + "@126xmpp");
             msg.setType(Message.Type.chat);
             msg.setTo(to);
-            msg.setBody("4576");
+            msg.setBody("__"+i++);
             conn.sendStanza(msg);
         }
 
@@ -272,17 +325,19 @@ public class XMPPConnectionClientTest{
         login();
         // 默认插件
         // 客服地址
+       // String to ="testof@126xmpp";
+
         String to ="zwc@126xmpp";
-        String agent = "zwc1@126xmpp";
+        String agent = "yt";
         // 待伪装名称
         String groupNum = UUID.randomUUID().toString();
         // 真实名称
-        String realName1 ="zwc1_1@126xmpp/Smack";
-        String realName2 ="zwc1_2@126xmpp/Smack";
-        String realName3 ="zwc1_3@126xmpp/Smack";
-        String realName4 ="zwc1_4@126xmpp/Smack";
+        String realName1 =agent+"_a@126xmpp/Smack";
+        String realName2 =agent+"_b@126xmpp/Smack";
+        String realName3 =agent+"_c@126xmpp/Smack";
+        String realName4 =agent+"_d@126xmpp/Smack";
 
-        String groupName = "22" ;
+        String groupName = "55" ;
         String group = groupName+"@conference.126xmpp";
 
         joinMultiUserChat("agent",null,groupName);
@@ -295,19 +350,15 @@ public class XMPPConnectionClientTest{
         createAccount("zwc1_3");
         createAccount("zwc1_4");*/
 
-        JoinMultiUserChat("真实用户1",realName1,group);
-        JoinMultiUserChat("真实用户2",realName2,group);
-        JoinMultiUserChat("真实用户3",realName3,group);
-        JoinMultiUserChat("真实用户4",realName4,group);
+        JoinMultiUserChat("真实用户XX",realName1,group);
+        JoinMultiUserChat("真实用户YY",realName2,group);
+        JoinMultiUserChat("真实用户RR",realName3,group);
+        JoinMultiUserChat("真实用户TT",realName4,group);
         /*createRoom(realName,group,"nickname");*/
 
 
-        muc.addMessageListener(new MessageListener() {
-            @Override
-            public void processMessage(Message message) {
-                System.out.println(message);
-           }
-        });
+        MessageListener messageListener = new UcMessageListener(null,null);
+        muc.addMessageListener(messageListener);
 
 
         while (true){
@@ -316,14 +367,14 @@ public class XMPPConnectionClientTest{
                 Message msg1 = new Message();
                 msg1.setType(Message.Type.groupchat);
                 msg1.setTo(group);
-                msg1.setBody("111111");
+                msg1.setBody( "msg1--------"+get());
                 msg1.setFrom(realName1);
 
                 conn.sendStanza(msg1);
 
                 Message msg2 = new Message();
                 msg2.setType(Message.Type.groupchat);
-                msg2.setBody("222222");
+                msg2.setBody( "msg2-------"+get());
                 msg2.setTo(group);
                 msg2.setFrom(realName2);
 
@@ -332,7 +383,7 @@ public class XMPPConnectionClientTest{
 
                 Message msg3= new Message();
                 msg3.setType(Message.Type.groupchat);
-                msg3.setBody("3333333");
+                msg3.setBody( "msg3-------"+get());
                 msg3.setTo(group);
                 msg3.setFrom(realName3);
 
@@ -340,14 +391,14 @@ public class XMPPConnectionClientTest{
 
                 Message msg4= new Message();
                 msg4.setType(Message.Type.groupchat);
-                msg4.setBody("444444");
+                msg4.setBody( "msg4-------"+get());
                 msg4.setFrom(realName4);
                 msg4.setTo(group);
                 conn.sendStanza(msg4);
 
                 Message msg5= new Message();
                 msg5.setType(Message.Type.groupchat);
-                msg5.setBody("11");
+                msg5.setBody( "msg1-------"+get());
                 msg5.setTo(group);
                 msg5.setFrom(realName1);
 
@@ -375,6 +426,10 @@ public class XMPPConnectionClientTest{
         System.out.print(123);*/
     }
 
+    int i = 0 ;
+    public int get(){
+        return i++;
+    }
     /**
      * 当前登录用户加入会议室
      *
@@ -388,6 +443,7 @@ public class XMPPConnectionClientTest{
 
             // 使用XMPPConnection创建一个MultiUserChat窗口
             final MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(conn);
+
             String room = roomsName + "@conference." + conn.getServiceName();
             muc = manager.getMultiUserChat(room);
 
