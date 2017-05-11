@@ -24,7 +24,9 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
         webSocketService.saveSession(customer.getId(), session);
         //获取一个customerNode节点
         try{
-            userLifeCycleService.login(customer);
+            //if(!xmppService.isAuthenticated(customer.getId())){
+                userLifeCycleService.login(customer);
+          //  }
             userLifeCycleService.online(customer);
         }catch (Exception e){
             userLifeCycleService.logout(customer);

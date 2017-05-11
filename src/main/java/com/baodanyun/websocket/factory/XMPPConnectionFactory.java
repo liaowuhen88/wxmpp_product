@@ -1,6 +1,7 @@
 package com.baodanyun.websocket.factory;
 
 import com.baodanyun.websocket.core.listener.InitChatManagerListener;
+import com.baodanyun.websocket.core.listener.MUCPacketExtensionProvider;
 import com.baodanyun.websocket.core.listener.UcInvitationListener;
 import com.baodanyun.websocket.core.listener.UcRosterListener;
 import com.baodanyun.websocket.util.Config;
@@ -9,6 +10,7 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -23,8 +25,8 @@ public class XMPPConnectionFactory {
         builder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
         //builder.setSendPresence(false);
 
-        XMPPTCPConnectionConfiguration config = builder.setServiceName(Config.xmppdomain).setHost(Config.xmppurl).setPort(Integer.valueOf(Config.xmppport)).build();
-        // XMPPTCPConnectionConfiguration config = builder.setServiceName(Config.xmppdomain).setHost("kefu.tx-network.com").setPort(Integer.valueOf(Config.xmppport)).build();
+       // XMPPTCPConnectionConfiguration config = builder.setServiceName(Config.xmppdomain).setHost(Config.xmppurl).setPort(Integer.valueOf(Config.xmppport)).build();
+        XMPPTCPConnectionConfiguration config = builder.setServiceName(Config.xmppdomain).setHost("kefu.tx-network.com").setPort(Integer.valueOf(Config.xmppport)).build();
 
         AbstractXMPPConnection connection = new XMPPTCPConnection(config);
 
@@ -33,7 +35,7 @@ public class XMPPConnectionFactory {
         // 添加群邀请监听器
         MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(connection);
 
-        UcInvitationListener ul = new UcInvitationListener(null,null);
+        UcInvitationListener ul = new UcInvitationListener(null,null,null);
         manager.addInvitationListener(ul);
 
 
@@ -54,6 +56,8 @@ public class XMPPConnectionFactory {
         UcRosterListener ur = new UcRosterListener(null,null);
         roster.addRosterListener(ur);
 
+        //增加自定义会议信息解析
+        ProviderManager.addIQProvider("muc", "YANG", new MUCPacketExtensionProvider(null,null,null));
         // 增加消息监听
         ChatManager chatmanager = ChatManager.getInstanceFor(connection);
         ChatManagerListener chatManagerListener = new InitChatManagerListener(null,null);

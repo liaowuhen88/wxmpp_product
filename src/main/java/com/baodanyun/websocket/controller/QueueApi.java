@@ -14,7 +14,6 @@ import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -89,6 +88,8 @@ public class QueueApi extends BaseController {
 
                 Set<Friend> friendList = new HashSet<>();
 
+              /*  xmppService.getHostRoom(customer.getId());
+
                 Collection<DoubaoFriends> res = doubaoFriendsService.selectByJid(customer.getId());
 
                 if (!CollectionUtils.isEmpty(res)) {
@@ -98,7 +99,7 @@ public class QueueApi extends BaseController {
                                 friendList.add(friend);
                             }
                     }
-                }
+                }*/
 
                 List<Friend> li = new ArrayList<>(friendList);
                 ComparatorFriend comparator=new ComparatorFriend();

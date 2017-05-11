@@ -90,4 +90,6 @@ public interface XmppService {
     boolean changePassword(String jid, String pwd) throws SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException, BusinessException;
 
     boolean createAccount(String jid,String userName,String password) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException;
+
+    void getHostRoom(String jid) throws XMPPException, IOException, SmackException, BusinessException;
 }

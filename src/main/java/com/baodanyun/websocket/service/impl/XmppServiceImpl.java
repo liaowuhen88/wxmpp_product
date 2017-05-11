@@ -4,16 +4,10 @@ import com.baodanyun.websocket.bean.XmppAdapter;
 import com.baodanyun.websocket.bean.XmppContentMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
-import com.baodanyun.websocket.core.listener.InitChatManagerListener;
-import com.baodanyun.websocket.core.listener.InitConnectListener;
-import com.baodanyun.websocket.core.listener.UcInvitationListener;
-import com.baodanyun.websocket.core.listener.UcRosterListener;
+import com.baodanyun.websocket.core.listener.*;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.DoubaoFriends;
-import com.baodanyun.websocket.service.DoubaoFriendsService;
-import com.baodanyun.websocket.service.MsgSendControl;
-import com.baodanyun.websocket.service.WebSocketService;
-import com.baodanyun.websocket.service.XmppService;
+import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
@@ -23,12 +17,14 @@ import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterGroup;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +34,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -57,6 +54,10 @@ public class XmppServiceImpl implements XmppService {
 
     @Autowired
     protected MsgSendControl msgSendControl;
+
+    @Autowired
+    protected MsgService msgService;
+
 
 
     @Autowired
@@ -274,7 +275,7 @@ public class XmppServiceImpl implements XmppService {
         // 添加群邀请监听器
         final MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(connection);
 
-        UcInvitationListener ul = new UcInvitationListener(msgSendControl,user);
+        UcInvitationListener ul = new UcInvitationListener(msgService,msgSendControl,user);
         manager.addInvitationListener(ul);
 
 
@@ -283,7 +284,8 @@ public class XmppServiceImpl implements XmppService {
         ChatManagerListener chatManagerListener = new InitChatManagerListener(user,msgSendControl);
         chatmanager.addChatListener(chatManagerListener);
 
-
+        //增加自定义会议信息解析
+        ProviderManager.addIQProvider("muc", "YANG", new MUCPacketExtensionProvider(msgService,msgSendControl,user));
         return connection;
     }
 
@@ -361,5 +363,27 @@ public class XmppServiceImpl implements XmppService {
         return false;
     }
 
+
+    /**
+     * 初始化聊服务会议列表
+     */
+    @Override
+    public void getHostRoom(String jid) throws XMPPException, IOException, SmackException, BusinessException {
+        if (isAuthenticated(jid)) {
+
+            MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(getXMPPConnectionAuthenticated(jid));
+
+            Collection<HostedRoom> hostrooms;
+
+            //manager.getJoinedRooms("");
+            Set<String> romms = manager.getJoinedRooms();
+
+            logger.info(romms.toString());
+
+            logger.info(manager.getServiceNames().toString());
+
+        }
+
+    }
 
 }

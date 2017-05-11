@@ -19,6 +19,7 @@ import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
+import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.muc.packet.MUCInitialPresence;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 
-public class XMPPConnectionClientTest{
+public class XMPPConnectionClientTest {
     protected static final Logger logger = LoggerFactory.getLogger(XMPPConnectionClientTest.class);
 
 
@@ -39,7 +40,7 @@ public class XMPPConnectionClientTest{
     private MultiUserChat muc;
     private static ChatManager chatManager;
 
-    boolean  login = false;
+    boolean login = false;
     private String username = "yt";
     private String password = "111111";
 
@@ -64,49 +65,48 @@ public class XMPPConnectionClientTest{
     }
 
 
-
     /**
      * 登录 并且生成 chatManager,并且添加消息接收监听器
      * 重复登陆会报错
      * org.jivesoftware.smack.SmackException$AlreadyLoggedInException: Client is already logged in
-     *
+     * <p/>
      * Presence presence = new Presence(Presence.Type.available);   //这里如果改成unavailable则会显示用户不在线
-     presence.setStatus("Go fishing");
-     conn.sendPacket(presence);
+     * presence.setStatus("Go fishing");
+     * conn.sendPacket(presence);
      */
     @Test
     public void login() throws XMPPException, IOException, SmackException {
-        if(login){
-            return ;
+        if (login) {
+            return;
         }
         connect();
 
 
-        conn.login(username,password);
+        conn.login(username, password);
 
 
     }
 
     public void login(String userName) throws XMPPException, IOException, SmackException {
-        if(login){
-            return ;
+        if (login) {
+            return;
         }
         connect();
 
 
-        conn.login(userName,password);
+        conn.login(userName, password);
 
 
     }
 
     @Test
     public void loginKf() throws XMPPException, IOException, SmackException, InterruptedException {
-        if(login){
-            return ;
+        if (login) {
+            return;
         }
         connect();
 
-        conn.login("zwc",password);
+        conn.login("zwc", password);
 
         Thread.sleep(1000000);
     }
@@ -114,6 +114,7 @@ public class XMPPConnectionClientTest{
 
     /**
      * 直接获取群失败
+     *
      * @throws XMPPException
      * @throws IOException
      * @throws SmackException
@@ -127,12 +128,11 @@ public class XMPPConnectionClientTest{
 
 
         Collection<RosterGroup> entriesGroup = roster.getGroups();
-        for(RosterGroup group: entriesGroup){
+        for (RosterGroup group : entriesGroup) {
             group(group);
         }
 
     }
-
 
 
     @Test
@@ -142,7 +142,7 @@ public class XMPPConnectionClientTest{
         Roster roster = Roster.getInstanceFor(conn);
         roster.getEntries();
         //roster.addRosterListener(new Rost());
-        List<Presence> li = roster.getAllPresences(username+"@126xmpp");
+        List<Presence> li = roster.getAllPresences(username + "@126xmpp");
         RosterGroup group = roster.getGroup(frindName);
         /*Collection<RosterGroup> entriesGroup = roster.getGroups();
         for(RosterGroup group: entriesGroup){
@@ -151,16 +151,16 @@ public class XMPPConnectionClientTest{
         group(group);
     }
 
-    public void group( RosterGroup group) throws XMPPException, IOException, SmackException {
+    public void group(RosterGroup group) throws XMPPException, IOException, SmackException {
         login();
         Collection<RosterEntry> entries = group.getEntries();
-        logger.info("---"+ group.getName());
+        logger.info("---" + group.getName());
         for (RosterEntry entry : entries) {
-            logger.info("---user: "+entry.getUser());
-            logger.info("---name: "+entry.getName());
-            logger.info("---tyep: "+entry.getType());
-            logger.info("---status: "+entry.getStatus());
-            logger.info("---groups: "+entry.getGroups());
+            logger.info("---user: " + entry.getUser());
+            logger.info("---name: " + entry.getName());
+            logger.info("---tyep: " + entry.getType());
+            logger.info("---status: " + entry.getStatus());
+            logger.info("---groups: " + entry.getGroups());
         }
 
 
@@ -194,7 +194,7 @@ public class XMPPConnectionClientTest{
         String username = "zwc_xxx";
         createAccount(username);
         Roster roster = Roster.getInstanceFor(conn);
-        roster.createEntry(username+"@126xmpp", username, new String[]{"friends"});
+        roster.createEntry(username + "@126xmpp", username, new String[]{"friends"});
         System.out.print(123);
     }
 
@@ -202,14 +202,15 @@ public class XMPPConnectionClientTest{
     /**
      * 发送加好友信息
      * 模拟账号添加好友
+     *
      * @param uname
      * @throws Exception
      */
-    public void addFiends(String uname,String to) throws Exception {
+    public void addFiends(String uname, String to) throws Exception {
         String[] groups = new String[]{"friends"};
         String user = uname + "@126xmpp";
 
-        login(uname);
+        login();
         //createAccount(uname);
 
         if (!conn.isAuthenticated()) {
@@ -250,13 +251,15 @@ public class XMPPConnectionClientTest{
                     sb.append(">");
                     return sb.toString();
                 }
+
                 @Override
                 public String getElementName() {
                     return elementName;
                 }
+
                 @Override
                 public String getNamespace() {
-                    return  null;
+                    return null;
                 }
             };
             rosterPacket.addExtension(ex);
@@ -292,19 +295,19 @@ public class XMPPConnectionClientTest{
         // 默认插件
         String agent = "yt";
         // 客服地址
-        String to ="zwc@126xmpp";
+        String to = "zwc@126xmpp";
         // 待伪装名称
-        String name ="zwc33344555667777888999";
+        String name = "zwc33344555667777888999";
         // 真实名称
-        String realName = agent+"_"+name;
-        try{
-            addFiends(realName,to);
-        }catch (Exception e){
+        String realName = agent + "_" + name;
+        try {
+            addFiends(realName, to);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         int i = 0;
-        while(true){
+        while (true) {
 
             Thread.sleep(10000);
 
@@ -312,7 +315,7 @@ public class XMPPConnectionClientTest{
             msg.setFrom(realName + "@126xmpp");
             msg.setType(Message.Type.chat);
             msg.setTo(to);
-            msg.setBody("__"+i++);
+            msg.setBody("__" + i++);
             conn.sendStanza(msg);
         }
 
@@ -325,23 +328,23 @@ public class XMPPConnectionClientTest{
         login();
         // 默认插件
         // 客服地址
-       // String to ="testof@126xmpp";
+        // String to ="testof@126xmpp";
 
-        String to ="zwc@126xmpp";
+        String to = "zwc@126xmpp";
         String agent = "yt";
         // 待伪装名称
         String groupNum = UUID.randomUUID().toString();
         // 真实名称
-        String realName1 =agent+"_a@126xmpp/Smack";
-        String realName2 =agent+"_b@126xmpp/Smack";
-        String realName3 =agent+"_c@126xmpp/Smack";
-        String realName4 =agent+"_d@126xmpp/Smack";
+        String realName1 = agent + "_a@126xmpp/Smack";
+        String realName2 = agent + "_b@126xmpp/Smack";
+        String realName3 = agent + "_c@126xmpp/Smack";
+        String realName4 = agent + "_d@126xmpp/Smack";
 
-        String groupName = "55" ;
-        String group = groupName+"@conference.126xmpp";
+        String groupName = "55";
+        String group = groupName + "@conference.126xmpp";
 
-        joinMultiUserChat("agent",null,groupName);
-        inviteJoinMultiUserChat(to,"kf");
+        joinMultiUserChat("agent", null, groupName);
+        inviteJoinMultiUserChat(to, "kf");
 
         //JoinMultiUserChat("agent",agent,group);
         //JoinMultiUserChat("kf",to,group);
@@ -350,55 +353,55 @@ public class XMPPConnectionClientTest{
         createAccount("zwc1_3");
         createAccount("zwc1_4");*/
 
-        JoinMultiUserChat("真实用户XX",realName1,group);
-        JoinMultiUserChat("真实用户YY",realName2,group);
-        JoinMultiUserChat("真实用户RR",realName3,group);
-        JoinMultiUserChat("真实用户TT",realName4,group);
+        JoinMultiUserChat("真实用户XX", realName1, group);
+        JoinMultiUserChat("真实用户YY", realName2, group);
+        JoinMultiUserChat("真实用户RR", realName3, group);
+        JoinMultiUserChat("真实用户TT", realName4, group);
         /*createRoom(realName,group,"nickname");*/
 
 
-        MessageListener messageListener = new UcMessageListener(null,null);
+        MessageListener messageListener = new UcMessageListener(null, null);
         muc.addMessageListener(messageListener);
 
 
-        while (true){
+        while (true) {
             try {
                 Thread.sleep(10000);
                 Message msg1 = new Message();
                 msg1.setType(Message.Type.groupchat);
                 msg1.setTo(group);
-                msg1.setBody( "msg1--------"+get());
+                msg1.setBody("msg1--------" + get());
                 msg1.setFrom(realName1);
 
                 conn.sendStanza(msg1);
 
                 Message msg2 = new Message();
                 msg2.setType(Message.Type.groupchat);
-                msg2.setBody( "msg2-------"+get());
+                msg2.setBody("msg2-------" + get());
                 msg2.setTo(group);
                 msg2.setFrom(realName2);
 
                 conn.sendStanza(msg2);
 
 
-                Message msg3= new Message();
+                Message msg3 = new Message();
                 msg3.setType(Message.Type.groupchat);
-                msg3.setBody( "msg3-------"+get());
+                msg3.setBody("msg3-------" + get());
                 msg3.setTo(group);
                 msg3.setFrom(realName3);
 
                 conn.sendStanza(msg3);
 
-                Message msg4= new Message();
+                Message msg4 = new Message();
                 msg4.setType(Message.Type.groupchat);
-                msg4.setBody( "msg4-------"+get());
+                msg4.setBody("msg4-------" + get());
                 msg4.setFrom(realName4);
                 msg4.setTo(group);
                 conn.sendStanza(msg4);
 
-                Message msg5= new Message();
+                Message msg5 = new Message();
                 msg5.setType(Message.Type.groupchat);
-                msg5.setBody( "msg1-------"+get());
+                msg5.setBody("msg1-------" + get());
                 msg5.setTo(group);
                 msg5.setFrom(realName1);
 
@@ -426,19 +429,42 @@ public class XMPPConnectionClientTest{
         System.out.print(123);*/
     }
 
-    int i = 0 ;
-    public int get(){
+
+    /**
+     * 初始化聊服务会议列表
+     */
+    @Test
+    public void initHostRoom() throws XMPPException, IOException, SmackException {
+        login("zwc");
+        Collection<HostedRoom> hostrooms;
+
+        MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(conn);
+
+        //manager.getJoinedRooms("");
+        Set<String> romms = manager.getJoinedRooms();
+
+        logger.info(romms.toString());
+
+        logger.info(manager.getServiceNames().toString());
+
+    }
+
+
+    int i = 0;
+
+    public int get() {
         return i++;
     }
+
     /**
      * 当前登录用户加入会议室
      *
-     * @param user 昵称
-     * @param password 会议室密码
+     * @param user      昵称
+     * @param password  会议室密码
      * @param roomsName 会议室名
      * @param
      */
-    public MultiUserChat joinMultiUserChat(String user, String password, String roomsName) throws  Exception {
+    public MultiUserChat joinMultiUserChat(String user, String password, String roomsName) throws Exception {
         try {
 
             // 使用XMPPConnection创建一个MultiUserChat窗口
@@ -467,8 +493,8 @@ public class XMPPConnectionClientTest{
      *
      * @param
      */
-    public void inviteJoinMultiUserChat(String to,String nickName) throws  Exception {
-             muc.invite(to,nickName);
+    public void inviteJoinMultiUserChat(String to, String nickName) throws Exception {
+        muc.invite(to, nickName);
 
     }
 
@@ -477,7 +503,7 @@ public class XMPPConnectionClientTest{
      *
      * @param
      */
-    public void JoinMultiUserChat(String nickname,String from,String room) throws  Exception {
+    public void JoinMultiUserChat(String nickname, String from, String room) throws Exception {
         // We enter a room by sending a presence packet where the "to"
         // field is in the form "roomName@service/nickname"
         Presence joinPresence = new Presence(Presence.Type.available);
@@ -510,13 +536,13 @@ public class XMPPConnectionClientTest{
             throw e;
         }*/
         joinPresence.setFrom(from);
-       conn.sendStanza(joinPresence);
+        conn.sendStanza(joinPresence);
         // Update the list of joined rooms
 
     }
 
 
-    public void createRoom(String realname,String room,String nickname) throws  Exception{
+    public void createRoom(String realname, String room, String nickname) throws Exception {
         try {
             MultiUserChatManager mcm = MultiUserChatManager.getInstanceFor(conn);
             MultiUserChat muc = mcm.getMultiUserChat(room);
@@ -563,7 +589,7 @@ public class XMPPConnectionClientTest{
             // 发送已完成的表单（有默认值）到服务器来配置聊天室
             muc.sendConfigurationForm(submitForm);
 
-           // 假如聊天室
+            // 假如聊天室
             muc.join("test");
             //enter(realname,room,nickname);
 
@@ -576,8 +602,8 @@ public class XMPPConnectionClientTest{
     }
 
 
-    private Presence enter(String from,String room,String nickname
-                          ) throws SmackException.NotConnectedException, SmackException.NoResponseException,
+    private Presence enter(String from, String room, String nickname
+    ) throws SmackException.NotConnectedException, SmackException.NoResponseException,
             XMPPException.XMPPErrorException {
         StringUtils.requireNotNullOrEmpty(nickname, "Nickname must not be null or blank.");
         // We enter a room by sending a presence packet where the "to"
@@ -601,8 +627,7 @@ public class XMPPConnectionClientTest{
         Presence presence;
         try {
             presence = conn.createPacketCollectorAndSend(responseFilter, joinPresence).nextResultOrThrow(conn.getPacketReplyTimeout());
-        }
-        catch (SmackException.NoResponseException | XMPPException.XMPPErrorException e) {
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException e) {
             // Ensure that all callbacks are removed if there is an exception
             throw e;
         }
@@ -845,9 +870,10 @@ public class XMPPConnectionClientTest{
 
     /**
      * 查询会议室成员名字
+     *
      * @param muc
      */
-    public static List<String> findMulitUser(MultiUserChat muc){
+    public static List<String> findMulitUser(MultiUserChat muc) {
         List<String> listUser = new ArrayList<String>();
         Iterator<String> it = muc.getOccupants().iterator();
         //遍历出聊天室人员名称
