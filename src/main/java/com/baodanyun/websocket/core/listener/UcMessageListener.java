@@ -4,6 +4,7 @@ import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.util.JSONUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.packet.Message;
@@ -28,16 +29,21 @@ public class UcMessageListener implements MessageListener {
     public void processMessage(Message msg) {
          logger.info("接收到群组信息:"+ JSONUtil.toJson(msg));
         try {
-            String realFrom = msg.getFrom().split("/")[1];
             Msg sendMsg = msgSendControl.getMsg(msg);
-            sendMsg.setFromName(realFrom);
+            if(!StringUtils.isEmpty(msg.getFrom()) && msg.getFrom().contains("/")){
+                String realFrom = msg.getFrom().split("/")[1];
+                sendMsg.setFromName(realFrom);
+            }else {
+                sendMsg.setFromName(msg.getFrom());
+            }
+
             if (null != sendMsg) {
                 // 手机app端发送过来的数据subject 为空
                 sendMsg.setOpenId(user.getOpenId());
                 msgSendControl.sendMsg(sendMsg);
             }
-        } catch (InterruptedException e) {
-            logger.error("msgSendControl.sendMsg error", e);
+        } catch (Exception e) {
+            logger.error("msgSendControl.sendMsg error");
         }
 
     }

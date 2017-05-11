@@ -340,7 +340,7 @@ public class XMPPConnectionClientTest {
         String realName3 = agent + "_c@126xmpp/Smack";
         String realName4 = agent + "_d@126xmpp/Smack";
 
-        String groupName = "55";
+        String groupName = "22";
         String group = groupName + "@conference.126xmpp";
 
         joinMultiUserChat("agent", null, groupName);
@@ -366,7 +366,7 @@ public class XMPPConnectionClientTest {
 
         while (true) {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(100000);
                 Message msg1 = new Message();
                 msg1.setType(Message.Type.groupchat);
                 msg1.setTo(group);

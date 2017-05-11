@@ -219,6 +219,7 @@ xchat.sendEvent = function (msg) {
             "content": msg,
             "to": window.destJid,
             "icon": window.user.icon,
+            "fromType": window.fromType,
             "from": window.currentId,
             "timeOutCall": function (o) {
                 o.removeClass("sending").addClass("timeOut");
@@ -368,10 +369,11 @@ xchat.loadChatListEvent = function () {
         $(_this.controls.backupfriendList).find("li").removeClass("active");
         var myFriendId = $(this).attr("id");
         var openId = $(this).attr("openId");
+        var fromType = $(this).attr("fromType");
         var nickname = $(this).find('.name').text();
         var isOnline = $(this).attr("class").indexOf("online");
 
-        _this.openFriendWindow(isOnline, myFriendId, nickname, openId);
+        _this.openFriendWindow(isOnline, myFriendId, nickname, openId,fromType);
         $(this).addClass("active");
     });
 
@@ -485,9 +487,10 @@ xchat.visitorProperties = function () {
 };
 /*=====================================================================================打开对话=====================================================================================*/
 //打开对话的窗口
-xchat.openFriendWindow = function (isOnline, id, nickname, openId) {
+xchat.openFriendWindow = function (isOnline, id, nickname, openId,fromType) {
     var _this = this;
     window.destJid = id;
+    window.fromType = fromType;
     //$(id).addClass("active").siblings().removeClass("active");  //设置当前的好友为激活 且 把消息变成已阅读
     $("#currentChatId").empty().append("您正在和" + nickname + "聊天 ").data('id', id); //设置聊天标题
     $("#noChat").hide();  //中间位置消失

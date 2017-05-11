@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script id="backupfriendListTpl" type="text/html">
     <%--<li ><span  style="display: none" id="{{from}}_tip"></span></li>--%>
-    <li class="{{onlineStatus}} have-message" id="{{from}}" data-id="{{name}}">
+    <li class="{{onlineStatus}} have-message" fromType="{{fromType}}"  id="{{from}}" data-id="{{name}}">
         <div class="avatar"><img src="{{icon}}" alt=""></div>
         <div class="name">{{loginUsername}}</div>
         <div class="time">{{name}}</div>

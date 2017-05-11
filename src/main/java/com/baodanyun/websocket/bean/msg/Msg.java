@@ -29,6 +29,11 @@ public class Msg implements Serializable{
     public enum MsgContentType {
         text, video, file, audio, image, receiptMsg
     }
+
+    public enum fromType {
+        personal, group
+    }
+
     // 表示用户从那个入口接入
     //  0 默认h5客服端   1 微信直接聊天入口
     private Integer toType;
@@ -36,6 +41,7 @@ public class Msg implements Serializable{
     private String fromName;//from的昵称
     private String icon;  //头像
     private String from;//jid
+    private fromType fromType;    //发送者类别,         // 个人 或者群    1 为 个人  2 为群
     private String to;//jid
     private String toName;
     private String content;
@@ -48,9 +54,18 @@ public class Msg implements Serializable{
     private boolean isRead;//TODO 是否已经被回执
     private Long readCt;//阅读时间
 
+
     //消息种类
     public enum Type {
         active, msg, status
+    }
+
+    public Msg.fromType getFromType() {
+        return fromType;
+    }
+
+    public void setFromType(Msg.fromType fromType) {
+        this.fromType = fromType;
     }
 
     public Long getCt() {

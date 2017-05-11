@@ -1,18 +1,15 @@
 package com.baodanyun.websocket.service.impl;
 
 import com.baodanyun.websocket.bean.XmppAdapter;
-import com.baodanyun.websocket.bean.XmppContentMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.core.listener.*;
 import com.baodanyun.websocket.exception.BusinessException;
-import com.baodanyun.websocket.model.DoubaoFriends;
 import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.jivesoftware.smack.*;
-import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.packet.Message;
@@ -189,7 +186,13 @@ public class XmppServiceImpl implements XmppService {
         Message xmppMsg = new Message();
 
         xmppMsg.setFrom(msg.getFrom());
-        xmppMsg.setType(Message.Type.chat);
+
+        if(msg.getFromType().toString().equals(Msg.fromType.group.toString())){
+            xmppMsg.setType(Message.Type.groupchat);
+        }else {
+            xmppMsg.setType(Message.Type.chat);
+        }
+
         xmppMsg.setBody(msg.getContent());
         xmppMsg.setSubject(msg.getContentType());
         xmppMsg.setTo(msg.getTo());
@@ -198,37 +201,13 @@ public class XmppServiceImpl implements XmppService {
     }
 
     public void sendMessage(Msg msg) throws SmackException.NotConnectedException, BusinessException {
-        Message xmppMsg = new Message();
-        XmppContentMsg xm = new XmppContentMsg();
-        DoubaoFriends df = doubaoFriendsService.selectByRealFrom(msg.getFrom(),msg.getTo());
-
-        xm.setContent(msg.getContent());
-        xm.setContentType(msg.getContentType());
-        xm.setFrom(df.getJid());
-        xm.setFromName(msg.getFromName());
-        xm.setFromIcon(msg.getIcon());
-        xm.setFromType(df.getFriendType());
-        xm.setGroupName(df.getFriendGroup());
-        xm.setTo(df.getFriendJid());
-        xm.setRealFrom(df.getFriendJname());
-        msg.setFrom(df.getJid());
-
-        xmppMsg.setFrom(msg.getFrom());
-        xmppMsg.setType(Message.Type.chat);
-        xmppMsg.setBody(JSONUtil.toJson(xm));
-        xmppMsg.setSubject(msg.getContentType());
-        xmppMsg.setTo(df.getFriendJid());
-        sendMessage(xmppMsg);
-
+        sendMessageNoChange( msg);
     }
 
     public void sendMessage( Message xmppMsg) throws BusinessException, SmackException.NotConnectedException {
         logger.info("xmpp send message:" + JSONUtil.toJson(xmppMsg));
         XMPPConnection connection = this.getXMPPConnectionAuthenticated(xmppMsg.getFrom());
-        ChatManager chatmanager = ChatManager.getInstanceFor(connection);
-
-        Chat newChat = chatmanager.createChat(xmppMsg.getTo());
-        newChat.sendMessage(xmppMsg);
+        connection.sendStanza(xmppMsg);
     }
 
     public AbstractXMPPConnection getInitConnectListenerXmpp(AbstractUser user) throws IOException, XMPPException, SmackException {

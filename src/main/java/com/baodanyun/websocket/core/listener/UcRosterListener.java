@@ -37,6 +37,7 @@ public class UcRosterListener implements RosterListener {
                     sm.setLoginTime(new Date().getTime());
                     sm.setFromName(address);
                     sm.setFrom(address);
+                    sm.setFromType(Msg.fromType.personal);
                     sm.setLoginUsername(address);
                     sm.setTo(user.getId());
                     sm.setCt(new Date().getTime());

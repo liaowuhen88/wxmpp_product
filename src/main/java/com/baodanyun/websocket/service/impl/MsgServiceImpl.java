@@ -22,6 +22,7 @@ public class MsgServiceImpl implements MsgService {
         sm.setContent(null);
         sm.setLoginTime(new Date().getTime());
         sm.setFromName(room);
+        sm.setFromType(Msg.fromType.group);
         sm.setFrom(room);
         sm.setLoginUsername("群消息");
         sm.setTo(to);
