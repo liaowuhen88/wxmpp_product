@@ -34,8 +34,6 @@ public class UcRosterListener implements RosterListener {
                     StatusMsg sm = new  StatusMsg();
                     sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
                     sm.setType(Msg.Type.status.toString());
-                    sm.setContentType(null);
-                    sm.setContent(null);
                     sm.setLoginTime(new Date().getTime());
                     sm.setFromName(address);
                     sm.setFrom(address);
