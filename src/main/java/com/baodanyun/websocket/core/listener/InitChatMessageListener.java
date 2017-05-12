@@ -32,7 +32,7 @@ public class InitChatMessageListener implements ChatMessageListener {
                 sendMsg.setOpenId(user.getOpenId());
                 msgSendControl.sendMsg(sendMsg);
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             logger.error("msgSendControl.sendMsg error", e);
         }
     }

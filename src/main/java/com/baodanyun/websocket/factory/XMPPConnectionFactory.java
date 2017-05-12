@@ -51,7 +51,7 @@ public class XMPPConnectionFactory {
         roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
 
         // 添加好友监听器
-        UcRosterListener ur = new UcRosterListener(null,null);
+        UcRosterListener ur = new UcRosterListener(null,null,null);
         roster.addRosterListener(ur);
 
        /* //增加自定义会议信息解析

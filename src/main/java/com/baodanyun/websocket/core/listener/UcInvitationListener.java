@@ -52,13 +52,15 @@ public class UcInvitationListener implements InvitationListener {
 
             DiscussionHistory history = new DiscussionHistory();
             history.setMaxStanzas(0);
-            // 用户加入聊天室
-            room.join(user.getLoginUsername(), password, history, conn.getPacketReplyTimeout());
 
+            if(!room.isJoined()){
+                // 用户加入聊天室
+                room.join(user.getLoginUsername(), password, history, conn.getPacketReplyTimeout());
+                // 增加 uc 消息监听器
+                MessageListener messageListener = new UcMessageListener(msgSendControl,user);
+                room.addMessageListener(messageListener);
 
-            // 增加 uc 消息监听器
-            MessageListener messageListener = new UcMessageListener(msgSendControl,user);
-            room.addMessageListener(messageListener);
+            }
 
             sengNewRoom(room,inviter);
 

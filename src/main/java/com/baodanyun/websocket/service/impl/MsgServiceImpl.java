@@ -18,13 +18,11 @@ public class MsgServiceImpl implements MsgService {
         StatusMsg sm = new StatusMsg();
         sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
         sm.setType(Msg.Type.status.toString());
-        sm.setContentType(null);
-        sm.setContent(null);
         sm.setLoginTime(new Date().getTime());
-        sm.setFromName(room);
+        sm.setFromName("群消息");
         sm.setFromType(Msg.fromType.group);
         sm.setFrom(room);
-        sm.setLoginUsername("群消息");
+        sm.setLoginUsername(room);
         sm.setTo(to);
         sm.setCt(new Date().getTime());
 

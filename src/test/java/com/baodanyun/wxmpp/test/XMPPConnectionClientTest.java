@@ -366,7 +366,7 @@ public class XMPPConnectionClientTest {
 
         while (true) {
             try {
-                Thread.sleep(100000);
+                Thread.sleep(10000);
                 Message msg1 = new Message();
                 msg1.setType(Message.Type.groupchat);
                 msg1.setTo(group);
@@ -413,20 +413,6 @@ public class XMPPConnectionClientTest {
             }
         }
 
-
-
-       /* ChatManagerListenerTest mt = new ChatManagerListenerTest();
-
-
-        chatManager.addChatListener(mt);
-
-        ChatMessageListenerTest li = new ChatMessageListenerTest();
-
-        Chat newChat = chatManager.createChat(toUsername, li);
-
-        newChat.sendMessage(msg);
-
-        System.out.print(123);*/
     }
 
 
@@ -503,7 +489,7 @@ public class XMPPConnectionClientTest {
      *
      * @param
      */
-    public void JoinMultiUserChat(String nickname, String from, String room) throws Exception {
+    public void JoinMultiUserChat(String nickname, String realName, String room) throws Exception {
         // We enter a room by sending a presence packet where the "to"
         // field is in the form "roomName@service/nickname"
         Presence joinPresence = new Presence(Presence.Type.available);
@@ -535,7 +521,7 @@ public class XMPPConnectionClientTest {
             // Ensure that all callbacks are removed if there is an exception
             throw e;
         }*/
-        joinPresence.setFrom(from);
+        joinPresence.setFrom(realName);
         conn.sendStanza(joinPresence);
         // Update the list of joined rooms
 

@@ -247,7 +247,7 @@ public class XmppServiceImpl implements XmppService {
         roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
 
         // 添加好友监听器
-        UcRosterListener ur = new UcRosterListener(msgSendControl,user);
+        UcRosterListener ur = new UcRosterListener(this,msgSendControl,user);
         roster.addRosterListener(ur);
 
 
@@ -265,6 +265,7 @@ public class XmppServiceImpl implements XmppService {
 
         //增加自定义会议信息解析
         ProviderManager.addIQProvider("muc", "YANG", new MUCPacketExtensionProvider(msgService,msgSendControl,user));
+
         return connection;
     }
 

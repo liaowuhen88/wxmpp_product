@@ -4,12 +4,14 @@ import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.service.MsgSendControl;
+import com.baodanyun.websocket.service.XmppService;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.RosterListener;
+import org.jivesoftware.smackx.vcardtemp.VCardManager;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * Created by liaowuhen on 2017/5/10.
@@ -19,9 +21,11 @@ import java.util.Date;
 public class UcRosterListener implements RosterListener {
     private static Logger logger= Logger.getLogger(UcRosterListener.class);
     private MsgSendControl msgSendControl;
+    private XmppService xmppService;
     private AbstractUser user;
 
-    public UcRosterListener(MsgSendControl msgSendControl,AbstractUser user){
+    public UcRosterListener(XmppService xmppService,MsgSendControl msgSendControl,AbstractUser user){
+        this.xmppService = xmppService;
         this.msgSendControl = msgSendControl;
         this.user = user;
     }
@@ -34,14 +38,20 @@ public class UcRosterListener implements RosterListener {
                     StatusMsg sm = new  StatusMsg();
                     sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
                     sm.setType(Msg.Type.status.toString());
-                    sm.setLoginTime(new Date().getTime());
-                    sm.setFromName(address);
-                    sm.setFrom(address);
-                    sm.setFromType(Msg.fromType.personal);
-                    sm.setLoginUsername(address);
+                    sm.setLoginTime(System.currentTimeMillis());
+                    sm.setCt(System.currentTimeMillis());
                     sm.setTo(user.getId());
-                    sm.setCt(new Date().getTime());
+                    sm.setFromType(Msg.fromType.personal);
+                    sm.setFrom(address);
 
+                    sm.setFromName(address);
+                    sm.setLoginUsername(address);
+
+                   VCard vCard = loadVcard(address);
+                    if(null != vCard){
+                        sm.setFromName(vCard.getFirstName());
+                        sm.setLoginUsername(vCard.getNickName());
+                    }
                     msgSendControl.sendMsg(sm);
                 }
             }
@@ -52,6 +62,16 @@ public class UcRosterListener implements RosterListener {
             logger.equals(e);
         }
 
+    }
+
+    public VCard loadVcard(String Jid){
+        VCard vcard = null;
+        try {
+             vcard  = VCardManager.getInstanceFor(xmppService.getXMPPConnectionAuthenticated(user.getId())).loadVCard(Jid);
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        return vcard;
     }
 
     public void entriesDeleted(Collection<String> addresses) {

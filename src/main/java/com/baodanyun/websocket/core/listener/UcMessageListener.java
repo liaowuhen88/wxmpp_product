@@ -32,6 +32,10 @@ public class UcMessageListener implements MessageListener {
             Msg sendMsg = msgSendControl.getMsg(msg);
             if(!StringUtils.isEmpty(msg.getFrom()) && msg.getFrom().contains("/")){
                 String realFrom = msg.getFrom().split("/")[1];
+                if(user.getLoginUsername().equals(realFrom)){
+                    // 客服自己发送的群消息，不发送到前端
+                    return ;
+                }
                 sendMsg.setFromName(realFrom);
             }else {
                 sendMsg.setFromName(msg.getFrom());

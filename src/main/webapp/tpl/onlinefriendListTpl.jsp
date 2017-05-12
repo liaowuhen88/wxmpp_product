@@ -3,8 +3,8 @@
     <%--<li ><span  style="display: none" id="{{from}}_tip"></span></li>--%>
     <li class="{{onlineStatus}} have-message" fromType="{{fromType}}"  id="{{from}}" openId="{{openId}}" data-id="{{name}}">
         <div class="avatar"><img src="{{icon}}" alt=""></div>
-        <div class="name">{{loginUsername}}</div>
-        <div class="time">{{name}}</div>
+        <div class="name">{{fromName}}</div>
+        <div class="time">{{loginUsername}}</div>
         <div class="time">{{time}}</div>
         <div class="last-message"></div>
         <!--   <span class="new-message" id="new-message"></span>
