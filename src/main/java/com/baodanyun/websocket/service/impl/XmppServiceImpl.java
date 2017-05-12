@@ -21,7 +21,9 @@ import org.jivesoftware.smack.roster.RosterGroup;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.HostedRoom;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +69,7 @@ public class XmppServiceImpl implements XmppService {
     private static final Map<String, XmppAdapter> XMPP_MAP = new ConcurrentHashMap<>();
 
     public boolean isAuthenticated(String jid) {
-        AbstractXMPPConnection xMPPConnection = getXMPPConnection(jid);
+        XMPPConnection xMPPConnection = getXMPPConnection(jid);
         if (null != xMPPConnection) {
             if (xMPPConnection.isConnected() && xMPPConnection.isAuthenticated()) {
                 return true;
@@ -90,7 +92,7 @@ public class XmppServiceImpl implements XmppService {
 
 
     public boolean isConnected(String jid) {
-        AbstractXMPPConnection xMPPConnection = getXMPPConnection(jid);
+        XMPPConnection xMPPConnection = getXMPPConnection(jid);
         if (null != xMPPConnection && xMPPConnection.isConnected()) {
             return true;
         } else {
@@ -100,9 +102,8 @@ public class XmppServiceImpl implements XmppService {
     }
 
 
-
     public RosterGroup getGroupByName(String jid,String groupName) throws Exception {
-        AbstractXMPPConnection connection = this.getXMPPConnectionAuthenticated(jid);
+        XMPPConnection connection = this.getXMPPConnectionAuthenticated(jid);
         Roster roster = Roster.getInstanceFor(connection);
         roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
         roster.reload();
@@ -124,7 +125,7 @@ public class XmppServiceImpl implements XmppService {
      * @param jid
      * @param xMPPConnection
      */
-    public void saveXMPPConnection(String jid, AbstractXMPPConnection xMPPConnection) {
+    public void saveXMPPConnection(String jid, XMPPConnection xMPPConnection) {
         XmppAdapter xa = new XmppAdapter();
         xa.setXmpp(xMPPConnection);
         xa.setTime(System.currentTimeMillis());
@@ -138,8 +139,8 @@ public class XmppServiceImpl implements XmppService {
      * @return
      */
 
-    public AbstractXMPPConnection getXMPPConnectionAuthenticated(String jid) throws BusinessException {
-        AbstractXMPPConnection xmppConnection = getXMPPConnection(jid);
+    public XMPPConnection getXMPPConnectionAuthenticated(String jid) throws BusinessException {
+        XMPPConnection xmppConnection = getXMPPConnection(jid);
         if (null != xmppConnection && xmppConnection.isAuthenticated()) {
             return xmppConnection;
         } else {
@@ -153,7 +154,7 @@ public class XmppServiceImpl implements XmppService {
      * @param jid
      * @return
      */
-    public AbstractXMPPConnection getXMPPConnection(String jid) {
+    public XMPPConnection getXMPPConnection(String jid) {
         XmppAdapter xmppAdapter = XMPP_MAP.get(jid);
         if (null != xmppAdapter) {
             return xmppAdapter.getXmpp();
@@ -162,10 +163,11 @@ public class XmppServiceImpl implements XmppService {
     }
 
     public boolean closed(String jid) throws IOException {
-        AbstractXMPPConnection xMPPConnection = getXMPPConnection(jid);
+        XMPPConnection xMPPConnection = getXMPPConnection(jid);
         if (null != xMPPConnection) {
             if (xMPPConnection.isConnected()) {
-                xMPPConnection.disconnect();
+                AbstractXMPPConnection axx = (AbstractXMPPConnection)xMPPConnection;
+                 axx.disconnect();
             }
             XMPP_MAP.remove(jid);
             return true;
@@ -178,7 +180,7 @@ public class XmppServiceImpl implements XmppService {
 
     public void sendPresence(String jid, Presence.Type type) throws SmackException.NotConnectedException {
         Presence presence = new Presence(type);
-        AbstractXMPPConnection xMPPConnection = getXMPPConnection(jid);
+        XMPPConnection xMPPConnection = getXMPPConnection(jid);
         xMPPConnection.sendStanza(presence);
     }
 
@@ -224,7 +226,10 @@ public class XmppServiceImpl implements XmppService {
         builder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
         //builder.setSendPresence(false);
 
-        XMPPTCPConnectionConfiguration config = builder.setServiceName(Config.xmppdomain).setHost(Config.xmppurl).setPort(Integer.valueOf(Config.xmppport)).build();
+        XMPPTCPConnectionConfiguration config = builder.setServiceName(Config.xmppdomain).
+                setHost(Config.xmppurl).
+                //setConnectTimeout()
+                setPort(Integer.valueOf(Config.xmppport)).build();
         AbstractXMPPConnection connection = new XMPPTCPConnection(config);
 
         connection.setFromMode(org.jivesoftware.smack.XMPPConnection.FromMode.UNCHANGED);
@@ -237,7 +242,7 @@ public class XmppServiceImpl implements XmppService {
         reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
         reconnectionManager.enableAutomaticReconnection();
 
-        ConnectionListener connectionListener = new InitConnectListener(user,webSocketService,msgSendControl,doubaoFriendsService);
+        ConnectionListener connectionListener = new InitConnectListener(this,user,webSocketService,msgSendControl,doubaoFriendsService);
         //初始化的连接监听器
         connection.addConnectionListener(connectionListener);
 
@@ -254,7 +259,7 @@ public class XmppServiceImpl implements XmppService {
         // 添加群邀请监听器
         final MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(connection);
 
-        UcInvitationListener ul = new UcInvitationListener(msgService,msgSendControl,user);
+        UcInvitationListener ul = new UcInvitationListener(this,msgService,msgSendControl,user);
         manager.addInvitationListener(ul);
 
 
@@ -264,7 +269,7 @@ public class XmppServiceImpl implements XmppService {
         chatmanager.addChatListener(chatManagerListener);
 
         //增加自定义会议信息解析
-        ProviderManager.addIQProvider("muc", "YANG", new MUCPacketExtensionProvider(msgService,msgSendControl,user));
+        ProviderManager.addIQProvider("muc", "YANG", new MUCPacketExtensionProvider(this,msgService,msgSendControl,user));
 
         return connection;
     }
@@ -287,7 +292,7 @@ public class XmppServiceImpl implements XmppService {
                 xmppConnection.disconnect();
 
                 createAccountConn  = this.getXMPPConnectionNew(user);
-                InitConnectListener initConnectListenerWebVisitor = new InitConnectListener(user,webSocketService,msgSendControl,doubaoFriendsService);
+                InitConnectListener initConnectListenerWebVisitor = new InitConnectListener(this,user,webSocketService,msgSendControl,doubaoFriendsService);
                 createAccountConn.addConnectionListener(initConnectListenerWebVisitor);
                 createAccountConn.connect();
                 createAccountConn.login(user.getLoginUsername(), user.getPassWord());
@@ -297,15 +302,11 @@ public class XmppServiceImpl implements XmppService {
                 isLoginDone = false;
             }
         }
-        if (isLoginDone) {
-            logger.info("id:[" + user.getId() + "] login success");
-            this.saveXMPPConnection(user.getId(), createAccountConn);
-        }
         return isLoginDone;
     }
 
     public void roster(String vjid, String cjid) throws BusinessException, SmackException.NotLoggedInException, XMPPException.XMPPErrorException, SmackException.NotConnectedException, SmackException.NoResponseException {
-        AbstractXMPPConnection createAccountConn = this.getXMPPConnectionAuthenticated(vjid);
+        XMPPConnection createAccountConn = this.getXMPPConnectionAuthenticated(vjid);
 
         Roster roster = Roster.getInstanceFor(createAccountConn);
         roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
@@ -362,6 +363,38 @@ public class XmppServiceImpl implements XmppService {
 
             logger.info(manager.getServiceNames().toString());
 
+        }
+
+    }
+
+    @Override
+    public void joinRoom(MultiUserChat room,AbstractUser user) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+        if(!room.isJoined()){
+            DiscussionHistory history = new DiscussionHistory();
+            history.setMaxStanzas(0);
+
+            // 用户加入聊天室
+            room.join(user.getLoginUsername(), user.getPassWord(), history, this.getXMPPConnection(user.getId()).getPacketReplyTimeout());
+            // 增加 uc 消息监听器
+            MessageListener messageListener = new UcMessageListener(msgSendControl,user);
+            room.addMessageListener(messageListener);
+
+        }
+    }
+
+    @Override
+    public void joinRoom(AbstractUser user, Set<String> rooms) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+        // 为了性能，延时加载
+        if(null != rooms && rooms.size() > 0 ){
+            for(String room:rooms){
+                XMPPConnection conn = this.getXMPPConnection(user.getId());
+                final MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(conn);
+
+                //String room = roomsName + "@conference." + conn.getServiceName();
+                MultiUserChat muc = manager.getMultiUserChat(room);
+
+                joinRoom(muc,user);
+            }
         }
 
     }

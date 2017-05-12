@@ -8,14 +8,14 @@ import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.listener.VisitorListener;
 import com.baodanyun.websocket.service.*;
 import org.apache.commons.lang.StringUtils;
-import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.offline.OfflineMessageManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
@@ -73,7 +73,7 @@ public abstract class UserLifeCycleServiceImpl implements UserLifeCycleService {
 
     public boolean pushOfflineMsg(AbstractUser user) throws BusinessException {
         //加载离线记录
-        AbstractXMPPConnection xmppConnection = xmppService.getXMPPConnectionAuthenticated(user.getId());
+        XMPPConnection xmppConnection = xmppService.getXMPPConnectionAuthenticated(user.getId());
         OfflineMessageManager offlineManager = new OfflineMessageManager(xmppConnection);
         try {
             List<Message> msgList = offlineManager.getMessages();

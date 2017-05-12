@@ -1,12 +1,12 @@
 package com.baodanyun.websocket.bean;
 
-import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.XMPPConnection;
 
 /**
  * Created by liaowuhen on 2016/12/13.
  */
 public class XmppAdapter {
-    private AbstractXMPPConnection xmpp;
+    private XMPPConnection xmpp;
     private Long time;
     private int count; // session 不存在次数
 
@@ -18,11 +18,11 @@ public class XmppAdapter {
         this.time = time;
     }
 
-    public AbstractXMPPConnection getXmpp() {
+    public XMPPConnection getXmpp() {
         return xmpp;
     }
 
-    public void setXmpp(AbstractXMPPConnection xmpp) {
+    public void setXmpp(XMPPConnection xmpp) {
         this.xmpp = xmpp;
     }
 

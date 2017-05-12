@@ -4,8 +4,8 @@ import com.baodanyun.websocket.bean.user.Customer;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.exception.BusinessException;
-import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
@@ -200,7 +200,7 @@ public class VcardService {
      */
 
     public boolean changePassword(String jid, String pwd) throws SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException, BusinessException {
-        AbstractXMPPConnection xmppConnection = xmppService.getXMPPConnectionAuthenticated(jid);
+        XMPPConnection xmppConnection = xmppService.getXMPPConnectionAuthenticated(jid);
         if (xmppConnection != null) {
 
             AccountManager.getInstance(xmppConnection).changePassword(pwd);

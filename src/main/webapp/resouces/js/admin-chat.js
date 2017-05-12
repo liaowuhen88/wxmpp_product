@@ -145,6 +145,12 @@ xchat.recvMsgEvent = function (json) {
             // alert(this.recvMsg.length);
             $(this.controls.waitReplyPerson).html(this.recvMsg.length);
         }
+
+        $('#friendList').find('li').each(function () {
+            if($(this).attr('id')===json.from){
+                $('#friendList').prepend($(this));
+            }
+        });
         // 单个用户
         $(document.getElementById('m' + json.from)).attr("class", "new-message");
         var from = json.from;

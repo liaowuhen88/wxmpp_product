@@ -4,6 +4,7 @@ import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.service.DoubaoFriendsService;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.WebSocketService;
+import com.baodanyun.websocket.service.XmppService;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -17,12 +18,13 @@ public class InitConnectListener implements ConnectionListener {
     private WebSocketService webSocketService;
     private MsgSendControl msgSendControl;
     private DoubaoFriendsService doubaoFriendsService;
-
+    private XmppService xmppService;
     private AbstractUser user;
     private XMPPConnection xmppConnection;
 
 
-    public InitConnectListener(AbstractUser user,WebSocketService webSocketService,MsgSendControl msgSendControl,DoubaoFriendsService doubaoFriendsService) {
+    public InitConnectListener(XmppService xmppService,AbstractUser user,WebSocketService webSocketService,MsgSendControl msgSendControl,DoubaoFriendsService doubaoFriendsService) {
+        this.xmppService = xmppService;
         this.user = user;
         this.webSocketService = webSocketService;
         this.msgSendControl = msgSendControl;
@@ -31,13 +33,14 @@ public class InitConnectListener implements ConnectionListener {
 
     @Override
     public void connected(XMPPConnection xmppConnection) {
+        xmppService.saveXMPPConnection(user.getId(), xmppConnection);
         logger.info("connected");
     }
 
 
     @Override
     public void authenticated(XMPPConnection xmppConnection, boolean b) {
-        this.xmppConnection = xmppConnection;
+        xmppService.saveXMPPConnection(user.getId(), xmppConnection);
         logger.info("authenticated");
     }
 

@@ -4,11 +4,10 @@ import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.MsgService;
+import com.baodanyun.websocket.service.XmppService;
 import org.apache.log4j.Logger;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
@@ -21,11 +20,12 @@ public class UcInvitationListener implements InvitationListener {
 
     private MsgSendControl msgSendControl;
     private MsgService msgService;
-
+    private XmppService xmppService;
     private AbstractUser user;
 
 
-    public UcInvitationListener(MsgService msgService,MsgSendControl msgSendControl,AbstractUser user){
+    public UcInvitationListener(XmppService xmppService, MsgService msgService, MsgSendControl msgSendControl, AbstractUser user) {
+        this.xmppService = xmppService;
         this.msgSendControl = msgSendControl;
         this.user = user;
         this.msgService = msgService;
@@ -47,22 +47,11 @@ public class UcInvitationListener implements InvitationListener {
 
 
         try {
-            logger.info("收到来自 " + inviter + " 的聊天"+room.getRoom()+"室邀请。邀请附带内容："
+            logger.info("收到来自 " + inviter + " 的聊天" + room.getRoom() + "室邀请。邀请附带内容："
                     + reason);
 
-            DiscussionHistory history = new DiscussionHistory();
-            history.setMaxStanzas(0);
-
-            if(!room.isJoined()){
-                // 用户加入聊天室
-                room.join(user.getLoginUsername(), password, history, conn.getPacketReplyTimeout());
-                // 增加 uc 消息监听器
-                MessageListener messageListener = new UcMessageListener(msgSendControl,user);
-                room.addMessageListener(messageListener);
-
-            }
-
-            sengNewRoom(room,inviter);
+            xmppService.joinRoom(room,user);
+            sengNewRoom(room, inviter);
 
 
         } catch (InterruptedException e) {
@@ -73,8 +62,8 @@ public class UcInvitationListener implements InvitationListener {
     }
 
 
-    public void sengNewRoom(MultiUserChat room,String inviter) throws InterruptedException {
-        Msg msg = msgService.getNewRoomJoines(room.getRoom(),user.getId());
+    public void sengNewRoom(MultiUserChat room, String inviter) throws InterruptedException {
+        Msg msg = msgService.getNewRoomJoines(room.getRoom(), user.getId());
 
         msgSendControl.sendMsg(msg);
     }

@@ -33,7 +33,7 @@ public class XMPPConnectionFactory {
         // 添加群邀请监听器
         MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(connection);
 
-        UcInvitationListener ul = new UcInvitationListener(null,null,null);
+        UcInvitationListener ul = new UcInvitationListener(null,null,null,null);
         manager.addInvitationListener(ul);
 
 

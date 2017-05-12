@@ -5,11 +5,14 @@ import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.exception.BusinessException;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * Created by liaowuhen on 2016/11/11.
@@ -40,7 +43,7 @@ public interface XmppService {
      * @param jid
      * @param xMPPConnection
      */
-    void saveXMPPConnection(String jid, AbstractXMPPConnection xMPPConnection) ;
+    void saveXMPPConnection(String jid, XMPPConnection xMPPConnection) ;
 
     /**
      * 获取登录成功的XMPPConnection
@@ -49,7 +52,7 @@ public interface XmppService {
      * @return
      */
 
-    AbstractXMPPConnection getXMPPConnectionAuthenticated(String jid) throws BusinessException;
+    XMPPConnection getXMPPConnectionAuthenticated(String jid) throws BusinessException;
 
     /**
      * 获取成功建立连接的XMPPConnection
@@ -57,7 +60,7 @@ public interface XmppService {
      * @param jid
      * @return
      */
-    AbstractXMPPConnection getXMPPConnection(String jid) ;
+    XMPPConnection getXMPPConnection(String jid) ;
 
     boolean closed(String jid) throws IOException ;
 
@@ -92,4 +95,9 @@ public interface XmppService {
     boolean createAccount(String jid,String userName,String password) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException;
 
     void getHostRoom(String jid) throws XMPPException, IOException, SmackException, BusinessException;
+
+    void joinRoom(MultiUserChat room, AbstractUser user) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException ;
+
+    void joinRoom(AbstractUser user, Set<String> room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException;
+
 }
