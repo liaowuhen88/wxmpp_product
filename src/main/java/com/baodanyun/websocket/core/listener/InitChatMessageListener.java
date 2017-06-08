@@ -2,8 +2,11 @@ package com.baodanyun.websocket.core.listener;
 
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
+import com.baodanyun.websocket.event.ConversationEvent;
 import com.baodanyun.websocket.service.MsgSendControl;
+import com.baodanyun.websocket.util.EventBusUtils;
 import com.baodanyun.websocket.util.JSONUtil;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatMessageListener;
@@ -29,9 +32,15 @@ public class InitChatMessageListener implements ChatMessageListener {
             Msg sendMsg = msgSendControl.getMsg(msg);
             if (null != sendMsg) {
                 // 手机app端发送过来的数据subject 为空
+                Msg cloneMsg = (Msg) SerializationUtils.clone(sendMsg);
+                ConversationEvent ce = new ConversationEvent(user, msgSendControl, cloneMsg);
+                EventBusUtils.post(ce);
+
+
                 sendMsg.setOpenId(user.getOpenId());
                 msgSendControl.sendMsg(sendMsg);
             }
+
         } catch (Exception e) {
             logger.error("msgSendControl.sendMsg error", e);
         }

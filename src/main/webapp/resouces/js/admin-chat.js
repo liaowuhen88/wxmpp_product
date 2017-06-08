@@ -146,6 +146,7 @@ xchat.recvMsgEvent = function (json) {
             $(this.controls.waitReplyPerson).html(this.recvMsg.length);
         }
 
+        // 新消息移动到表头
         $('#friendList').find('li').each(function () {
             if($(this).attr('id')===json.from){
                 $('#friendList').prepend($(this));

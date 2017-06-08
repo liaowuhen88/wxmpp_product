@@ -57,8 +57,6 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
 
         if (flag) {
             logger.info("userLifeCycleService.logout(customer): id[" + customer.getId() + "]" + status);
-
-            userLifeCycleService.logout(customer);
         }
 
     }

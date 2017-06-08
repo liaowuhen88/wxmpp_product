@@ -2,7 +2,9 @@ package com.baodanyun.websocket.core.listener;
 
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
+import com.baodanyun.websocket.event.ConversationRoomEvent;
 import com.baodanyun.websocket.service.MsgSendControl;
+import com.baodanyun.websocket.util.EventBusUtils;
 import com.baodanyun.websocket.util.JSONUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,6 +32,10 @@ public class UcMessageListener implements MessageListener {
          logger.info("接收到群组信息:"+ JSONUtil.toJson(msg));
         try {
             Msg sendMsg = msgSendControl.getMsg(msg);
+
+            ConversationRoomEvent je = new ConversationRoomEvent(user, sendMsg.getFrom());
+            EventBusUtils.post(je);
+
             if(!StringUtils.isEmpty(msg.getFrom()) && msg.getFrom().contains("/")){
                 String realFrom = msg.getFrom().split("/")[1];
                 if(user.getLoginUsername().equals(realFrom)){

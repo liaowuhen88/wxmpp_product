@@ -20,8 +20,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 
 public class MUCPacketExtensionProvider extends IQProvider {
@@ -42,14 +40,15 @@ public class MUCPacketExtensionProvider extends IQProvider {
     @Override
     public Element parse(XmlPullParser parser, int i) throws XmlPullParserException, IOException, SmackException {
         int eventType = parser.getEventType();
-        Set<String> rooms = new HashSet<>();
+
         while (true) {
             if (eventType == XmlPullParser.START_TAG) {
                 if ("room".equals(parser.getName())) {
                     String account = parser.getAttributeValue("", "account");
                     String room = parser.nextText();
                     try {
-                        rooms.add(room);
+                        JoinRoomEvent je = new JoinRoomEvent(user, room);
+                        EventBusUtils.post(je);
                     } catch (Exception e) {
                        logger.error(e);
                     }
@@ -64,12 +63,6 @@ public class MUCPacketExtensionProvider extends IQProvider {
             eventType = parser.next();
         }
 
-        try {
-            JoinRoomEvent je = new JoinRoomEvent(user,rooms);
-            EventBusUtils.post(je);
-        } catch (Exception e) {
-           logger.error(e);
-        }
         return null;
     }
 

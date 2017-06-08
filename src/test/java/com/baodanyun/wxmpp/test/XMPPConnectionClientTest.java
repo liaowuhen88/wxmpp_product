@@ -23,6 +23,7 @@ import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.muc.packet.MUCInitialPresence;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.Form;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -33,16 +34,58 @@ import java.util.*;
 
 public class XMPPConnectionClientTest {
     protected static final Logger logger = LoggerFactory.getLogger(XMPPConnectionClientTest.class);
+    private static ChatManager chatManager;
+    boolean login = false;
+    int i = 0;
+    ExtensionElement ex = new ExtensionElement() {
+        //用户信息元素名称
+        private String elementName = "need";
 
+        @Override
+        public CharSequence toXML() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<");
+            sb.append(elementName);
+            sb.append(">");
+            sb.append(true);
+            sb.append("</");
+            sb.append(elementName);
+            sb.append(">");
+            return sb.toString();
+        }
 
+        @Override
+        public String getElementName() {
+            return elementName;
+        }
+
+        @Override
+        public String getNamespace() {
+            return null;
+        }
+    };
     private AbstractXMPPConnection conn;
     private Roster roster;
     private MultiUserChat muc;
-    private static ChatManager chatManager;
-
-    boolean login = false;
     private String username = "yt";
     private String password = "111111";
+
+    /**
+     * 查询会议室成员名字
+     *
+     * @param muc
+     */
+    public static List<String> findMulitUser(MultiUserChat muc) {
+        List<String> listUser = new ArrayList<String>();
+        Iterator<String> it = muc.getOccupants().iterator();
+        //遍历出聊天室人员名称
+        while (it.hasNext()) {
+            // 聊天室成员名字
+            String name = it.next();
+            listUser.add(name);
+        }
+        return listUser;
+    }
 
     /**
      * 穿件连接
@@ -64,7 +107,6 @@ public class XMPPConnectionClientTest {
 
     }
 
-
     /**
      * 登录 并且生成 chatManager,并且添加消息接收监听器
      * 重复登陆会报错
@@ -81,10 +123,9 @@ public class XMPPConnectionClientTest {
         }
         connect();
 
-
         conn.login(username, password);
 
-
+        login = true;
     }
 
     public void login(String userName) throws XMPPException, IOException, SmackException {
@@ -111,7 +152,6 @@ public class XMPPConnectionClientTest {
         Thread.sleep(1000000);
     }
 
-
     /**
      * 直接获取群失败
      *
@@ -133,7 +173,6 @@ public class XMPPConnectionClientTest {
         }
 
     }
-
 
     @Test
     public void getGroup() throws XMPPException, IOException, SmackException {
@@ -166,7 +205,6 @@ public class XMPPConnectionClientTest {
 
     }
 
-
     /**
      * 注册账号
      */
@@ -178,13 +216,11 @@ public class XMPPConnectionClientTest {
         amgr.createAccount(username, "111111");
     }
 
-
     public void createAccount(String uname) throws Exception {
         login();
         AccountManager amgr = AccountManager.getInstance(conn);
         amgr.createAccount(uname, "111111");
     }
-
 
     /**
      * 当前登录用户添加好友
@@ -197,7 +233,6 @@ public class XMPPConnectionClientTest {
         roster.createEntry(username + "@126xmpp", username, new String[]{"friends"});
         System.out.print(123);
     }
-
 
     /**
      * 发送加好友信息
@@ -235,33 +270,6 @@ public class XMPPConnectionClientTest {
 
             rosterPacket.addRosterItem(item);
 
-            ExtensionElement ex = new ExtensionElement() {
-                //用户信息元素名称
-                private String elementName = "need";
-
-                @Override
-                public CharSequence toXML() {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("<");
-                    sb.append(elementName);
-                    sb.append(">");
-                    sb.append(true);
-                    sb.append("</");
-                    sb.append(elementName);
-                    sb.append(">");
-                    return sb.toString();
-                }
-
-                @Override
-                public String getElementName() {
-                    return elementName;
-                }
-
-                @Override
-                public String getNamespace() {
-                    return null;
-                }
-            };
             rosterPacket.addExtension(ex);
 
             // 模拟客服添加欺骗账号
@@ -282,6 +290,31 @@ public class XMPPConnectionClientTest {
             online.setTo(to);
             conn.sendStanza(online);
         }
+
+
+    }
+
+    /**
+     * updateVcard
+     */
+    @Test
+    public void updateVcard() throws Exception {
+
+        // 默认插件
+        String agent = "yt";
+        // 客服地址
+        String to = "zwc@126xmpp";
+        // 待伪装名称
+        String name = "zwc333";
+        // 真实名称
+        login();
+        VCard vCard = new VCard();
+        vCard.setNickName("test123");
+        vCard.setFrom("yt_yt123@126xmpp");
+        // vCard.setFrom("yt@126xmpp");
+        vCard.setType(IQ.Type.set);
+        vCard.addExtension(ex);
+        conn.sendStanza(vCard);
 
 
     }
@@ -309,7 +342,7 @@ public class XMPPConnectionClientTest {
         int i = 0;
         while (true) {
 
-            Thread.sleep(10000);
+            Thread.sleep(2000);
 
             Message msg = new Message();
             msg.setFrom(realName + "@126xmpp");
@@ -318,7 +351,6 @@ public class XMPPConnectionClientTest {
             msg.setBody("__" + i++);
             conn.sendStanza(msg);
         }
-
 
     }
 
@@ -335,10 +367,15 @@ public class XMPPConnectionClientTest {
         // 待伪装名称
         String groupNum = UUID.randomUUID().toString();
         // 真实名称
-        String realName1 = agent + "_a@126xmpp/Smack";
-        String realName2 = agent + "_b@126xmpp/Smack";
-        String realName3 = agent + "_c@126xmpp/Smack";
-        String realName4 = agent + "_d@126xmpp/Smack";
+        String name1 = agent + "_aaa";
+        String name2 = agent + "_bbb";
+        String name3 = agent + "_ccc";
+        String name4 = agent + "_ddd";
+
+        String realName1 = name1 + "@126xmpp/Smack";
+        String realName2 = name2 + "@126xmpp/Smack";
+        String realName3 = name3 + "@126xmpp/Smack";
+        String realName4 = name4 + "@126xmpp/Smack";
 
         String groupName = "22";
         String group = groupName + "@conference.126xmpp";
@@ -346,13 +383,9 @@ public class XMPPConnectionClientTest {
         joinMultiUserChat("agent", null, groupName);
         inviteJoinMultiUserChat(to, "kf");
 
-        //JoinMultiUserChat("agent",agent,group);
-        //JoinMultiUserChat("kf",to,group);
-      /*  createAccount("zwc1_1");
-        createAccount("zwc1_2");
-        createAccount("zwc1_3");
-        createAccount("zwc1_4");*/
-
+        /**
+         *   用户必须是假的，不能注册过
+         */
         JoinMultiUserChat("真实用户XX", realName1, group);
         JoinMultiUserChat("真实用户YY", realName2, group);
         JoinMultiUserChat("真实用户RR", realName3, group);
@@ -415,7 +448,6 @@ public class XMPPConnectionClientTest {
 
     }
 
-
     /**
      * 初始化聊服务会议列表
      */
@@ -434,9 +466,6 @@ public class XMPPConnectionClientTest {
         logger.info(manager.getServiceNames().toString());
 
     }
-
-
-    int i = 0;
 
     public int get() {
         return i++;
@@ -472,7 +501,6 @@ public class XMPPConnectionClientTest {
             return null;
         }
     }
-
 
     /**
      * 邀请用户加入群
@@ -526,7 +554,6 @@ public class XMPPConnectionClientTest {
         // Update the list of joined rooms
 
     }
-
 
     public void createRoom(String realname, String room, String nickname) throws Exception {
         try {
@@ -587,7 +614,6 @@ public class XMPPConnectionClientTest {
         }
     }
 
-
     private Presence enter(String from, String room, String nickname
     ) throws SmackException.NotConnectedException, SmackException.NoResponseException,
             XMPPException.XMPPErrorException {
@@ -620,22 +646,5 @@ public class XMPPConnectionClientTest {
 
         return presence;
     }
-    /**
-     * 查询会议室成员名字
-     *
-     * @param muc
-     */
-    public static List<String> findMulitUser(MultiUserChat muc) {
-        List<String> listUser = new ArrayList<String>();
-        Iterator<String> it = muc.getOccupants().iterator();
-        //遍历出聊天室人员名称
-        while (it.hasNext()) {
-            // 聊天室成员名字
-            String name = it.next();
-            listUser.add(name);
-        }
-        return listUser;
-    }
-
 
 }

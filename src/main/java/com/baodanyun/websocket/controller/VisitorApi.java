@@ -9,7 +9,6 @@ import com.baodanyun.websocket.bean.userInterface.PersonalDetail;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.model.UserModel;
 import com.baodanyun.websocket.service.*;
-import com.baodanyun.websocket.util.CommonConfig;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
@@ -64,9 +63,11 @@ public class VisitorApi extends BaseController {
             Visitor user = new Visitor();
             user.setId(vjid);
             user.setCustomer(cu);
-            userCacheServer.delete(CommonConfig.USER_ONLINE,cu.getId(),user);
+            //userCacheServer.delete(CommonConfig.USER_ONLINE,cu.getId(),user);
 
-            userLifeCycleService.logout(user);
+            //userLifeCycleService.logout(user);
+
+
             response.setSuccess(true);
 
         } catch (Exception e) {
