@@ -206,6 +206,21 @@ xchat.recvAudioMsgHandelEvent = function (json) {
     xchat.goBottom();
 };
 
+//接收到音频信息
+xchat.recvVideoMsgHandelEvent = function (json) {
+    document.getElementById("msgTipAudio").play();
+    json.src = json.from;
+    json.icon = json.icon || this.controls.defaultAvatar;
+    json.time = myUtils.formatDate(new Date(json.ct));
+    if (json.from == window.destJid) {
+        myUtils.renderDivAdd('videoLeft', json, 'chatMsgContainer');
+    }
+    myUtils.storage(json);
+    xchat.goBottom();
+};
+
+
+
 
 /*=====================================================================================接收消息=====================================================================================*/
 /*=====================================================================================发送信息=====================================================================================*/

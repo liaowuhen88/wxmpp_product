@@ -17,7 +17,6 @@ import org.jivesoftware.smack.packet.Message;
  */
 public class InitChatMessageListener implements ChatMessageListener {
     private static Logger logger = Logger.getLogger(InitChatMessageListener.class);
-
     private MsgSendControl msgSendControl;
     private AbstractUser user;
 

@@ -1,6 +1,5 @@
 package com.baodanyun.websocket.service.impl.lifecycle;
 
-import com.baodanyun.websocket.bean.XmppContentMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
@@ -69,14 +68,14 @@ public class WebSocketVisitorUserLifeCycleServiceImpl extends VisitorUserLifeCyc
             msg.setTo(destId);
             msg.setFrom(visitor.getId());
             if (msg != null && !StringUtils.isEmpty(msg.getFrom()) && !StringUtils.isEmpty(destId)) {
-                XmppContentMsg xm = new XmppContentMsg();
+               /* XmppContentMsg xm = new XmppContentMsg();
                 xm.setContentType(msg.getContentType());
                 xm.setContent(msg.getContent());
                 xm.setFromType("41");
                 xm.setFrom(msg.getFrom());
                 xm.setRealFrom(msg.getFrom());
-                xm.setGroupName(msg.getFromName());
-                msg.setContent(JSONUtil.toJson(xm));
+                xm.setGroupName(msg.getFromName());*/
+                msg.setContent(msg.getContent());
 
                 return msg;
             } else {

@@ -52,9 +52,15 @@ public class ConversationEventBusListenerImpl extends AbstarctEventBusListener<C
                     sm.setLoginUsername(from);
 
                     VCard vCard = loadVcard(conversationEvent.getUser().getId(), from);
+                    logger.info(vCard);
                     if (null != vCard) {
                         sm.setFromName(vCard.getFirstName());
                         sm.setLoginUsername(vCard.getNickName());
+                        byte[] avatar = vCard.getAvatar();
+                        if (null != avatar) {
+                            String image = new sun.misc.BASE64Encoder().encode(avatar);
+                            sm.setIcon("data:image/jpeg;base64," + image);
+                        }
                     }
                     conversationEvent.getMsgSendControl().sendMsg(sm);
 

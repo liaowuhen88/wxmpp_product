@@ -91,21 +91,13 @@ public class UserServer {
         visitor.setOpenId(openId);
 
         PersonalInfo pe = null;
-        try {
+        /*try {
             pe = personalService.getPersonalInfo(openId);
         } catch (BusinessException e) {
             logger.error("personalService.getPersonalInfo error", e);
         }
-        Map account = null;
-        try {
-            account = personalService.getPersonalUserAccount(openId);
-            visitor.setIcon(account.get("icon").toString());
-        } catch (Exception e) {
-            visitor.setIcon(contextPath + "/resouces/images/user_photo_default.jpg");
-        }
 
-        logger.info("getPersonalInfo:--->" + JSONUtil.toJson(pe));
-        logger.info("getPersonalUserAccount:---->" + JSONUtil.toJson(account));
+        logger.info("getPersonalInfo:--->" + JSONUtil.toJson(pe));*/
 
         if (null != pe) {
             visitor.setLoginUsername(pe.getMobile());
@@ -141,12 +133,13 @@ public class UserServer {
             Visitor visitor = this.InitUserByOpenId(contextPath, accessId);
             AbstractUser customer;
             if(StringUtils.isEmpty(to)){
-                customer= userCacheServer.getVisitorCustomer(visitor.getOpenId());
-            }else {
-                customer=getUserCustomer(XMPPUtil.nameToJid(to));
+                to = userCacheServer.getVisitorCustomerOpenId(visitor.getOpenId());
             }
 
-            visitor.setCustomer(customer);
+            Customer cu = new Customer();
+            cu.setLoginUsername(to);
+            cu.setId(XMPPUtil.nameToJid(to));
+            visitor.setCustomer(cu);
             visitor.setPassWord(pwd);
             visitor.setLoginTime(new Date().getTime());
             return visitor;

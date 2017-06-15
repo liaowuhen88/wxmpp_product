@@ -4,7 +4,9 @@ import com.baodanyun.websocket.bean.XmppAdapter;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.core.listener.*;
+import com.baodanyun.websocket.dao.OfuserMapper;
 import com.baodanyun.websocket.exception.BusinessException;
+import com.baodanyun.websocket.model.Ofuser;
 import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.JSONUtil;
@@ -58,6 +60,9 @@ public class XmppServiceImpl implements XmppService {
     protected MsgService msgService;
     @Autowired
     protected WebSocketService webSocketService;
+
+    @Autowired
+    protected OfuserMapper ofuserMapper;
 
     public boolean isAuthenticated(String jid) {
         XMPPConnection xMPPConnection = getXMPPConnection(jid);
@@ -180,7 +185,7 @@ public class XmppServiceImpl implements XmppService {
 
         xmppMsg.setFrom(msg.getFrom());
 
-        if (msg.getFromType().toString().equals(Msg.fromType.group.toString())) {
+        if (null != msg.getFromType() && Msg.fromType.group.toString().equals(msg.getFromType().toString())) {
             xmppMsg.setType(Message.Type.groupchat);
         } else {
             xmppMsg.setType(Message.Type.chat);
@@ -233,7 +238,7 @@ public class XmppServiceImpl implements XmppService {
         reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
         reconnectionManager.enableAutomaticReconnection();
 
-        ConnectionListener connectionListener = new InitConnectListener(this, user, webSocketService, msgSendControl, doubaoFriendsService);
+        ConnectionListener connectionListener = new MUCPacketExtensionProviderAndInitConnectListener(this, user, webSocketService, msgSendControl, doubaoFriendsService);
         //初始化的连接监听器
         connection.addConnectionListener(connectionListener);
 
@@ -260,40 +265,22 @@ public class XmppServiceImpl implements XmppService {
         chatmanager.addChatListener(chatManagerListener);
 
         //增加自定义会议信息解析
-        ProviderManager.addIQProvider("muc", "YANG", new MUCPacketExtensionProvider(this, msgService, msgSendControl, user));
-
+        ProviderManager.addIQProvider("muc", "YANG", connectionListener);
         return connection;
     }
 
     public boolean login(AbstractUser user) throws SmackException, XMPPException, IOException {
-        boolean isLoginDone = false;
-        AbstractXMPPConnection createAccountConn = null;
         AbstractXMPPConnection xmppConnection = getInitConnectListenerXmpp(user);
-        try {
-            xmppConnection.login(user.getLoginUsername(), user.getPassWord());
 
-            isLoginDone = true;
-            createAccountConn = xmppConnection;
-        } catch (Exception e) {
-            logger.error("login error", e);
-            try {
-
-                AccountManager accountManager = AccountManager.getInstance(xmppConnection);
-                accountManager.createAccount(user.getLoginUsername(), user.getPassWord());
-                xmppConnection.disconnect();
-
-                createAccountConn = this.getXMPPConnectionNew(user);
-                InitConnectListener initConnectListenerWebVisitor = new InitConnectListener(this, user, webSocketService, msgSendControl, doubaoFriendsService);
-                createAccountConn.addConnectionListener(initConnectListenerWebVisitor);
-                createAccountConn.connect();
-                createAccountConn.login(user.getLoginUsername(), user.getPassWord());
-                isLoginDone = true;
-            } catch (Exception e1) {
-                logger.error("nodeLogin error", e1);
-                isLoginDone = false;
-            }
+        Ofuser ofuser = ofuserMapper.selectByPrimaryKey(user.getLoginUsername());
+        if (null == ofuser) {
+            logger.info("创建用户:" + user.getLoginUsername());
+            AccountManager accountManager = AccountManager.getInstance(xmppConnection);
+            accountManager.createAccount(user.getLoginUsername(), user.getPassWord());
         }
-        return isLoginDone;
+
+        xmppConnection.login(user.getLoginUsername(), user.getPassWord());
+        return true;
     }
 
     public void roster(String vjid, String cjid) throws BusinessException, SmackException.NotLoggedInException, XMPPException.XMPPErrorException, SmackException.NotConnectedException, SmackException.NoResponseException {
@@ -360,7 +347,7 @@ public class XmppServiceImpl implements XmppService {
     @Override
     public synchronized void joinRoom(MultiUserChat room, AbstractUser user) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
         if (!room.isJoined()) {
-            logger.info(user.getLoginUsername() + "加入房间");
+
             DiscussionHistory history = new DiscussionHistory();
             history.setMaxStanzas(0);
 
@@ -372,7 +359,7 @@ public class XmppServiceImpl implements XmppService {
             // 用户加入聊天室
             room.join(user.getLoginUsername(), user.getPassWord(), history, this.getXMPPConnection(user.getId()).getPacketReplyTimeout());
 
-
+            logger.info(user.getLoginUsername() + "加入房间[" + room.getRoom() + "]");
         } else {
             logger.info(user.getLoginUsername() + "已经加入房间");
         }
@@ -391,16 +378,20 @@ public class XmppServiceImpl implements XmppService {
 
     @Override
     public void joinRoom(AbstractUser user, String room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+        MultiUserChat muc = getRoom(user, room);
+
+        joinRoom(muc, user);
+
+    }
+
+    @Override
+    public MultiUserChat getRoom(AbstractUser user, String room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
         // 为了性能，延时加载
         XMPPConnection conn = this.getXMPPConnection(user.getId());
         final MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(conn);
 
         //String room = roomsName + "@conference." + conn.getServiceName();
-        MultiUserChat muc = manager.getMultiUserChat(room);
-
-        joinRoom(muc, user);
-
-
+        return manager.getMultiUserChat(room);
     }
 
 }

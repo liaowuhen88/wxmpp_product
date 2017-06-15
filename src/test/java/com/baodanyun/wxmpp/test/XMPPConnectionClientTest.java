@@ -330,7 +330,7 @@ public class XMPPConnectionClientTest {
         // 客服地址
         String to = "zwc@126xmpp";
         // 待伪装名称
-        String name = "zwc33344555667777888999";
+        String name = "zwc";
         // 真实名称
         String realName = agent + "_" + name;
         try {
@@ -342,7 +342,7 @@ public class XMPPConnectionClientTest {
         int i = 0;
         while (true) {
 
-            Thread.sleep(2000);
+            Thread.sleep(10000);
 
             Message msg = new Message();
             msg.setFrom(realName + "@126xmpp");
@@ -367,17 +367,17 @@ public class XMPPConnectionClientTest {
         // 待伪装名称
         String groupNum = UUID.randomUUID().toString();
         // 真实名称
-        String name1 = agent + "_aaa";
-        String name2 = agent + "_bbb";
-        String name3 = agent + "_ccc";
-        String name4 = agent + "_ddd";
+        String name1 = agent + "_aaaa";
+        String name2 = agent + "_bbbb";
+        String name3 = agent + "_cccc";
+        String name4 = agent + "_dddd";
 
         String realName1 = name1 + "@126xmpp/Smack";
         String realName2 = name2 + "@126xmpp/Smack";
         String realName3 = name3 + "@126xmpp/Smack";
         String realName4 = name4 + "@126xmpp/Smack";
 
-        String groupName = "22";
+        String groupName = "666";
         String group = groupName + "@conference.126xmpp";
 
         joinMultiUserChat("agent", null, groupName);
@@ -408,19 +408,20 @@ public class XMPPConnectionClientTest {
 
                 conn.sendStanza(msg1);
 
-                Message msg2 = new Message();
+            /*    Message msg2 = new Message();
                 msg2.setType(Message.Type.groupchat);
                 msg2.setBody("msg2-------" + get());
                 msg2.setTo(group);
                 msg2.setFrom(realName2);
 
-                conn.sendStanza(msg2);
+                conn.sendStanza(msg2);*/
 
 
                 Message msg3 = new Message();
                 msg3.setType(Message.Type.groupchat);
                 msg3.setBody("msg3-------" + get());
                 msg3.setTo(group);
+                msg3.setSubject("image");
                 msg3.setFrom(realName3);
 
                 conn.sendStanza(msg3);
@@ -432,13 +433,13 @@ public class XMPPConnectionClientTest {
                 msg4.setTo(group);
                 conn.sendStanza(msg4);
 
-                Message msg5 = new Message();
+             /*   Message msg5 = new Message();
                 msg5.setType(Message.Type.groupchat);
                 msg5.setBody("msg1-------" + get());
                 msg5.setTo(group);
                 msg5.setFrom(realName1);
 
-                conn.sendStanza(msg5);
+                conn.sendStanza(msg5);*/
 
 
             } catch (InterruptedException e) {

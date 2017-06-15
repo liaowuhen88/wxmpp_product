@@ -61,29 +61,6 @@ public class CustomerLogin extends BaseController {
 
     }
 
-    /*@RequestMapping(value = "customerLogin")
-    public ModelAndView customerLogin(LoginModel user, HttpServletRequest request, HttpServletResponse response) {
-        //客服必须填写用户名 和 密码
-        logger.info("user"+JSONUtil.toJson(user));
-        ModelAndView mv = new ModelAndView();
-        AbstractUser customer = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
-        try {
-            if (null == customer || !xmppService.isAuthenticated(customer.getId())) {
-                customer = customerLogin(user);
-                request.getSession().setAttribute(Common.USER_KEY, customer);
-            } else {
-                logger.info("jid[" + customer.getId() + "] is login");
-            }
-            mv.addObject("user",JSONUtil.toJson(customer));
-            mv.setViewName("/customer/chat");
-        } catch (BusinessException e) {
-            mv.setViewName("/index");
-            mv.addObject("msg",e.getMessage());
-        }
-        return mv;
-    }
-*/
-
 
     @RequestMapping(value = "customerLogin")
     public ModelAndView customerLogin(LoginModel user, HttpServletRequest request, HttpServletResponse response) {
@@ -94,7 +71,6 @@ public class CustomerLogin extends BaseController {
         try {
             AbstractUser customer = customerInit(user);
             request.getSession().setAttribute(Common.USER_KEY, customer);
-
             mv.addObject("user", JSONUtil.toJson(customer));
             mv.setViewName("/customer/chat");
         } catch (BusinessException e) {

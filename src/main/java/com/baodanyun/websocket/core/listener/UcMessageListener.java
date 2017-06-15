@@ -34,8 +34,8 @@ public class UcMessageListener implements MessageListener {
             Msg sendMsg = msgSendControl.getMsg(msg);
 
             ConversationRoomEvent je = new ConversationRoomEvent(user, sendMsg.getFrom());
-            EventBusUtils.post(je);
 
+            EventBusUtils.post(je);
             if(!StringUtils.isEmpty(msg.getFrom()) && msg.getFrom().contains("/")){
                 String realFrom = msg.getFrom().split("/")[1];
                 if(user.getLoginUsername().equals(realFrom)){

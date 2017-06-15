@@ -26,27 +26,23 @@ import java.util.List;
  */
 public abstract class UserLifeCycleServiceImpl implements UserLifeCycleService {
     public static final Logger logger = Logger.getLogger(UserLifeCycleServiceImpl.class);
-
+    @Autowired
+    public LastVisitorSendMessageService lastVisitorSendMessageService;
+    @Autowired
+    public VisitorListener visitorListener;
     @Autowired
     protected XmppService xmppService;
-
     @Autowired
     protected VcardService vcardService;
-
     @Autowired
     protected UserCacheServer userCacheServer;
 
-    @Autowired
-    public LastVisitorSendMessageService lastVisitorSendMessageService ;
-
-    @Autowired
-    public VisitorListener visitorListener ;
-
     @Override
     public boolean login(AbstractUser user) throws IOException, XMPPException, SmackException, BusinessException, InterruptedException {
-
+        if (xmppService.isAuthenticated(user.getId())) {
+            return true;
+        }
        return xmppService.login(user);
-
     }
 
     protected boolean init(AbstractUser user) throws InterruptedException, SmackException.NotLoggedInException, SmackException.NoResponseException, XMPPException.XMPPErrorException, SmackException.NotConnectedException, BusinessException {
