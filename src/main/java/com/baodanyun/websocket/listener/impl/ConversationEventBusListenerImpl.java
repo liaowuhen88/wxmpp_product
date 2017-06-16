@@ -32,7 +32,7 @@ public class ConversationEventBusListenerImpl extends AbstarctEventBusListener<C
     @Override
     @Subscribe
     public boolean processExpiringEvent(final ConversationEvent conversationEvent) {
-        logger.info(JSONUtil.toJson(conversationEvent));
+        logger.info(conversationEvent.toString());
 
         executorService.execute(new Runnable() {
             @Override
@@ -41,7 +41,7 @@ public class ConversationEventBusListenerImpl extends AbstarctEventBusListener<C
 
                     String from = conversationEvent.getCloneMsg().getFrom();
                     String realFrom = XMPPUtil.removeRoomSource(from);
-                    logger.info("from}{}----realFrom{}", from, realFrom);
+                    logger.info("from{}----realFrom{}", from, realFrom);
 
                     StatusMsg sm = new StatusMsg();
                     sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
@@ -50,10 +50,10 @@ public class ConversationEventBusListenerImpl extends AbstarctEventBusListener<C
                     sm.setCt(System.currentTimeMillis());
                     sm.setTo(conversationEvent.getUser().getId());
                     sm.setFromType(Msg.fromType.personal);
-                    sm.setFrom(from);
+                    sm.setFrom(realFrom);
 
-                    sm.setFromName(from);
-                    sm.setLoginUsername(from);
+                    sm.setFromName(realFrom);
+                    sm.setLoginUsername(realFrom);
 
                     VCard vCard = loadVcard(conversationEvent.getUser().getId(), from);
                     logger.info(JSONUtil.toJson(vCard));

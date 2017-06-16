@@ -12,10 +12,14 @@ import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Created by liaowuhen on 2017/5/11.
  */
 public class InitChatMessageListener implements ChatMessageListener {
+    public static final Map<String, ConversationEvent> ces = new ConcurrentHashMap();
     private static Logger logger = Logger.getLogger(InitChatMessageListener.class);
     private MsgSendControl msgSendControl;
     private AbstractUser user;
@@ -31,11 +35,13 @@ public class InitChatMessageListener implements ChatMessageListener {
             Msg sendMsg = msgSendControl.getMsg(msg);
             if (null != sendMsg) {
                 // 手机app端发送过来的数据subject 为空
-                Msg cloneMsg = (Msg) SerializationUtils.clone(sendMsg);
-                ConversationEvent ce = new ConversationEvent(user, msgSendControl, cloneMsg);
-                EventBusUtils.post(ce);
-
-
+                ConversationEvent ce = ces.get(user.getId());
+                if (null == ce) {
+                    Msg cloneMsg = (Msg) SerializationUtils.clone(sendMsg);
+                    ce = new ConversationEvent(user, msgSendControl, cloneMsg);
+                    ces.put(user.getId(), ce);
+                    EventBusUtils.post(ce);
+                }
                 sendMsg.setOpenId(user.getOpenId());
                 msgSendControl.sendMsg(sendMsg);
             }

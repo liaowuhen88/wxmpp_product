@@ -11,17 +11,20 @@ import org.apache.log4j.Logger;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.packet.Message;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Created by liaowuhen on 2017/5/11.
  */
 public class UcMessageListener implements MessageListener {
+    public static final Map<String, ConversationRoomEvent> ces = new ConcurrentHashMap();
     private static Logger logger = Logger.getLogger(UcMessageListener.class);
-
     private MsgSendControl msgSendControl;
     private AbstractUser user;
 
 
-    public UcMessageListener(MsgSendControl msgSendControl,AbstractUser user){
+    public UcMessageListener(MsgSendControl msgSendControl, AbstractUser user) {
         this.msgSendControl = msgSendControl;
         this.user = user;
     }
@@ -29,21 +32,24 @@ public class UcMessageListener implements MessageListener {
 
     @Override
     public void processMessage(Message msg) {
-         logger.info("接收到群组信息:"+ JSONUtil.toJson(msg));
+        logger.info("接收到群组信息:" + JSONUtil.toJson(msg));
         try {
             Msg sendMsg = msgSendControl.getMsg(msg);
+            ConversationRoomEvent ce = ces.get(user.getId());
+            if (null == ce) {
+                ce = new ConversationRoomEvent(user, sendMsg.getFrom());
+                ces.put(user.getId(), ce);
+                EventBusUtils.post(ce);
+            }
 
-            ConversationRoomEvent je = new ConversationRoomEvent(user, sendMsg.getFrom());
-
-            EventBusUtils.post(je);
-            if(!StringUtils.isEmpty(msg.getFrom()) && msg.getFrom().contains("/")){
+            if (!StringUtils.isEmpty(msg.getFrom()) && msg.getFrom().contains("/")) {
                 String realFrom = msg.getFrom().split("/")[1];
-                if(user.getLoginUsername().equals(realFrom)){
+                if (user.getLoginUsername().equals(realFrom)) {
                     // 客服自己发送的群消息，不发送到前端
-                    return ;
+                    return;
                 }
                 sendMsg.setFromName(realFrom);
-            }else {
+            } else {
                 sendMsg.setFromName(msg.getFrom());
             }
 

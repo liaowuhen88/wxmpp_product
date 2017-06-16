@@ -2,6 +2,8 @@ package com.baodanyun.websocket.core.handle;
 
 import com.baodanyun.websocket.bean.user.Customer;
 import com.baodanyun.websocket.core.common.Common;
+import com.baodanyun.websocket.core.listener.InitChatMessageListener;
+import com.baodanyun.websocket.core.listener.UcMessageListener;
 import com.baodanyun.websocket.service.UserLifeCycleService;
 import com.baodanyun.websocket.service.WebSocketService;
 import com.baodanyun.websocket.util.JSONUtil;
@@ -25,6 +27,8 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
         //获取一个customerNode节点
         try {
             userLifeCycleService.login(customer);
+            UcMessageListener.ces.clear();
+            InitChatMessageListener.ces.clear();
             userLifeCycleService.online(customer);
         } catch (Exception e) {
             userLifeCycleService.logout(customer);
