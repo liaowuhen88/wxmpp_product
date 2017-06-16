@@ -6,10 +6,13 @@ import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.event.ConversationEvent;
 import com.baodanyun.websocket.listener.EventBusListener;
 import com.baodanyun.websocket.service.XmppService;
+import com.baodanyun.websocket.util.JSONUtil;
+import com.baodanyun.websocket.util.XMPPUtil;
 import com.google.common.eventbus.Subscribe;
-import org.apache.log4j.Logger;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +24,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ConversationEventBusListenerImpl extends AbstarctEventBusListener<ConversationEvent> implements EventBusListener<ConversationEvent> {
-    private static Logger logger = Logger.getLogger(ConversationEventBusListenerImpl.class);
 
+    private static Logger logger = LoggerFactory.getLogger(ConversationEventBusListenerImpl.class);
     @Autowired
     private XmppService xmppService;
 
     @Override
     @Subscribe
     public boolean processExpiringEvent(final ConversationEvent conversationEvent) {
-        logger.info(conversationEvent);
+        logger.info(JSONUtil.toJson(conversationEvent));
 
         executorService.execute(new Runnable() {
             @Override
@@ -37,7 +40,8 @@ public class ConversationEventBusListenerImpl extends AbstarctEventBusListener<C
                 try {
 
                     String from = conversationEvent.getCloneMsg().getFrom();
-                    logger.info(from);
+                    String realFrom = XMPPUtil.removeRoomSource(from);
+                    logger.info("from}{}----realFrom{}", from, realFrom);
 
                     StatusMsg sm = new StatusMsg();
                     sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
@@ -52,7 +56,7 @@ public class ConversationEventBusListenerImpl extends AbstarctEventBusListener<C
                     sm.setLoginUsername(from);
 
                     VCard vCard = loadVcard(conversationEvent.getUser().getId(), from);
-                    logger.info(vCard);
+                    logger.info(JSONUtil.toJson(vCard));
                     if (null != vCard) {
                         sm.setFromName(vCard.getFirstName());
                         sm.setLoginUsername(vCard.getNickName());
@@ -65,7 +69,7 @@ public class ConversationEventBusListenerImpl extends AbstarctEventBusListener<C
                     conversationEvent.getMsgSendControl().sendMsg(sm);
 
                 } catch (Exception e) {
-                    logger.error(e);
+                    logger.error("", e);
                 }
             }
         });
@@ -77,7 +81,7 @@ public class ConversationEventBusListenerImpl extends AbstarctEventBusListener<C
         try {
             vcard = VCardManager.getInstanceFor(xmppService.getXMPPConnectionAuthenticated(xmppid)).loadVCard(Jid);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("", e);
         }
         return vcard;
     }
