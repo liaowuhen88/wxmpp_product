@@ -403,9 +403,9 @@ public class XMPPConnectionClientTest {
                 Message msg1 = new Message();
                 msg1.setType(Message.Type.groupchat);
                 msg1.setTo(group);
-                msg1.setBody("msg1--------" + get());
+                msg1.setBody("http://duobaojl.oss-cn-hangzhou.aliyuncs.com/wechat2017/2418708985930446407.mp3");
                 msg1.setFrom(realName1);
-
+                msg1.setSubject("audio");
                 conn.sendStanza(msg1);
 
             /*    Message msg2 = new Message();
@@ -428,9 +428,10 @@ public class XMPPConnectionClientTest {
 
                 Message msg4 = new Message();
                 msg4.setType(Message.Type.groupchat);
-                msg4.setBody("msg4-------" + get());
+                msg4.setBody("http://duobaojl.oss-cn-hangzhou.aliyuncs.com/wechat2017/2843883166980356279.mp4");
                 msg4.setFrom(realName4);
                 msg4.setTo(group);
+                msg4.setSubject("video");
                 conn.sendStanza(msg4);
 
              /*   Message msg5 = new Message();

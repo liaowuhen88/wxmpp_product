@@ -142,6 +142,8 @@ Utils = (function () {
                         commentTpl = $('#imgLeft').html();
                     }else if (item.contentType == 'audio') {
                         commentTpl = $('#audioLeft').html();
+                    } else if (item.contentType == 'video') {
+                        commentTpl = $('#videoLeft').html();
                     } else {
                         commentTpl = $('#mleft').html();
                     }

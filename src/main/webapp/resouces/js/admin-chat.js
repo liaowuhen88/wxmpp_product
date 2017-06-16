@@ -206,7 +206,7 @@ xchat.recvAudioMsgHandelEvent = function (json) {
     xchat.goBottom();
 };
 
-//接收到音频信息
+//接收到视频信息
 xchat.recvVideoMsgHandelEvent = function (json) {
     document.getElementById("msgTipAudio").play();
     json.src = json.from;

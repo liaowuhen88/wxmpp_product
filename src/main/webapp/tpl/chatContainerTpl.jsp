@@ -42,7 +42,7 @@
             <video width="320" height="240" controls="controls" autoplay="autoplay">
 
                 <%-- <source src="http://duobaojl.oss-cn-hangzhou.aliyuncs.com/wechat2017/2843883166980356279.mp4" type="video/mp4" controls="controls"/>--%>
-                <source src="{{content}}" type="video/mp4" controls="controls"/>
+                <source src="{{content}}" type="video/mp4"/>
 
             </video>
 
