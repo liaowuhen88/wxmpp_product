@@ -50,7 +50,7 @@ xchat.controls = {
 xchat.interface = {
     holdList: base + '/api/queue/2',
     callIn: base + '/api/visitorUp/',
-    offConnect: base + '/api/visitorOff/',
+    offConnect: base + '/api/visitorOff',
     login: base + '/customerlogin',
     loadChatList: base + '/api/queue/1',
     userInfo: base + '/api/visitorDetail',
@@ -108,10 +108,10 @@ xchat.setCustomerProfileEventBind = function () {
 xchat.closeEventBind = function () {
     var _this = this;
     $("#offSession").on('click', function () {
-        myUtils.load(_this.interface.offConnect + destJid, 'post', function () {
+        myUtils.load(_this.interface.offConnect, 'post', function () {
             $(document.getElementById(destJid)).remove();
             _this.closeFriendWindow();
-        }, {})
+        }, {"vjid": destJid})
     });
 };
 //关闭当前窗口

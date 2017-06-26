@@ -1,5 +1,6 @@
 package com.baodanyun.wxmpp.test;
 
+import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.listener.UcMessageListener;
 import com.baodanyun.websocket.factory.XMPPConnectionFactory;
 import org.jivesoftware.smack.*;
@@ -393,7 +394,7 @@ public class XMPPConnectionClientTest {
         /*createRoom(realName,group,"nickname");*/
 
 
-        MessageListener messageListener = new UcMessageListener(null, null);
+        MessageListener messageListener = new UcMessageListener(null, new Visitor(), null, null, null);
         muc.addMessageListener(messageListener);
 
 

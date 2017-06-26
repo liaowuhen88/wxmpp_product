@@ -56,13 +56,20 @@ public class XmppServiceImpl implements XmppService {
     protected DoubaoFriendsService doubaoFriendsService;
     @Autowired
     protected MsgSendControl msgSendControl;
-    @Autowired
-    protected MsgService msgService;
+
     @Autowired
     protected WebSocketService webSocketService;
 
     @Autowired
     protected OfuserMapper ofuserMapper;
+
+    @Autowired
+    protected ConversationService conversationService;
+    @Autowired
+    private OfmucroomService ofmucroomService;
+    @Autowired
+    private MsgService msgService;
+
 
     public boolean isAuthenticated(String jid) {
         XMPPConnection xMPPConnection = getXMPPConnection(jid);
@@ -353,7 +360,7 @@ public class XmppServiceImpl implements XmppService {
 
             room.addParticipantStatusListener(new UcParticipantStatus());
             // 增加 uc 消息监听器
-            UcMessageListener messageListener = new UcMessageListener(msgSendControl, user);
+            UcMessageListener messageListener = new UcMessageListener(msgSendControl, user, conversationService, ofmucroomService, msgService);
             room.addMessageListener(messageListener);
 
             // 用户加入聊天室
