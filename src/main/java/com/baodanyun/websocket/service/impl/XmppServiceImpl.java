@@ -241,9 +241,9 @@ public class XmppServiceImpl implements XmppService {
         设置默认连接策略
          */
         ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
-        reconnectionManager.setFixedDelay(10);
-        reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
         reconnectionManager.enableAutomaticReconnection();
+        reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.RANDOM_INCREASING_DELAY);
+
 
         ConnectionListener connectionListener = new MUCPacketExtensionProviderAndInitConnectListener(this, user, webSocketService, msgSendControl, doubaoFriendsService);
         //初始化的连接监听器

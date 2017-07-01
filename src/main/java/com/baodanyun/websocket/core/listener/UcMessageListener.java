@@ -35,12 +35,24 @@ public class UcMessageListener implements MessageListener {
         this.msgService = msgService;
     }
 
+    public AbstractUser getUser() {
+        return user;
+    }
+
+    public void setUser(AbstractUser user) {
+        this.user = user;
+    }
 
     @Override
     public void processMessage(Message msg) {
         logger.info("接收到群组信息:" + JSONUtil.toJson(msg));
         try {
             Msg sendMsg = msgSendControl.getMsg(msg);
+            if (null == sendMsg) {
+                logger.warn("sendMsg is null");
+                return;
+            }
+
             String realRoom = XMPPUtil.removeRoomSource(sendMsg.getFrom());
             boolean isExist = conversationService.isExist(user.getId(), realRoom);
 
@@ -82,4 +94,24 @@ public class UcMessageListener implements MessageListener {
         }
 
     }
+
+
+    @Override
+    public int hashCode() {
+        return this.getUser().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (obj.getClass() != getClass())
+            return false;
+
+        UcMessageListener e = (UcMessageListener) obj;
+        return e.getUser().equals(this.getUser());
+    }
+
 }
