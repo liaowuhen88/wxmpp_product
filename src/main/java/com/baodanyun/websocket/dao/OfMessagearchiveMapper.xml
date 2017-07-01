@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baodanyun.websocket.dao.OfMessagearchiveMapper">
+    <resultMap id="BaseResultMap" type="com.baodanyun.websocket.model.OfMessagearchive">
+        <result column="messageID" property="messageid" jdbcType="BIGINT"/>
+        <result column="conversationID" property="conversationid" jdbcType="BIGINT"/>
+        <result column="fromJID" property="fromjid" jdbcType="VARCHAR"/>
+        <result column="fromJIDResource" property="fromjidresource" jdbcType="VARCHAR"/>
+        <result column="toJID" property="tojid" jdbcType="VARCHAR"/>
+        <result column="toJIDResource" property="tojidresource" jdbcType="VARCHAR"/>
+        <result column="sentDate" property="sentdate" jdbcType="BIGINT"/>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.baodanyun.websocket.model.OfMessagearchiveWithBLOBs"
+               extends="BaseResultMap">
+        <result column="stanza" property="stanza" jdbcType="LONGVARCHAR"/>
+        <result column="body" property="body" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+    <sql id="Blob_Column_List">
+    stanza, body
+  </sql>
+
+    <select id="select" resultMap="ResultMapWithBLOBs"
+            parameterType="java.lang.String">
+    select
+    *
+    from ofmessagearchive
+    where
+     toJID = #{jid,jdbcType=VARCHAR}
+     or
+     fromJID =  #{jid,jdbcType=VARCHAR}
+
+     ORDER  by sentDate
+
+  </select>
+
+    <insert id="insert" parameterType="com.baodanyun.websocket.model.OfMessagearchiveWithBLOBs">
+    insert into ofmessagearchive (messageID, conversationID, fromJID, 
+      fromJIDResource, toJID, toJIDResource, 
+      sentDate, stanza, body
+      )
+    values (#{messageid,jdbcType=BIGINT}, #{conversationid,jdbcType=BIGINT}, #{fromjid,jdbcType=VARCHAR}, 
+      #{fromjidresource,jdbcType=VARCHAR}, #{tojid,jdbcType=VARCHAR}, #{tojidresource,jdbcType=VARCHAR}, 
+      #{sentdate,jdbcType=BIGINT}, #{stanza,jdbcType=LONGVARCHAR}, #{body,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.baodanyun.websocket.model.OfMessagearchiveWithBLOBs">
+        insert into ofmessagearchive
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="messageid != null">
+                messageID,
+            </if>
+            <if test="conversationid != null">
+                conversationID,
+            </if>
+            <if test="fromjid != null">
+                fromJID,
+            </if>
+            <if test="fromjidresource != null">
+                fromJIDResource,
+            </if>
+            <if test="tojid != null">
+                toJID,
+            </if>
+            <if test="tojidresource != null">
+                toJIDResource,
+            </if>
+            <if test="sentdate != null">
+                sentDate,
+            </if>
+            <if test="stanza != null">
+                stanza,
+            </if>
+            <if test="body != null">
+                body,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="messageid != null">
+                #{messageid,jdbcType=BIGINT},
+            </if>
+            <if test="conversationid != null">
+                #{conversationid,jdbcType=BIGINT},
+            </if>
+            <if test="fromjid != null">
+                #{fromjid,jdbcType=VARCHAR},
+            </if>
+            <if test="fromjidresource != null">
+                #{fromjidresource,jdbcType=VARCHAR},
+            </if>
+            <if test="tojid != null">
+                #{tojid,jdbcType=VARCHAR},
+            </if>
+            <if test="tojidresource != null">
+                #{tojidresource,jdbcType=VARCHAR},
+            </if>
+            <if test="sentdate != null">
+                #{sentdate,jdbcType=BIGINT},
+            </if>
+            <if test="stanza != null">
+                #{stanza,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="body != null">
+                #{body,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+</mapper>

@@ -401,6 +401,8 @@ public class XMPPConnectionClientTest {
         while (true) {
             try {
                 Thread.sleep(10000);
+                inviteJoinMultiUserChat(to, "kf");
+
                 Message msg1 = new Message();
                 msg1.setType(Message.Type.groupchat);
                 msg1.setTo(group);

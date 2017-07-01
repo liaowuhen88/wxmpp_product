@@ -3,6 +3,7 @@ package com.baodanyun.websocket.springConfig;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.PropertiesUtil;
+import com.github.pagehelper.PageHelper;
 import com.whalin.MemCached.MemCachedClient;
 import com.whalin.MemCached.SockIOPool;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -17,7 +18,10 @@ import org.apache.log4j.Logger;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jms.core.JmsTemplate;
@@ -27,6 +31,7 @@ import org.springframework.stereotype.Component;
 import javax.jms.Destination;
 import javax.sql.DataSource;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by liaowuhen on 2016/11/2.
@@ -81,10 +86,24 @@ public class SpringConfig {
         Environment environment =
                 new Environment("development", transactionFactory, dataSource);
 
+        PageHelper ph = new PageHelper();
+        Properties p = new Properties();
+        p.put("dialect", "mysql");
+        p.put("offsetAsPageNum", "true");
+        p.put("rowBoundsWithCount", "true");
+        p.put("pageSizeZero", "true");
+        p.put("reasonable", "false");
+        p.put("params", "pageNum=start;pageSize=limit;");
+        p.put("returnPageInfo", "check");
+
+        ph.setProperties(p);
         org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration(environment);
+
+        configuration.addInterceptor(ph);
 
         SqlSessionFactory sessionFactory =
                 new SqlSessionFactoryBuilder().build(configuration);
+
         return sessionFactory;
     }
 
@@ -105,34 +124,10 @@ public class SpringConfig {
         return jdbcTemplate;
     }
 
-    @Bean
-    public ActiveMQConnectionFactory activeMQConnectionFactory() {
-        ActiveMQConnectionFactory aMQF = new ActiveMQConnectionFactory();
-        aMQF.setBrokerURL(map.get("broker.url"));
-        return aMQF;
-    }
 
-    @Bean
-    public PooledConnectionFactory pooledConnectionFactory(@Qualifier("activeMQConnectionFactory") ActiveMQConnectionFactory activeMQConnectionFactory) {
-        PooledConnectionFactory pCF = new PooledConnectionFactory();
-        pCF.setConnectionFactory(activeMQConnectionFactory);
-        return pCF;
-    }
-
-    @Bean
-    public JmsTemplate jmsTemplate(@Qualifier("pooledConnectionFactory") PooledConnectionFactory pooledConnectionFactory) {
-
-        JmsTemplate jtl = new JmsTemplate();
-        jtl.setConnectionFactory(pooledConnectionFactory);
-        return jtl;
-    }
-
-    @Bean
-    public Destination destination() {
-        Destination de = new ActiveMQQueue(map.get("env.queue.eventCenterDestination"));
-
-        return de;
-    }
+    /**
+     * MemCached
+     */
 
     @Bean
     public SockIOPool getSockIOPool() {
@@ -156,4 +151,43 @@ public class SpringConfig {
         MemCachedClient  memCachedClient= new  MemCachedClient();
         return memCachedClient;
     }
+
+
+    /**
+     *
+     * active
+     */
+
+    @Bean
+    public ActiveMQConnectionFactory activeMQConnectionFactory() {
+        ActiveMQConnectionFactory aMQF = new ActiveMQConnectionFactory();
+        aMQF.setBrokerURL(map.get("broker.url"));
+        return aMQF;
+    }
+
+
+    @Bean
+    public JmsTemplate jmsTemplate(@Qualifier("pooledConnectionFactory") PooledConnectionFactory pooledConnectionFactory) {
+
+        JmsTemplate jtl = new JmsTemplate();
+        jtl.setConnectionFactory(pooledConnectionFactory);
+        return jtl;
+    }
+
+
+    @Bean
+    public PooledConnectionFactory pooledConnectionFactory(@Qualifier("activeMQConnectionFactory") ActiveMQConnectionFactory activeMQConnectionFactory) {
+        PooledConnectionFactory pCF = new PooledConnectionFactory();
+        pCF.setConnectionFactory(activeMQConnectionFactory);
+        return pCF;
+    }
+
+    @Bean
+    public Destination destination() {
+        Destination de = new ActiveMQQueue(map.get("env.queue.eventCenterDestination"));
+
+        return de;
+    }
+
+
 }
