@@ -52,8 +52,7 @@ public class UcMessageListener implements MessageListener {
                 logger.warn("sendMsg is null");
                 return;
             }
-
-            String realRoom = XMPPUtil.removeRoomSource(sendMsg.getFrom());
+            String realRoom = XMPPUtil.getRoomName(sendMsg.getFrom());
             boolean isExist = conversationService.isExist(user.getId(), realRoom);
 
             if (isExist) {

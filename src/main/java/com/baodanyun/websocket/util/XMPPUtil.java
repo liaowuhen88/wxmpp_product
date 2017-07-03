@@ -32,6 +32,14 @@ public class XMPPUtil {
         return jid;
     }
 
+
+    public static String getRoomName(String room) {
+        if (StringUtils.isNotBlank(room) && room.contains("@")) {
+            return room.substring(0, room.indexOf("@"));
+        }
+        return room;
+    }
+
     public static String buildJson(Object o) {
        return JSONUtil.toJson(o);
     }
