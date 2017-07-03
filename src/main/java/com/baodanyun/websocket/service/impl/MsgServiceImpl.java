@@ -3,6 +3,7 @@ package com.baodanyun.websocket.service.impl;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
+import com.baodanyun.websocket.model.Ofmucroom;
 import com.baodanyun.websocket.service.MsgService;
 import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.util.JSONUtil;
@@ -34,18 +35,23 @@ public class MsgServiceImpl implements MsgService {
     }
 
     @Override
-    public Msg getNewRoomJoines(String room, String detail, String to) {
+    public Msg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to) {
         String realRoom = XMPPUtil.removeRoomSource(room);
         StatusMsg sm = new StatusMsg();
         sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
         sm.setType(Msg.Type.status.toString());
         sm.setLoginTime(new Date().getTime());
-        sm.setFromName(detail);
+
         sm.setFromType(Msg.fromType.group);
         sm.setFrom(realRoom);
-        sm.setLoginUsername(realRoom);
         sm.setTo(to);
         sm.setCt(new Date().getTime());
+
+        if (null != ofmucroom) {
+
+            sm.setFromName(ofmucroom.getNaturalname());
+            sm.setLoginUsername(ofmucroom.getDescription());
+        }
 
         return sm;
     }
@@ -68,8 +74,8 @@ public class MsgServiceImpl implements MsgService {
         VCard vCard = loadVcard(user.getId(), realFrom);
         logger.info(JSONUtil.toJson(vCard));
         if (null != vCard) {
-            sm.setFromName(vCard.getFirstName());
-            sm.setLoginUsername(vCard.getNickName());
+            sm.setFromName(vCard.getNickName());
+            sm.setLoginUsername(vCard.getField("FN"));
             byte[] avatar = vCard.getAvatar();
             if (null != avatar) {
                 String image = new sun.misc.BASE64Encoder().encode(avatar);

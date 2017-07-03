@@ -55,6 +55,7 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
         boolean flag = webSocketService.isCloseded(customer.getId());
 
         if (flag) {
+            userLifeCycleService.logout(customer);
             logger.info("userLifeCycleService.logout(customer): id[" + customer.getId() + "]" + status);
         }
 

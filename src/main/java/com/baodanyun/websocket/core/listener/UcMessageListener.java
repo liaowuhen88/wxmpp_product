@@ -52,19 +52,15 @@ public class UcMessageListener implements MessageListener {
                 logger.warn("sendMsg is null");
                 return;
             }
-            String realRoom = XMPPUtil.getRoomName(sendMsg.getFrom());
+            String realRoom = XMPPUtil.removeRoomSource(sendMsg.getFrom());
             boolean isExist = conversationService.isExist(user.getId(), realRoom);
 
             if (isExist) {
                 logger.info(" user {}, room {} isExist", user.getId(), realRoom);
             } else {
                 logger.info(" user {}, room {} notExist", user.getId(), realRoom);
-                Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, realRoom);
-                String subject = "";
-                if (null != ofmucroom) {
-                    subject = ofmucroom.getDescription();
-                }
-                Msg msgConversation = msgService.getNewRoomJoines(realRoom, subject, user.getId());
+                Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(realRoom));
+                Msg msgConversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId());
                 logger.info(JSONUtil.toJson(msgConversation));
                 msgSendControl.sendMsg(msgConversation);
 
