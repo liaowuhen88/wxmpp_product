@@ -50,7 +50,7 @@ xchat.controls = {
 xchat.interface = {
     holdList: base + '/api/queue/2',
     callIn: base + '/api/visitorUp/',
-    offConnect: base + '/api/visitorOff/',
+    offConnect: base + '/api/visitorOff',
     login: base + '/customerlogin',
     loadChatList: base + '/api/queue/1',
     userInfo: base + '/api/visitorDetail',
@@ -108,10 +108,10 @@ xchat.setCustomerProfileEventBind = function () {
 xchat.closeEventBind = function () {
     var _this = this;
     $("#offSession").on('click', function () {
-        myUtils.load(_this.interface.offConnect + destJid, 'post', function () {
+        myUtils.load(_this.interface.offConnect, 'post', function () {
             $(document.getElementById(destJid)).remove();
             _this.closeFriendWindow();
-        }, {})
+        }, {"vjid": destJid})
     });
 };
 //关闭当前窗口
@@ -146,6 +146,7 @@ xchat.recvMsgEvent = function (json) {
             $(this.controls.waitReplyPerson).html(this.recvMsg.length);
         }
 
+        // 新消息移动到表头
         $('#friendList').find('li').each(function () {
             if($(this).attr('id')===json.from){
                 $('#friendList').prepend($(this));
@@ -206,6 +207,21 @@ xchat.recvAudioMsgHandelEvent = function (json) {
     myUtils.storage(json);
     xchat.goBottom();
 };
+
+//接收到视频信息
+xchat.recvVideoMsgHandelEvent = function (json) {
+    document.getElementById("msgTipAudio").play();
+    json.src = json.from;
+    json.icon = json.icon || this.controls.defaultAvatar;
+    json.time = myUtils.formatDate(new Date(json.ct));
+    if (json.from == window.destJid) {
+        myUtils.renderDivAdd('videoLeft', json, 'chatMsgContainer');
+    }
+    myUtils.storage(json);
+    xchat.goBottom();
+};
+
+
 
 
 /*=====================================================================================接收消息=====================================================================================*/

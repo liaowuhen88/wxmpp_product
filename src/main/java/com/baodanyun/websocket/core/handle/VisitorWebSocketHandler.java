@@ -2,10 +2,8 @@ package com.baodanyun.websocket.core.handle;
 
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
-import com.baodanyun.websocket.listener.VisitorListener;
 import com.baodanyun.websocket.service.UserLifeCycleService;
 import com.baodanyun.websocket.service.WebSocketService;
-import com.baodanyun.websocket.util.CommonConfig;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.SpringContextUtil;
 import org.springframework.web.socket.CloseStatus;

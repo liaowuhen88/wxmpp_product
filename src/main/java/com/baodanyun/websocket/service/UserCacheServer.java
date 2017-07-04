@@ -45,7 +45,7 @@ public class UserCacheServer {
      * 获取发送地址
      */
 
-    private String getVisitorCustomerOpenId(String openId){
+    public String getVisitorCustomerOpenId(String openId) {
 
         if(!StringUtils.isEmpty(openId)){
             Object map = cacheService.get(openId);

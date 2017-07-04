@@ -98,6 +98,10 @@ public interface XmppService {
 
     void joinRoom(MultiUserChat room, AbstractUser user) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException ;
 
-    void joinRoom(AbstractUser user, Set<String> room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException;
+    void joinRoom(AbstractUser user, Set<String> rooms) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException;
+
+    void joinRoom(AbstractUser user, String room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException;
+
+    MultiUserChat getRoom(AbstractUser user, String room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException;
 
 }

@@ -27,6 +27,17 @@ public class XmppUserOnlineServer {
     private String ip;
     private String domain;
 
+    public static void main(String args[]) {
+        System.out.println(123);
+        XmppUserOnlineServer xs = new XmppUserOnlineServer();
+
+        String main = "<presence id=\"6kro2sgu58\" from=\"maqiumeng@126xmpp/AstraChat-iOS-69111447\"><show>chat</show><priority>-1</priority><nick xmlns=\"http://jabber.org/protocol/nick\">豆包萌萌</nick></presence>";
+
+
+        System.out.println(xs.isOnlineXml(main));
+
+    }
+
     @PostConstruct
     private void init() {
         Map<String, String> map = PropertiesUtil.get(XmppUserOnlineServer.class.getClassLoader(), "config.properties");
@@ -51,7 +62,7 @@ public class XmppUserOnlineServer {
         String url = "http://" + ip + ":" + 9090 + "/plugins/presence/status?jid=" + jid + "&type=xml";
         logger.info("isOnline" + url);
         String str = HttpUtils.get(url);
-        logger.info("result" + str);
+        //logger.info("result" + str);
         return isOnlineXml(str);
     }
 
@@ -64,6 +75,9 @@ public class XmppUserOnlineServer {
 
         try {
             Element el = XmllUtil.xmlElementRoot(str);
+            if (null == el) {
+                return false;
+            }
             logger.info(el.getName());
             if (el.getName().equals("presence")) {
                 if (!StringUtils.isEmpty(el.getAttribute("from").toString())) {
@@ -87,18 +101,6 @@ public class XmppUserOnlineServer {
         }
 
         return false;
-    }
-
-
-    public static void main(String args[]) {
-        System.out.println(123);
-        XmppUserOnlineServer xs = new XmppUserOnlineServer();
-
-        String main = "<presence id=\"6kro2sgu58\" from=\"maqiumeng@126xmpp/AstraChat-iOS-69111447\"><show>chat</show><priority>-1</priority><nick xmlns=\"http://jabber.org/protocol/nick\">豆包萌萌</nick></presence>";
-
-
-        System.out.println(xs.isOnlineXml(main));
-
     }
 
 }

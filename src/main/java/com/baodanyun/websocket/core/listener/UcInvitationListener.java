@@ -1,6 +1,5 @@
 package com.baodanyun.websocket.core.listener;
 
-import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.MsgService;
@@ -45,26 +44,15 @@ public class UcInvitationListener implements InvitationListener {
     @Override
     public void invitationReceived(XMPPConnection conn, MultiUserChat room, String inviter, String reason, String password, Message message) {
 
-
         try {
             logger.info("收到来自 " + inviter + " 的聊天" + room.getRoom() + "室邀请。邀请附带内容："
                     + reason);
 
             xmppService.joinRoom(room,user);
-            sengNewRoom(room, inviter);
 
-
-        } catch (InterruptedException e) {
-            logger.error(e);
         } catch (Exception e) {
             logger.error(e);
         }
     }
 
-
-    public void sengNewRoom(MultiUserChat room, String inviter) throws InterruptedException {
-        Msg msg = msgService.getNewRoomJoines(room.getRoom(), user.getId());
-
-        msgSendControl.sendMsg(msg);
-    }
 }

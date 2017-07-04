@@ -5,11 +5,11 @@ import com.baodanyun.websocket.bean.user.AbstractUser;
 /**
  * Created by liaowuhen on 2017/5/12.
  */
-public class JoinRoomEvent {
+public class ConversationRoomEvent {
     private AbstractUser user;
     private String room;
 
-    public JoinRoomEvent(AbstractUser user, String room) {
+    public ConversationRoomEvent(AbstractUser user, String room) {
         this.user = user;
         this.room = room;
     }

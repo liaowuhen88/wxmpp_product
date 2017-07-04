@@ -1,7 +1,5 @@
 package com.baodanyun.websocket.core.listener;
 
-import com.baodanyun.websocket.bean.msg.Msg;
-import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.XmppService;
@@ -33,7 +31,7 @@ public class UcRosterListener implements RosterListener {
     public void entriesAdded(Collection<String> addresses) {
         try {
             logger.info("添加新的好友："+addresses);
-            if(null != addresses && addresses.size() > 0 ){
+            /*if(null != addresses && addresses.size() > 0 ){
                 for(String address:addresses){
                     StatusMsg sm = new  StatusMsg();
                     sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
@@ -54,12 +52,10 @@ public class UcRosterListener implements RosterListener {
                     }
                     msgSendControl.sendMsg(sm);
                 }
-            }
+            }*/
 
-        } catch (InterruptedException e) {
-            logger.equals(e);
         } catch (Exception e) {
-            logger.equals(e);
+            logger.error(e);
         }
 
     }

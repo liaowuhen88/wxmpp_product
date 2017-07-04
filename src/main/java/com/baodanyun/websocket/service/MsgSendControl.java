@@ -43,12 +43,7 @@ public class MsgSendControl {
         if (webSocketService.isConnected(msg.getTo())) {
             webSocketService.produce(msg);
         } else {
-            try {
-                messageSendToWeixin.send(msg, msg.getTo(), msg.getId());
-                logger.info("msg---" + JSONUtil.toJson(msg) + "send to Weixin ");
-            } catch (Exception e) {
-                logger.error("", e);
-            }
+            logger.info("msg.getTo[" + msg.getTo() + "] is closed");
         }
         return true;
     }

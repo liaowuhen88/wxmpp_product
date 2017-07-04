@@ -3,14 +3,12 @@ package com.baodanyun.websocket.controller;
 import com.baodanyun.websocket.bean.Response;
 import com.baodanyun.websocket.bean.UserSetPW;
 import com.baodanyun.websocket.bean.user.AbstractUser;
+import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.model.PageModel;
 import com.baodanyun.websocket.model.Transferlog;
 import com.baodanyun.websocket.model.UserModel;
-import com.baodanyun.websocket.service.TransferServer;
-import com.baodanyun.websocket.service.UserLifeCycleService;
-import com.baodanyun.websocket.service.UserServer;
-import com.baodanyun.websocket.service.VcardService;
+import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
@@ -46,6 +44,10 @@ public class CustomerApi extends BaseController {
 
     @Autowired
     private UserServer userServer;
+
+    @Autowired
+    private ConversationService conversationService;
+
 
     @Autowired
     @Qualifier("wcUserLifeCycleService")
@@ -172,6 +174,29 @@ public class CustomerApi extends BaseController {
         Render.r(httpServletResponse, JSONUtil.toJson(response));
     }
 
+    /**
+     * 关闭访客
+     *
+     * @param vjid
+     * @param httpServletResponse
+     */
+    @RequestMapping(value = "visitorOff")
+    public void visitorOff(String vjid, HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        Response response = new Response();
+        try {
+            AbstractUser cu = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
+            Visitor user = new Visitor();
+            user.setId(vjid);
+            user.setCustomer(cu);
+            conversationService.removeConversations(cu.getId(), vjid);
+            response.setSuccess(true);
+
+        } catch (Exception e) {
+            logger.error(e);
+            response.setSuccess(false);
+        }
+        Render.r(httpServletResponse, JSONUtil.toJson(response));
+    }
 
 
     /**

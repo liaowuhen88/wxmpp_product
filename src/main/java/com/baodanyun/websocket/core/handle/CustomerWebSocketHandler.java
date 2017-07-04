@@ -18,29 +18,28 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
     public WebSocketService webSocketService = SpringContextUtil.getBean("webSocketService", WebSocketService.class);
     UserLifeCycleService userLifeCycleService = SpringContextUtil.getBean("wcUserLifeCycleService", UserLifeCycleService.class);
 
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Customer customer = (Customer) session.getHandshakeAttributes().get(Common.USER_KEY);
         webSocketService.saveSession(customer.getId(), session);
         //获取一个customerNode节点
-        try{
-            //if(!xmppService.isAuthenticated(customer.getId())){
-                userLifeCycleService.login(customer);
-          //  }
+        try {
+            userLifeCycleService.login(customer);
             userLifeCycleService.online(customer);
-        }catch (Exception e){
+        } catch (Exception e) {
             userLifeCycleService.logout(customer);
         }
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        try{
+        try {
             Customer customer = (Customer) session.getHandshakeAttributes().get(Common.USER_KEY);
             logger.info("webSocket receive message:" + JSONUtil.toJson(message));
             String content = message.getPayload();
-            userLifeCycleService.receiveMessage(customer,content);
-        }catch (Exception e){
+            userLifeCycleService.receiveMessage(customer, content);
+        } catch (Exception e) {
             logger.info(e);
         }
 
@@ -56,9 +55,8 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
         boolean flag = webSocketService.isCloseded(customer.getId());
 
         if (flag) {
-            logger.info("userLifeCycleService.logout(customer): id[" + customer.getId() + "]" + status);
-
             userLifeCycleService.logout(customer);
+            logger.info("userLifeCycleService.logout(customer): id[" + customer.getId() + "]" + status);
         }
 
     }

@@ -25,6 +25,21 @@ public class XMPPUtil {
         return jid;
     }
 
+    public static String removeRoomSource(String jid) {
+        if (StringUtils.isNotBlank(jid) && jid.contains("/")) {
+            return jid.substring(0, jid.indexOf("/"));
+        }
+        return jid;
+    }
+
+
+    public static String getRoomName(String room) {
+        if (StringUtils.isNotBlank(room) && room.contains("@")) {
+            return room.substring(0, room.indexOf("@"));
+        }
+        return room;
+    }
+
     public static String buildJson(Object o) {
        return JSONUtil.toJson(o);
     }

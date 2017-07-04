@@ -2,14 +2,12 @@ package com.baodanyun.websocket.controller;
 
 import com.baodanyun.websocket.bean.Response;
 import com.baodanyun.websocket.bean.Tags;
-import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Customer;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.bean.userInterface.PersonalDetail;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.model.UserModel;
 import com.baodanyun.websocket.service.*;
-import com.baodanyun.websocket.util.CommonConfig;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
@@ -51,30 +49,6 @@ public class VisitorApi extends BaseController {
     @Autowired
     @Qualifier("wvUserLifeCycleService")
     private UserLifeCycleService userLifeCycleService;
-
-    /**
-     * @param vjid
-     * @param httpServletResponse
-     */
-    @RequestMapping(value = "visitorOff/{vjid}")
-    public void visitorOff(@PathVariable("vjid") String vjid, HttpServletRequest request,HttpServletResponse httpServletResponse) {
-        Response response = new Response();
-        try {
-            AbstractUser cu = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
-            Visitor user = new Visitor();
-            user.setId(vjid);
-            user.setCustomer(cu);
-            userCacheServer.delete(CommonConfig.USER_ONLINE,cu.getId(),user);
-
-            userLifeCycleService.logout(user);
-            response.setSuccess(true);
-
-        } catch (Exception e) {
-            logger.error(e);
-            response.setSuccess(false);
-        }
-        Render.r(httpServletResponse, JSONUtil.toJson(response));
-    }
 
     /**
      * 获取访客节点信息

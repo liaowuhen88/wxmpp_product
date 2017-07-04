@@ -142,6 +142,8 @@ Utils = (function () {
                         commentTpl = $('#imgLeft').html();
                     }else if (item.contentType == 'audio') {
                         commentTpl = $('#audioLeft').html();
+                    } else if (item.contentType == 'video') {
+                        commentTpl = $('#videoLeft').html();
                     } else {
                         commentTpl = $('#mleft').html();
                     }
@@ -360,6 +362,9 @@ Utils = (function () {
                 msgList = [];
                 msgList.push(data);
             } else {
+                if (storeList.length >= 200) {
+                    storeList.shift();
+                }
                 storeList.push(data);
                 msgList = storeList;
             }

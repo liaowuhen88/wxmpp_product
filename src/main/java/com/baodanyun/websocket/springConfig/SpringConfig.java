@@ -3,6 +3,7 @@ package com.baodanyun.websocket.springConfig;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.PropertiesUtil;
+import com.github.pagehelper.PageHelper;
 import com.whalin.MemCached.MemCachedClient;
 import com.whalin.MemCached.SockIOPool;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -15,10 +16,12 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.log4j.Logger;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jms.core.JmsTemplate;
@@ -28,6 +31,7 @@ import org.springframework.stereotype.Component;
 import javax.jms.Destination;
 import javax.sql.DataSource;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by liaowuhen on 2016/11/2.
@@ -45,8 +49,8 @@ public class SpringConfig {
     protected static Logger logger = Logger.getLogger(SpringConfig.class);
     Map<String, String> map = PropertiesUtil.get(this.getClass().getClassLoader(), "config.properties");
 
-
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public DataSource dataSource() {
         logger.info("DataSource");
         DruidDataSource dataSource = new DruidDataSource();
@@ -63,84 +67,67 @@ public class SpringConfig {
         dataSource.setRemoveAbandonedTimeoutMillis(1800);
         dataSource.setLogAbandoned(true);
         //dataSource.setFilters("mergeStat");
+        logger.info(dataSource.hashCode());
         return dataSource;
     }
 
-
     @Bean
-    public DataSourceTransactionManager txManager() {
-
-        return new DataSourceTransactionManager(dataSource());
+    public DataSourceTransactionManager txManager(@Qualifier("dataSource") DataSource dataSource) {
+        logger.info(dataSource.hashCode());
+        return new DataSourceTransactionManager(dataSource);
     }
 
-    //@Bean
-    public SqlSessionFactory sqlSessionFactory() throws Exception {
-        //DataSource dataSource = SpringContextUtil.getBean("dataSource", DataSource.class);
-
+    @Bean
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource) throws Exception {
+        logger.info("sqlSessionFactory");
         TransactionFactory transactionFactory = new
                 JdbcTransactionFactory();
 
         Environment environment =
-                new Environment("development", transactionFactory, dataSource());
+                new Environment("development", transactionFactory, dataSource);
 
+        PageHelper ph = new PageHelper();
+        Properties p = new Properties();
+        p.put("dialect", "mysql");
+        p.put("offsetAsPageNum", "true");
+        p.put("rowBoundsWithCount", "true");
+        p.put("pageSizeZero", "true");
+        p.put("reasonable", "false");
+        p.put("params", "pageNum=start;pageSize=limit;");
+        p.put("returnPageInfo", "check");
+
+        ph.setProperties(p);
         org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration(environment);
+
+        configuration.addInterceptor(ph);
 
         SqlSessionFactory sessionFactory =
                 new SqlSessionFactoryBuilder().build(configuration);
+
         return sessionFactory;
     }
 
     @Bean
-    public MapperScannerConfigurer mapperScannerConfigurer() throws Exception {
-      //  SqlSessionFactory sqlSessionFactory = SpringContextUtil.getBean("sqlSessionFactory", SqlSessionFactory.class);
-
+    public MapperScannerConfigurer mapperScannerConfigurer(@Qualifier("sqlSessionFactory") SqlSessionFactory sqlSessionFactory) throws Exception {
         MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
-        mapperScannerConfigurer.setSqlSessionFactory(sqlSessionFactory());
+        mapperScannerConfigurer.setSqlSessionFactory(sqlSessionFactory);
         mapperScannerConfigurer.setBasePackage("com/baodanyun/websocket/dao");
         return mapperScannerConfigurer;
     }
 
 
     @Bean
-    public JdbcTemplate jdbcTemplate() {
-        //DataSource dataSource = SpringContextUtil.getBean("dataSource", DataSource.class);
+    public JdbcTemplate jdbcTemplate(@Qualifier("dataSource") DataSource dataSource) {
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate();
-        jdbcTemplate.setDataSource(dataSource());
+        jdbcTemplate.setDataSource(dataSource);
         return jdbcTemplate;
     }
 
-    @Bean
-    public ActiveMQConnectionFactory activeMQConnectionFactory() {
-        ActiveMQConnectionFactory aMQF = new ActiveMQConnectionFactory();
-        aMQF.setBrokerURL(map.get("broker.url"));
-        return aMQF;
-    }
 
-    @Bean
-    public PooledConnectionFactory pooledConnectionFactory() {
-        //ActiveMQConnectionFactory activeMQConnectionFactory = SpringContextUtil.getBean("activeMQConnectionFactory", ActiveMQConnectionFactory.class);
-
-        PooledConnectionFactory pCF = new PooledConnectionFactory();
-        pCF.setConnectionFactory(activeMQConnectionFactory());
-        return pCF;
-    }
-
-    @Bean
-    public JmsTemplate jmsTemplate() {
-        //PooledConnectionFactory pooledConnectionFactory = SpringContextUtil.getBean("pooledConnectionFactory", PooledConnectionFactory.class);
-
-        JmsTemplate jtl = new JmsTemplate();
-        jtl.setConnectionFactory(pooledConnectionFactory());
-        return jtl;
-    }
-
-    @Bean
-    public Destination destination() {
-        Destination de = new ActiveMQQueue(map.get("env.queue.eventCenterDestination"));
-
-        return de;
-    }
+    /**
+     * MemCached
+     */
 
     @Bean
     public SockIOPool getSockIOPool() {
@@ -164,4 +151,43 @@ public class SpringConfig {
         MemCachedClient  memCachedClient= new  MemCachedClient();
         return memCachedClient;
     }
+
+
+    /**
+     *
+     * active
+     */
+
+    @Bean
+    public ActiveMQConnectionFactory activeMQConnectionFactory() {
+        ActiveMQConnectionFactory aMQF = new ActiveMQConnectionFactory();
+        aMQF.setBrokerURL(map.get("broker.url"));
+        return aMQF;
+    }
+
+
+    @Bean
+    public JmsTemplate jmsTemplate(@Qualifier("pooledConnectionFactory") PooledConnectionFactory pooledConnectionFactory) {
+
+        JmsTemplate jtl = new JmsTemplate();
+        jtl.setConnectionFactory(pooledConnectionFactory);
+        return jtl;
+    }
+
+
+    @Bean
+    public PooledConnectionFactory pooledConnectionFactory(@Qualifier("activeMQConnectionFactory") ActiveMQConnectionFactory activeMQConnectionFactory) {
+        PooledConnectionFactory pCF = new PooledConnectionFactory();
+        pCF.setConnectionFactory(activeMQConnectionFactory);
+        return pCF;
+    }
+
+    @Bean
+    public Destination destination() {
+        Destination de = new ActiveMQQueue(map.get("env.queue.eventCenterDestination"));
+
+        return de;
+    }
+
+
 }

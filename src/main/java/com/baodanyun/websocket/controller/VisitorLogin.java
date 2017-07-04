@@ -4,7 +4,6 @@ import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.*;
-import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -27,10 +26,9 @@ import java.io.IOException;
 @RestController
 @RequestMapping("visitorlogin")
 public class VisitorLogin extends BaseController {
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final String LOGIN_USER = "u";
-    private static final String LOGIN_TO= "t";
-
+    private static final String LOGIN_TO = "t";
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private UserServer userServer;
 
@@ -53,30 +51,24 @@ public class VisitorLogin extends BaseController {
         String base = request.getContextPath();
         String accessId = request.getParameter(LOGIN_USER);
         String to = request.getParameter(LOGIN_TO);
-        Visitor visitor = (Visitor) request.getSession().getAttribute(Common.USER_KEY);
-        logger.info("accessId:[" + accessId + "] ------ContextPath[" + base + "]"+"---visitor["+JSONUtil.toJson(visitor)+"]");
+        logger.info("accessId:[" + accessId + "] ------ContextPath[" + base + "]");
 
         try {
-            if (null == visitor) {
-                visitor = userServer.initVisitor(base, accessId,to);
 
-            }
-            if (null != visitor.getCustomer()) {
-                boolean flag = customerOnline(visitor.getCustomer().getId());
-                if (flag) {
-                    if(!xmppService.isAuthenticated(visitor.getId())){
-                        userLifeCycleService.login(visitor);
-                    }
-
-                    mv = getOnline(visitor, visitor.getCustomer().getId());
-                    request.getSession().setAttribute(Common.USER_KEY, visitor);
-                } else {
-                    //客服不在线
-                    mv = getOffline(visitor,visitor.getCustomer().getId());
+            Visitor visitor = userServer.initVisitor(base, accessId, to);
+            request.getSession().setAttribute(Common.USER_KEY, visitor);
+            boolean flag = customerOnline(visitor.getCustomer().getId());
+            if (flag) {
+                if (!xmppService.isAuthenticated(visitor.getId())) {
+                    userLifeCycleService.login(visitor);
                 }
+                mv = getOnline(visitor, visitor.getCustomer().getId());
+
             } else {
-                throw new BusinessException("客服不存在");
+                //客服不在线
+                mv = getOffline(visitor, visitor.getCustomer().getId());
             }
+
 
         } catch (Exception e) {
             mv.addObject("statue", false);
@@ -101,7 +93,7 @@ public class VisitorLogin extends BaseController {
     }
 
 
-    public ModelAndView getOffline(Visitor visitor,String customerJid) throws BusinessException {
+    public ModelAndView getOffline(Visitor visitor, String customerJid) throws BusinessException {
         ModelAndView mv = new ModelAndView();
 
         if (null == visitor) {
