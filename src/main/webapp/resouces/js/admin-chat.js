@@ -174,6 +174,8 @@ xchat.recvTextMsgHandelEvent = function (json) {
     json.time = myUtils.formatDate(new Date(json.ct));
     json.src = json.from;
     json.icon = json.icon || this.controls.defaultAvatar;
+    json.content = wechatFace.faceToHTML(json.content, window.base); //表情字符转换对象的图片
+
     if (json.from == window.destJid) {
         myUtils.renderDivAdd('mleft', json, 'chatMsgContainer');
     }

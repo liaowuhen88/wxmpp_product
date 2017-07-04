@@ -4,6 +4,7 @@ import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.util.Config;
+import com.baodanyun.websocket.util.EmojiUtil;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +52,7 @@ public class MsgSendControl {
         Msg sendMsg = null;
         String body = msg.getBody();
         if (StringUtils.isNotBlank(body)) {
+            body = EmojiUtil.tranformEemojiContent(body);//文本内容替换表情
             sendMsg = new Msg(body);
             String from = XMPPUtil.removeSource(msg.getFrom());
             sendMsg.setFrom(from);
