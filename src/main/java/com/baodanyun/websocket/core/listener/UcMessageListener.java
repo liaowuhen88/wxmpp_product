@@ -45,7 +45,7 @@ public class UcMessageListener implements MessageListener {
 
     @Override
     public void processMessage(Message msg) {
-        logger.info("接收到群组信息:" + JSONUtil.toJson(msg));
+        logger.info("{}接收到群组信息:" + JSONUtil.toJson(msg), this.getUser().getId());
         try {
             Msg sendMsg = msgSendControl.getMsg(msg);
             if (null == sendMsg) {

@@ -29,10 +29,19 @@ public class InitChatMessageListener implements ChatMessageListener {
         this.user = user;
         this.msgSendControl = msgSendControl;
     }
+
+    public AbstractUser getUser() {
+        return user;
+    }
+
+    public void setUser(AbstractUser user) {
+        this.user = user;
+    }
+
     @Override
     public void processMessage(Chat chat, Message msg) {
         try {
-            logger.info("xmpp receive message :" + JSONUtil.toJson(msg));
+            logger.info("{} xmpp receive message :" + JSONUtil.toJson(msg),this.getUser().getId());
             Msg sendMsg = msgSendControl.getMsg(msg);
             String from = msg.getFrom();
             String realFrom = XMPPUtil.removeRoomSource(from);

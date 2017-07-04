@@ -25,7 +25,7 @@ public abstract  class CustomerUserLifeCycleServiceImpl extends UserLifeCycleSer
     @Override
     public boolean online(AbstractUser user) throws InterruptedException, BusinessException, SmackException.NotLoggedInException, XMPPException.XMPPErrorException, SmackException.NotConnectedException, SmackException.NoResponseException {
         super.online(user);
-        conversationService.clear(user.getId());
+        //conversationService.clear(user.getId());
         logger.info("保存到缓存[USER_CUSTOMER]["+user.getId()+"]--->" + userCacheServer.add(CommonConfig.USER_CUSTOMER, user));
         return true;
     }
