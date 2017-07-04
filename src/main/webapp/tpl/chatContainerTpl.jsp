@@ -8,7 +8,7 @@
     <div class="timeline timeline-from">
         <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
         <span class="time">{{fromName}}     {{time}}</span>
-        <span class="message">{{content}}</span>
+        <span class="message">{{&content}}</span>
     </div>
 </script>
 
