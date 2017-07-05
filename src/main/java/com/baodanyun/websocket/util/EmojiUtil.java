@@ -1,5 +1,7 @@
 package com.baodanyun.websocket.util;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,10 +19,12 @@ public class EmojiUtil {
      * 转换后的内容： 欢迎新会员'表情'
      */
     public static String tranformEemojiContent(String span) {
-        Pattern pattern = Pattern.compile("<span.*?>.*?</span>");
+        span = StringEscapeUtils.unescapeJava(span); //unicode码如\u003cspan
 
+        Pattern pattern = Pattern.compile("<span.*?>.*?</span>");
         Pattern p = Pattern.compile(".*?<span.*?class=.*?emoji emoji(.*?)\"></span>.*?");
         Matcher matcher = p.matcher(span);
+
         while (matcher.find()) {
             String base = matcher.group(0);
             String group = matcher.group(1);
@@ -33,5 +37,11 @@ public class EmojiUtil {
         }
 
         return span.trim();
+    }
+
+    public static void main(String [] args){
+        String span = StringEscapeUtils.unescapeJava(""); //unicode码如\u003cspan
+        System.out.println(span);
+
     }
 }
