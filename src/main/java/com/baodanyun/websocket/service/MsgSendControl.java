@@ -54,7 +54,7 @@ public class MsgSendControl {
         if (StringUtils.isNotBlank(body)) {
             body = EmojiUtil.tranformEemojiContent(body);//文本内容替换表情
             sendMsg = new Msg(body);
-            String from = XMPPUtil.removeSource(msg.getFrom());
+            String from = XMPPUtil.removeRoomSource(msg.getFrom());
             sendMsg.setFrom(from);
             if(StringUtils.isEmpty(msg.getSubject())){
                 sendMsg.setContentType("text");
