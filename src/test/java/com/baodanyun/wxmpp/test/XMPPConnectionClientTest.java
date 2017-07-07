@@ -346,13 +346,13 @@ public class XMPPConnectionClientTest {
             Thread.sleep(10000);
 
             Message msg = new Message();
-            msg.setFrom(realName + "@126xmpp");
+            String resorce = "/A\u003cspan class\u003d\"emoji emoji1f33f\"\u003e\u003c/span\u003e 叶子\u003cspan class\u003d\"emoji emoji1f49e\"\u003e\u003c/span\u003e \u003cspan class\u003d\"emoji emoji1f33c\"\u003e\u003c";
+            msg.setFrom(realName + "@126xmpp" + resorce);
             msg.setType(Message.Type.chat);
             msg.setTo(to);
             msg.setBody("__" + i++);
             conn.sendStanza(msg);
         }
-
     }
 
     @Test
@@ -387,16 +387,15 @@ public class XMPPConnectionClientTest {
         /**
          *   用户必须是假的，不能注册过
          */
+
         JoinMultiUserChat("真实用户XX", realName1, group);
         JoinMultiUserChat("真实用户YY", realName2, group);
         JoinMultiUserChat("真实用户RR", realName3, group);
         JoinMultiUserChat("真实用户TT", realName4, group);
         /*createRoom(realName,group,"nickname");*/
 
-
         MessageListener messageListener = new UcMessageListener(null, new Visitor(), null, null, null);
         muc.addMessageListener(messageListener);
-
 
         while (true) {
             try {
@@ -411,14 +410,12 @@ public class XMPPConnectionClientTest {
                 msg1.setSubject("audio");
                 conn.sendStanza(msg1);
 
-            /*    Message msg2 = new Message();
+            /*  Message msg2 = new Message();
                 msg2.setType(Message.Type.groupchat);
                 msg2.setBody("msg2-------" + get());
                 msg2.setTo(group);
                 msg2.setFrom(realName2);
-
                 conn.sendStanza(msg2);*/
-
 
                 Message msg3 = new Message();
                 msg3.setType(Message.Type.groupchat);
@@ -426,7 +423,6 @@ public class XMPPConnectionClientTest {
                 msg3.setTo(group);
                 msg3.setSubject("image");
                 msg3.setFrom(realName3);
-
                 conn.sendStanza(msg3);
 
                 Message msg4 = new Message();
@@ -437,14 +433,19 @@ public class XMPPConnectionClientTest {
                 msg4.setSubject("video");
                 conn.sendStanza(msg4);
 
-             /*   Message msg5 = new Message();
+                Message msg5 = new Message();
                 msg5.setType(Message.Type.groupchat);
-                msg5.setBody("msg1-------" + get());
+                msg5.setBody("邀请你加入群聊<br/>互粉大群(500人)<br/>1、千人互粉群<br/>https://a.meipian.me/55fyfvn<br/><br/>2、点赞互粉群<br/>https://a.meipian.me/55fx6xb<br/><br/>3、帅哥美女聊天群<br/>https://a.meipian.me/55fwbdr<br/><br/>4、辣妈互粉群<br/>https://a.meipian.me/55fucch<br/><br/>5、宝妈萌娃互粉群<br/>https://a.meipian.me/55ftevo<br/><br/>6、产品咨询代理群<br/>https://a.meipian.me/55fszvg<br/><br/>7、小白创业任务群<br/>https://a.meipian.me/55fqdxl<br/><br/>8、任务交接资源群<br/>https://a.meipian.me/55fpt78<br/><br/>9、关验证互粉一族群<br/>https://a.meipian.me/55fp9jl<br/><br/>10、宝妈互粉群<br/>https://a.meipian.me/55foqno<br/><br/>11、徽商小白交流互粉群<br/>https://a.meipian.me/55fnx9w<br/><br/>12、大学生创业互粉群<br/>https://a.meipian.me/55fjg7h<br/>  <br/><br/>互粉大群（500人）<br/>邀请你加入群聊" + get());
                 msg5.setTo(group);
                 msg5.setFrom(realName1);
+                conn.sendStanza(msg5);
 
-                conn.sendStanza(msg5);*/
-
+                Message msg6 = new Message();
+                msg6.setType(Message.Type.groupchat);
+                msg6.setBody("<span class=\"emoji emoji1f498\"></span><span class=\"emoji emoji1f498\"></span><span class=\"emoji emoji1f498\"></span>微商必备加人神器<br/> 　　全国定位：百姓活粉<br/> 　 　 强行加粉：强行被加<br/>　　　　无需验证：直接通过<br/>　　　　日加千人：不是梦想<br/>　　　　防封加密：删除僵尸<br/>　　　　全部自动：操作简单<br/> 　 苹果免越狱：转小视频<br/>　　　朋友圈点赞：强加附近人<br/>　　　强行加人版：强行倍加版<br/>　教你一天怎样加1000人先看视频http://u1994106.jisuwebapp.com/s?id=3203388　 →售4000人好友V信号 ←<br/> 未绑定 可选全女：全男<br/> 保证精粉 ：无僵尸粉<br/> 广招代理 ：加好友聊<br/> 咨询加微信 :nry4513<br/> 咨询加微信 :nry4513<br/> 咨询加微信 :nry4513<br/> ▃▃▃▃▃▃▃▃▃▃<br/> 重点 认准正版" + get());
+                msg6.setTo(group);
+                msg6.setFrom(realName1);
+                conn.sendStanza(msg6);
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
