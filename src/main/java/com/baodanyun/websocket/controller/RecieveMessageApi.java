@@ -8,7 +8,8 @@ import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ import java.util.Date;
  */
 @RestController
 public class RecieveMessageApi extends BaseController {
-    protected static Logger logger = Logger.getLogger(RecieveMessageApi.class);
+    protected static Logger logger = LoggerFactory.getLogger(RecieveMessageApi.class);
 
     @Autowired
     private UserServer userServer;
@@ -70,7 +71,7 @@ public class RecieveMessageApi extends BaseController {
                     if (!cFlag) {
                         cFlag = xmppUserOnlineServer.isOnline(msg.getTo());
                     }
-                    logger.info(cFlag);
+
                     // 客服不在线
                     if (!cFlag) {
                         String url = request.getRequestURL().toString();
@@ -94,7 +95,7 @@ public class RecieveMessageApi extends BaseController {
             }
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("", e);
             response = new Response();
             response.setMsg(e.getMessage());
             response.setSuccess(false);

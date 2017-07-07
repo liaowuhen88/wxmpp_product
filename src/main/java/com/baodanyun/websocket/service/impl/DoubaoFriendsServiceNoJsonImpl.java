@@ -6,7 +6,8 @@ import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.DoubaoFriends;
 import com.baodanyun.websocket.service.DoubaoFriendsService;
 import com.baodanyun.websocket.service.MsgSendControl;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service("doubaoFriendsNoJsonService")
 public class DoubaoFriendsServiceNoJsonImpl implements DoubaoFriendsService {
-    private static Logger logger = Logger.getLogger(DoubaoFriendsServiceNoJsonImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(DoubaoFriendsServiceNoJsonImpl.class);
 
     // jid  不同的客服获取不同的用户列表
     private static Map<String, Map<String, DoubaoFriends>> map = new ConcurrentHashMap();

@@ -3,7 +3,8 @@ package com.baodanyun.websocket.service.impl;
 import com.baodanyun.websocket.core.common.SecondConstant;
 import com.baodanyun.websocket.service.CacheService;
 import com.whalin.MemCached.MemCachedClient;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.util.Date;
 @Service
 public class MemCacheServiceImpl implements CacheService{
 
-    private static final Logger logger = Logger.getLogger(MemCacheServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MemCacheServiceImpl.class);
 
     @Autowired
     private MemCachedClient memCachedClient;

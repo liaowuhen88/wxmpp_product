@@ -40,7 +40,7 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
             String content = message.getPayload();
             userLifeCycleService.receiveMessage(customer, content);
         } catch (Exception e) {
-            logger.info(e);
+            logger.info("", e);
         }
 
 

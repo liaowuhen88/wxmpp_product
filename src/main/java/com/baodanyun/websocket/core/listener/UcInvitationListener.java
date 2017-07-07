@@ -4,18 +4,19 @@ import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.MsgService;
 import com.baodanyun.websocket.service.XmppService;
-import org.apache.log4j.Logger;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by liaowuhen on 2017/5/10.
  */
 public class UcInvitationListener implements InvitationListener {
 
-    private static Logger logger = Logger.getLogger(UcRosterListener.class);
+    private static Logger logger = LoggerFactory.getLogger(UcRosterListener.class);
 
     private MsgSendControl msgSendControl;
     private MsgService msgService;
@@ -51,7 +52,7 @@ public class UcInvitationListener implements InvitationListener {
             xmppService.joinRoom(room,user);
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
         }
     }
 

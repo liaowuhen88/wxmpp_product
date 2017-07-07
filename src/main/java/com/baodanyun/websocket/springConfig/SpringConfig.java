@@ -14,8 +14,9 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
-import org.apache.log4j.Logger;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +47,7 @@ import java.util.Properties;
 //加载资源文件
 @PropertySource({"classpath:config.properties"})
 public class SpringConfig {
-    protected static Logger logger = Logger.getLogger(SpringConfig.class);
+    protected static Logger logger = LoggerFactory.getLogger(SpringConfig.class);
     Map<String, String> map = PropertiesUtil.get(this.getClass().getClassLoader(), "config.properties");
 
     @Bean
@@ -67,13 +68,11 @@ public class SpringConfig {
         dataSource.setRemoveAbandonedTimeoutMillis(1800);
         dataSource.setLogAbandoned(true);
         //dataSource.setFilters("mergeStat");
-        logger.info(dataSource.hashCode());
         return dataSource;
     }
 
     @Bean
     public DataSourceTransactionManager txManager(@Qualifier("dataSource") DataSource dataSource) {
-        logger.info(dataSource.hashCode());
         return new DataSourceTransactionManager(dataSource);
     }
 

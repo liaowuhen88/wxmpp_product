@@ -13,7 +13,8 @@ import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,7 @@ import java.util.*;
  */
 @RestController
 public class QueueApi extends BaseController {
-    protected static Logger logger = Logger.getLogger(CustomerApi.class);
+    protected static Logger logger = LoggerFactory.getLogger(CustomerApi.class);
 
     @Autowired
     private UserCacheServer userCacheServer;
@@ -72,7 +73,7 @@ public class QueueApi extends BaseController {
                 msgResponse.setSuccess(false);
             }
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             msgResponse.setSuccess(false);
         }
         Render.r(response, XMPPUtil.buildJson(msgResponse));

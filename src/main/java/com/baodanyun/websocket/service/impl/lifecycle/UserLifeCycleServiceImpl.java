@@ -8,13 +8,14 @@ import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.listener.VisitorListener;
 import com.baodanyun.websocket.service.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.offline.OfflineMessageManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
@@ -25,7 +26,7 @@ import java.util.List;
  * Created by liaowuhen on 2017/3/6.
  */
 public abstract class UserLifeCycleServiceImpl implements UserLifeCycleService {
-    public static final Logger logger = Logger.getLogger(UserLifeCycleServiceImpl.class);
+    public static final Logger logger = LoggerFactory.getLogger(UserLifeCycleServiceImpl.class);
     @Autowired
     public LastVisitorSendMessageService lastVisitorSendMessageService;
     @Autowired
@@ -91,7 +92,7 @@ public abstract class UserLifeCycleServiceImpl implements UserLifeCycleService {
                 }
             }
         } catch (Exception e) {
-            logger.error("offline msg error");
+            logger.error("offline msg error", e);
         }
 
         return true;

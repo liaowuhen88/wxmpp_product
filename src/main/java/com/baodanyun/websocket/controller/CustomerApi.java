@@ -15,7 +15,8 @@ import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +36,7 @@ import java.util.Map;
 @RestController
 public class CustomerApi extends BaseController {
 
-    protected static Logger logger = Logger.getLogger(CustomerApi.class);
+    protected static Logger logger = LoggerFactory.getLogger(CustomerApi.class);
 
 
     @Autowired
@@ -121,7 +122,7 @@ public class CustomerApi extends BaseController {
 
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("", e);
             response.setSuccess(false);
         }
         Render.r(httpServletResponse, JSONUtil.toJson(response));
@@ -168,7 +169,7 @@ public class CustomerApi extends BaseController {
             }
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             response.setSuccess(false);
             response.setMsg("系统异常");
         }
@@ -194,7 +195,7 @@ public class CustomerApi extends BaseController {
             response.setSuccess(true);
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             response.setSuccess(false);
         }
         Render.r(httpServletResponse, JSONUtil.toJson(response));
@@ -218,7 +219,7 @@ public class CustomerApi extends BaseController {
             response.setSuccess(true);
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             response.setSuccess(false);
         }
         Render.r(httpServletResponse, JSONUtil.toJson(response));
@@ -243,7 +244,7 @@ public class CustomerApi extends BaseController {
             response.setSuccess(true);
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             response.setSuccess(false);
         }
         Render.r(httpServletResponse, JSONUtil.toJson(response));
@@ -271,7 +272,7 @@ public class CustomerApi extends BaseController {
             mv.setViewName("/index");
             mv.addObject("msg","您已退出");
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
         }
 
         return mv;
@@ -291,7 +292,7 @@ public class CustomerApi extends BaseController {
             response.setData(gson.toJson(freeCustomerNodeList));
             response.setSuccess(true);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             response.setSuccess(false);
         }
         Render.r(httpServletResponse, gson.toJson(response));
@@ -311,7 +312,7 @@ public class CustomerApi extends BaseController {
             response.setData(freeCustomerNodeList);
             response.setSuccess(true);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             response.setSuccess(false);
         }
         Render.r(httpServletResponse, JSONUtil.toJson(response));
@@ -335,7 +336,7 @@ public class CustomerApi extends BaseController {
             boolean flag = transferServer.changeVisitorTo(tm);
             response.setSuccess(flag);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             response.setMsg(e.getMessage());
             response.setSuccess(false);
         }

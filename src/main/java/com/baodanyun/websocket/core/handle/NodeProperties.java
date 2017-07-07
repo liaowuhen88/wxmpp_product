@@ -2,7 +2,7 @@
 package com.baodanyun.websocket.core.handle;
 
 import com.baodanyun.websocket.util.IPDataHandler;
-import org.apache.log4j.Logger;
+import LoggerFactory.getLogger;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *//*
 
 public class NodeProperties {
-    protected static Logger logger = Logger.getLogger(NodeProperties.class);
+    protected static Logger logger = LoggerFactory.getLogger(NodeProperties.class);
     //属性过滤器
     public PropertiesFilter propertiesFilter;
 

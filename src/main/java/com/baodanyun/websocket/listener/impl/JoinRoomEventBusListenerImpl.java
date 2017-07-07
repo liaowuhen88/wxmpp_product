@@ -8,7 +8,8 @@ import com.baodanyun.websocket.service.MsgService;
 import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.google.common.eventbus.Subscribe;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JoinRoomEventBusListenerImpl extends AbstarctEventBusListener<JoinRoomEvent> implements EventBusListener<JoinRoomEvent> {
-    private static Logger logger = Logger.getLogger(JoinRoomEventBusListenerImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(JoinRoomEventBusListenerImpl.class);
 
     @Autowired
     private MsgSendControl msgSendControl;

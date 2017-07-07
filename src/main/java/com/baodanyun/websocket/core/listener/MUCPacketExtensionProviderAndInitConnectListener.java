@@ -7,12 +7,13 @@ import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.WebSocketService;
 import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.util.EventBusUtils;
-import org.apache.log4j.Logger;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Element;
 import org.jivesoftware.smack.provider.IQProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -25,7 +26,7 @@ import java.util.List;
  * 离线消息只包括文本，图片类型
  */
 public class MUCPacketExtensionProviderAndInitConnectListener extends IQProvider implements ConnectionListener {
-    private static Logger logger = Logger.getLogger(MUCPacketExtensionProviderAndInitConnectListener.class);
+    private static Logger logger = LoggerFactory.getLogger(MUCPacketExtensionProviderAndInitConnectListener.class);
     private List<JoinRoomEvent> rooms;
     private WebSocketService webSocketService;
     private MsgSendControl msgSendControl;
@@ -124,7 +125,7 @@ public class MUCPacketExtensionProviderAndInitConnectListener extends IQProvider
                         JoinRoomEvent je = new JoinRoomEvent(user, room);
                         rooms.add(je);
                     } catch (Exception e) {
-                        logger.error(e);
+                        logger.error("error", e);
                     }
                     this.rooms = rooms;
                     logger.info("account is " + account + " and room is " + room);

@@ -8,7 +8,8 @@ import com.baodanyun.websocket.model.LoginModel;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 public class CustomerLogin extends BaseController {
 
-    protected static Logger logger = Logger.getLogger(CustomerApi.class);
+    protected static Logger logger = LoggerFactory.getLogger(CustomerApi.class);
 
     @RequestMapping(value = "customerLogin")
     public ModelAndView customerLogin(LoginModel user, HttpServletRequest request, HttpServletResponse response) {

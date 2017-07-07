@@ -7,7 +7,8 @@ import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.HttpUtils;
 import com.baodanyun.websocket.util.JSONUtil;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 
 public class MessageSendToWeixin {
-    private static Logger logger = Logger.getLogger(MessageSendToWeixin.class);
+    private static Logger logger = LoggerFactory.getLogger(MessageSendToWeixin.class);
 
     public void send(Msg sendMsg, AbstractUser user) {
         send(sendMsg,user.getOpenId(),user.getId());

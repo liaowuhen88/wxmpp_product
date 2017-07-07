@@ -3,11 +3,12 @@ package com.baodanyun.websocket.core.listener;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.XmppService;
-import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.RosterListener;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
@@ -17,7 +18,7 @@ import java.util.Collection;
 
 
 public class UcRosterListener implements RosterListener {
-    private static Logger logger= Logger.getLogger(UcRosterListener.class);
+    private static Logger logger = LoggerFactory.getLogger(UcRosterListener.class);
     private MsgSendControl msgSendControl;
     private XmppService xmppService;
     private AbstractUser user;
@@ -55,7 +56,7 @@ public class UcRosterListener implements RosterListener {
             }*/
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
         }
 
     }
@@ -65,7 +66,7 @@ public class UcRosterListener implements RosterListener {
         try {
              vcard  = VCardManager.getInstanceFor(xmppService.getXMPPConnectionAuthenticated(user.getId())).loadVCard(Jid);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
         }
         return vcard;
     }

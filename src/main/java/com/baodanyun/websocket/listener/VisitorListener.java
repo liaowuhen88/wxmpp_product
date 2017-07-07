@@ -1,7 +1,8 @@
 package com.baodanyun.websocket.listener;
 
 import com.baodanyun.websocket.bean.user.Visitor;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class VisitorListener {
-    private static final Logger logger = Logger.getLogger(VisitorListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(VisitorListener.class);
 
     public void login(Visitor visitor){
 

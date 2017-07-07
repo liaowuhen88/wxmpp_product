@@ -9,7 +9,8 @@ import com.baodanyun.websocket.model.DoubaoFriends;
 import com.baodanyun.websocket.service.DoubaoFriendsService;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.util.JSONUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service("doubaoFriendsService")
 public class DoubaoFriendsServiceImpl implements DoubaoFriendsService {
-    private static Logger logger = Logger.getLogger(DoubaoFriendsServiceImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(DoubaoFriendsServiceImpl.class);
 
     // jid  不同的客服获取不同的用户列表
     private static Map<String, Map<String, DoubaoFriends>> map = new ConcurrentHashMap();
@@ -44,7 +45,7 @@ public class DoubaoFriendsServiceImpl implements DoubaoFriendsService {
                 logger.info("msg is null");
             }
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             throw new BusinessException("解析content异常");
         }
     }

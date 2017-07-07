@@ -7,7 +7,8 @@ import com.baodanyun.websocket.service.OfMessagearchiveService;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
 import com.github.pagehelper.PageInfo;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestController
 public class OfMessagearchiveConTroller extends BaseController {
-    protected static Logger logger = Logger.getLogger(OfMessagearchiveConTroller.class);
+    protected static Logger logger = LoggerFactory.getLogger(OfMessagearchiveConTroller.class);
     @Autowired
     private OfMessagearchiveService ofMessagearchiveService;
 

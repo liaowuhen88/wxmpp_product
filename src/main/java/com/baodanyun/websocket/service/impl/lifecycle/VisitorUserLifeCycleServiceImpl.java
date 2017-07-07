@@ -7,9 +7,10 @@ import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.MsgSendService;
 import com.baodanyun.websocket.util.CommonConfig;
-import org.apache.log4j.Logger;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.io.IOException;
  */
 @Service
 public abstract class VisitorUserLifeCycleServiceImpl extends UserLifeCycleServiceImpl {
-    private static final Logger logger = Logger.getLogger(VisitorUserLifeCycleServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(VisitorUserLifeCycleServiceImpl.class);
 
     @Override
     public boolean login(AbstractUser user) throws IOException, XMPPException, SmackException, BusinessException, InterruptedException {

@@ -4,14 +4,14 @@ package com.baodanyun.websocket.core.sender;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.core.handle.ISender;
 import com.baodanyun.websocket.util.XMPPUtil;
-import org.apache.log4j.Logger;
+import LoggerFactory.getLogger;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.concurrent.*;
 
 public class NormalSender implements ISender {
-    private static Logger logger = Logger.getLogger(NormalSender.class);
+    private static Logger logger = LoggerFactory.getLogger(NormalSender.class);
 
     private static final ExecutorService SEND_POOL = Executors.newCachedThreadPool();
 

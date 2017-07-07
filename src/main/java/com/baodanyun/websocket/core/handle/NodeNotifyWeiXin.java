@@ -9,7 +9,7 @@ import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.XmppServer;
 import com.baodanyun.websocket.util.SpringContextUtil;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import LoggerFactory.getLogger;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Message;
@@ -32,7 +32,7 @@ import java.util.List;
 
 
 public class NodeNotifyWeiXin implements INodeEvent {
-    protected static Logger logger = Logger.getLogger(LifeCycle.class);
+    protected static Logger logger = LoggerFactory.getLogger(LifeCycle.class);
     public XmppServer xmppServer = SpringContextUtil.getBean("xmppServer", XmppServer.class);
 
     private Node node;

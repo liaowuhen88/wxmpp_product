@@ -6,12 +6,16 @@ import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Customer;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.exception.BusinessException;
-import com.baodanyun.websocket.service.*;
+import com.baodanyun.websocket.service.UserCacheServer;
+import com.baodanyun.websocket.service.UserServer;
+import com.baodanyun.websocket.service.WebSocketService;
+import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.util.CommonConfig;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +30,7 @@ import java.util.*;
  */
 @RestController
 public class MonitorApi extends BaseController {
-    protected static Logger logger = Logger.getLogger(MonitorApi.class);
+    protected static Logger logger = LoggerFactory.getLogger(MonitorApi.class);
 
     @Autowired
     private WebSocketService webSocketService;
@@ -63,7 +67,7 @@ public class MonitorApi extends BaseController {
             response.setSuccess(true);
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error", e);
             response.setMsg(e.getMessage());
             response.setSuccess(false);
         }

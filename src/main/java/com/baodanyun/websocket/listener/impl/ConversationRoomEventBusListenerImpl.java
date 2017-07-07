@@ -12,7 +12,8 @@ import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import com.google.common.eventbus.Subscribe;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class ConversationRoomEventBusListenerImpl extends AbstarctEventBusListener<ConversationRoomEvent> implements EventBusListener<ConversationRoomEvent> {
-    private static Logger logger = Logger.getLogger(ConversationRoomEventBusListenerImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(ConversationRoomEventBusListenerImpl.class);
 
     private Map<String, Ofmucroom> mucs = new ConcurrentHashMap<>();
 
@@ -67,7 +68,7 @@ public class ConversationRoomEventBusListenerImpl extends AbstarctEventBusListen
 
                     }
                 } catch (Exception e) {
-                    logger.error(e);
+                    logger.error("error", e);
                 }
             }
         });

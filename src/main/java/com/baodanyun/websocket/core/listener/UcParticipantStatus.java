@@ -1,13 +1,14 @@
 package com.baodanyun.websocket.core.listener;
 
-import org.apache.log4j.Logger;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by liaowuhen on 2017/6/8.
  */
 public class UcParticipantStatus implements ParticipantStatusListener {
-    private static Logger logger = Logger.getLogger(UcParticipantStatus.class);
+    private static Logger logger = LoggerFactory.getLogger(UcParticipantStatus.class);
 
     @Override
     public void joined(String participant) {

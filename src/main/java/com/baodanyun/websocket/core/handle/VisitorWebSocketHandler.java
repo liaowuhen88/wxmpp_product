@@ -39,7 +39,7 @@ public class VisitorWebSocketHandler extends AbstractWebSocketHandler {
             String content = message.getPayload();
             userLifeCycleService.receiveMessage(visitor,content);
         }catch (Exception e){
-            logger.info(e);
+            logger.info("", e);
         }
 
 

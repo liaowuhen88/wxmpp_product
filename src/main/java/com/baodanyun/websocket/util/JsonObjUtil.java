@@ -1,17 +1,16 @@
 package com.baodanyun.websocket.util;
 
+import com.google.gson.Gson;
+import org.apache.http.protocol.HTTP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
-
-import com.google.gson.Gson;
 
 /**
  * 
@@ -20,7 +19,7 @@ import com.google.gson.Gson;
  */
 public class JsonObjUtil {
 
-	private static final Logger logger = Logger.getLogger(JsonObjUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(JsonObjUtil.class);
 
 	private static final String DEFAULT_ENCODE = HTTP.UTF_8;
 
