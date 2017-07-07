@@ -2,6 +2,7 @@ package com.baodanyun.websocket.controller;
 
 import com.baodanyun.websocket.bean.Response;
 import com.baodanyun.websocket.bean.UserSetPW;
+import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by yutao on 2016/10/10.
@@ -197,6 +199,56 @@ public class CustomerApi extends BaseController {
         }
         Render.r(httpServletResponse, JSONUtil.toJson(response));
     }
+
+    /**
+     * 关闭访客
+     *
+     * @param httpServletResponse
+     */
+
+    @RequestMapping(value = "visitorList")
+    public void visitorList(HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        Response response = new Response();
+        try {
+            AbstractUser cu = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
+
+            Map<String, ConversationMsg> map = conversationService.get(cu.getId());
+
+            response.setData(map.keySet());
+            response.setSuccess(true);
+
+        } catch (Exception e) {
+            logger.error(e);
+            response.setSuccess(false);
+        }
+        Render.r(httpServletResponse, JSONUtil.toJson(response));
+    }
+
+    /**
+     * 关闭访客
+     *
+     * @param httpServletResponse
+     */
+
+    @RequestMapping(value = "getConversation")
+    public void getConversation(String from, HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        Response response = new Response();
+        try {
+            AbstractUser cu = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
+            Map<String, ConversationMsg> map = conversationService.get(cu.getId());
+
+            ConversationMsg cm = map.get(from);
+
+            response.setData(cm);
+            response.setSuccess(true);
+
+        } catch (Exception e) {
+            logger.error(e);
+            response.setSuccess(false);
+        }
+        Render.r(httpServletResponse, JSONUtil.toJson(response));
+    }
+
 
 
     /**

@@ -59,7 +59,9 @@ xchat.interface = {
     updateUserInfo: base + '/api/upVisitorInfo',
     getTagsAll: base + '/api/getTagsAll',
     changeProfile: base + '/api/upCustomerInfo',
-    closeFriendWindow: base + '/api/closeFriendWindow'
+    closeFriendWindow: base + '/api/closeFriendWindow',
+    getConversation: base + '/api/getConversation'
+
 };
 /*=====================================================================================初始化=====================================================================================*/
 //登录成功
@@ -138,6 +140,7 @@ xchat.closeFriendWindow = function () {
 //接收到消息
 xchat.recvMsgEvent = function (json) {
     // 是否打开当前窗口
+    var _this = this;
     if (json.from != window.destJid) {
         // 未打开当前窗口
         if (jQuery.inArray(json.from, this.recvMsg) == -1) {
@@ -146,6 +149,27 @@ xchat.recvMsgEvent = function (json) {
             $(this.controls.waitReplyPerson).html(this.recvMsg.length);
         }
 
+        var li = document.getElementById(json.from);
+        if (li) {
+            console.log("exit");
+        } else {
+
+            $.ajax({
+                url: _this.interface.getConversation + "?from=" + json.from,
+                type: 'GET',
+                timeout: 3000,
+                success: function (res) {
+                    if (res.success) {
+                        _this.onlineQueueSuccessStatusHandelEvent(res.data);
+                        //_this.userLabelComb(res.data);
+                    }
+                },
+                error: function () {
+                    $(_this.controls.userTags).html('获取会话消息失败');
+                }
+            });
+            console.log("not exit");
+        }
         // 新消息移动到表头
         $('#friendList').find('li').each(function () {
             if($(this).attr('id')===json.from){
@@ -321,6 +345,13 @@ xchat.offlineWaitQueueStatusHandelEvent = function (json) {
     myUtils.renderQueue(json.from, 'historyFriendList', 'down');
     myUtils.renderQueue(json.from, 'friendList', 'down');
 };
+
+//客服下线后调用
+xchat.customerOfflineStatusHandelEvent = function () {
+    this.alertShow('托管微信已下线，请你重新登录');
+};
+
+
 //用户下线
 xchat.offlineStatusHandelEvent = function (json) {
     myUtils.renderQueue(json.from, 'friendList', 'remove');
@@ -364,7 +395,6 @@ xchat.loadChatList = function () {
             if (json.data) {
                 for (var i = 0; i < json.data.length; i++) {
                     var friend = json.data[i];
-                    friend.from = friend.id;
                     if (friend.icon === undefined || friend.icon === '') {
                         friend.icon = _this.controls.defaultAvatar;
                     }

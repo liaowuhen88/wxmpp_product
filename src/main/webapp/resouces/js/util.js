@@ -362,7 +362,7 @@ Utils = (function () {
                 msgList = [];
                 msgList.push(data);
             } else {
-                if (storeList.length >= 200) {
+                if (storeList.length >= 80) {
                     storeList.shift();
                 }
                 storeList.push(data);

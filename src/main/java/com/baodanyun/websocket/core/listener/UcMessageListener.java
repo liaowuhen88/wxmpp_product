@@ -1,5 +1,6 @@
 package com.baodanyun.websocket.core.listener;
 
+import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.model.Ofmucroom;
@@ -60,11 +61,11 @@ public class UcMessageListener implements MessageListener {
             } else {
                 logger.info(" user {}, room {} notExist", user.getId(), realRoom);
                 Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(realRoom));
-                Msg msgConversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId());
+                ConversationMsg msgConversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId());
                 logger.info(JSONUtil.toJson(msgConversation));
-                msgSendControl.sendMsg(msgConversation);
+                // msgSendControl.sendMsg(msgConversation);
 
-                conversationService.addConversations(user.getId(), realRoom);
+                conversationService.addConversations(user.getId(), msgConversation);
 
             }
 

@@ -11,12 +11,12 @@ public class UcParticipantStatus implements ParticipantStatusListener {
 
     @Override
     public void joined(String participant) {
-        logger.info("joined" + participant);
+        logger.info("joined————————" + participant);
     }
 
     @Override
     public void left(String participant) {
-        logger.info("left" + participant);
+        logger.info("left-----------" + participant);
     }
 
     @Override

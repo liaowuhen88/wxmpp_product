@@ -36,6 +36,12 @@ public abstract  class CustomerUserLifeCycleServiceImpl extends UserLifeCycleSer
     }
 
     @Override
+    public void logout(AbstractUser user) throws InterruptedException {
+        super.logout(user);
+        getMsgSendService().sendSMMsgToCustomer(user, StatusMsg.Status.customerOffline);
+    }
+
+    @Override
     public boolean init(AbstractUser user) throws InterruptedException, SmackException.NotLoggedInException, BusinessException, XMPPException.XMPPErrorException, SmackException.NotConnectedException, SmackException.NoResponseException {
         Customer customer = (Customer) user;
 

@@ -1,5 +1,6 @@
 package com.baodanyun.websocket.service.impl;
 
+import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
@@ -35,9 +36,10 @@ public class MsgServiceImpl implements MsgService {
     }
 
     @Override
-    public Msg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to) {
+    public ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to) {
         String realRoom = XMPPUtil.removeRoomSource(room);
-        StatusMsg sm = new StatusMsg();
+        ConversationMsg sm = new ConversationMsg();
+        sm.setKey(realRoom);
         sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
         sm.setType(Msg.Type.status.toString());
         sm.setLoginTime(new Date().getTime());
@@ -57,9 +59,10 @@ public class MsgServiceImpl implements MsgService {
     }
 
     @Override
-    public Msg getNewPersionalJoines(String realFrom, AbstractUser user, Msg cloneMsg) {
+    public ConversationMsg getNewPersionalJoines(String realFrom, AbstractUser user, Msg cloneMsg) {
 
-        StatusMsg sm = new StatusMsg();
+        ConversationMsg sm = new ConversationMsg();
+        sm.setKey(realFrom);
         sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
         sm.setType(Msg.Type.status.toString());
         sm.setLoginTime(System.currentTimeMillis());
@@ -95,6 +98,5 @@ public class MsgServiceImpl implements MsgService {
         }
         return vcard;
     }
-
 
 }

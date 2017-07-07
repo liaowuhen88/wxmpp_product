@@ -1,5 +1,6 @@
 package com.baodanyun.websocket.core.listener;
 
+import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.service.ConversationService;
@@ -55,9 +56,9 @@ public class InitChatMessageListener implements ChatMessageListener {
                 } else {
                     logger.info(" user {}, realFrom {} notExist", user.getId(), realFrom);
                     Msg cloneMsg = (Msg) SerializationUtils.clone(sendMsg);
-                    Msg conversation = msgService.getNewPersionalJoines(realFrom, user, cloneMsg);
-                    msgSendControl.sendMsg(conversation);
-                    conversationService.addConversations(user.getId(), realFrom);
+                    ConversationMsg conversation = msgService.getNewPersionalJoines(realFrom, user, cloneMsg);
+                    //msgSendControl.sendMsg(conversation);
+                    conversationService.addConversations(user.getId(), conversation);
                 }
 
                 sendMsg.setOpenId(user.getOpenId());
