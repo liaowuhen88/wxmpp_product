@@ -221,6 +221,7 @@ var xChat = function (options) {
                                     }
                                     msg.to = destJid;
                                     msg.from = window.currentId;
+                                    msg.fromType = window.fromType;
                                     send();
                                     msg.time = myUtils.formatDate(new Date(msg.ct));
                                     msg.src = msg.to;
@@ -436,7 +437,7 @@ var xChat = function (options) {
             if (topType) {
                 var type = data.contentType || data.actionType || data.status;
                 var objList = _events.call(_this)[topType];
-                if(topType == "msg"){
+                if (topType == "msg") {
                     _this.recvMsgEvent(data);
                 }
 
@@ -480,10 +481,10 @@ var xChat = function (options) {
         };
     };
 
-    var disConnect = function(){
-        setTimeout(function(){
+    var disConnect = function () {
+        setTimeout(function () {
             this.connect();
-        },5000);
+        }, 5000);
     }
 
     //销毁ws
@@ -511,7 +512,7 @@ var xChat = function (options) {
     };
 
 //
-    this.uploadAvatar = function (id, uploadPath,fn) {
+    this.uploadAvatar = function (id, uploadPath, fn) {
         $.avatarUploader({
             "uploaderId": id,
             "isMultiple": false,
@@ -528,8 +529,8 @@ var xChat = function (options) {
             success: function (file, response) {
                 console.log(file);
                 console.log(response);
-                if(fn){
-                    fn.call(this,response);
+                if (fn) {
+                    fn.call(this, response);
                 }
             }
         });
