@@ -6,6 +6,7 @@ import com.baodanyun.websocket.bean.Response;
 import com.baodanyun.websocket.listener.VisitorListener;
 import com.baodanyun.websocket.model.MessageModel;
 import com.baodanyun.websocket.service.MessageServer;
+import com.baodanyun.websocket.util.AccessControlAllowUtils;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
 import org.apache.commons.lang.StringUtils;
@@ -66,6 +67,8 @@ public class MessageApi extends BaseController {
             response.setMsg("getTagsAll error");
             response.setSuccess(false);
         }
+
+        AccessControlAllowUtils.access(httpServletResponse);
         Render.r(httpServletResponse, JSONUtil.toJson(response));
     }
 
@@ -92,6 +95,8 @@ public class MessageApi extends BaseController {
             response.setMsg("getTagsAll error");
             response.setSuccess(false);
         }
+
+        AccessControlAllowUtils.access(httpServletResponse);
         Render.r(httpServletResponse, JSONUtil.toJson(response));
     }
 
@@ -102,7 +107,8 @@ public class MessageApi extends BaseController {
             if (StringUtils.isEmpty(message.addCheck())) {
                 int stu = messageServer.addMessage(message);
                 visitorListener.leaveMessage(message.getPhone(), message.getContent());
-                response.setData(stu);
+                response.setData(message);
+                response.setCode(stu);
                 response.setSuccess(true);
             } else {
                 response.setMsg(message.addCheck());
@@ -113,6 +119,8 @@ public class MessageApi extends BaseController {
             response.setMsg("update error");
             response.setSuccess(false);
         }
+
+        AccessControlAllowUtils.access(httpServletResponse);
         Render.r(httpServletResponse, JSONUtil.toJson(response));
     }
 

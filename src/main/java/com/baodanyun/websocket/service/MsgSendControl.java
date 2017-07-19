@@ -124,8 +124,9 @@ public class MsgSendControl {
         sendMsg.setFrom(from);
         sendMsg.setTo(to);
         sendMsg.setCt(ct);
+        sendMsg.setIcon(user.getIcon());
         // 获取发送端用户
-        AbstractUser u = userServer.getUser(from);
+       /* AbstractUser u = userServer.getUser(from);
         if (StringUtils.isEmpty(u.getIcon())) {
             logger.info("user " + from + "----------user icon is null");
         } else {
@@ -135,7 +136,7 @@ public class MsgSendControl {
             logger.info("user " + from + "----------user NickName is null");
         } else {
             sendMsg.setFromName(u.getNickName());
-        }
+        }*/
         return sendMsg;
     }
 

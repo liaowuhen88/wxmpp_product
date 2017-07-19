@@ -2,14 +2,10 @@ package com.baodanyun.websocket.model;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.sql.Date;
-
 /**
  * Created by liaowuhen on 2016/11/15.
  */
 public class MessageModel extends PageModel {
-
-    private Integer id;
     private String openId; // 微信唯一标识
     private String cid; // 客服id
     private String username; // 留言人

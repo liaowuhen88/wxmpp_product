@@ -33,7 +33,7 @@ public class CloseFriendWindowApi extends BaseController {
     @RequestMapping(value = "closeFriendWindow", method = RequestMethod.POST)
     public void keepOnline(String jid, HttpServletRequest request, HttpServletResponse httpServletResponse) {
         Customer customer = (Customer) request.getSession().getAttribute(Common.USER_KEY);
-        doubaoFriendsService.deleteByFriendJname(customer.getId(),jid);
+       /* doubaoFriendsService.deleteByFriendJname(customer.getId(),jid);*/
         Response response = new Response();
         response.setSuccess(true);
 

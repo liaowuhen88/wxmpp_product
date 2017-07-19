@@ -1,15 +1,15 @@
 package com.baodanyun.websocket.controller;
 
-import com.baodanyun.websocket.bean.*;
+import com.baodanyun.websocket.bean.ChatHistoryUser;
+import com.baodanyun.websocket.bean.MessageUser;
+import com.baodanyun.websocket.bean.PageResponse;
+import com.baodanyun.websocket.bean.Response;
 import com.baodanyun.websocket.bean.msg.HistoryMsg;
-import com.baodanyun.websocket.dao.ArchiveMessagesMapper;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.HistoryMessageModel;
 import com.baodanyun.websocket.model.HistoryMessageUserModel;
-import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.service.ArchiveMessagesServer;
 import com.baodanyun.websocket.service.MessageHistoryService;
-import com.baodanyun.websocket.util.JSONUtil;
 import com.mysql.jdbc.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +21,9 @@ import java.util.Map;
 
 /**
  * Created by liaowuhen on 2016/10/18.
+ *
+ * 低版本
+ *
  */
 @RestController
 @RequestMapping("messageHistory")
@@ -31,8 +34,6 @@ public class MessageHistoryApi extends BaseController {
 
     @Autowired
     private ArchiveMessagesServer archiveMessagesServer;
-
-
 
     @RequestMapping(value = "query")
     public Response query(HistoryMessageModel model) {

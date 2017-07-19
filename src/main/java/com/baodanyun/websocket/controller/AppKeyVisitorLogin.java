@@ -4,10 +4,12 @@ import com.baodanyun.websocket.bean.Response;
 import com.baodanyun.websocket.bean.request.AppKeyVisitorLoginBean;
 import com.baodanyun.websocket.bean.user.AppCustomer;
 import com.baodanyun.websocket.bean.user.Visitor;
+import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.AppKeyService;
 import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.service.XmppUserOnlineServer;
+import com.baodanyun.websocket.util.AccessControlAllowUtils;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
@@ -53,7 +55,7 @@ public class AppKeyVisitorLogin extends BaseController {
             Visitor visitor = appKeyService.getVisitor(re, customer.getToken());
 
             visitor.setCustomer(customer);
-
+            request.getSession().setAttribute(Common.USER_KEY, visitor);
             boolean flag = customerOnline(customer.getId());
             if (flag) {
                 getOnline(responseMsg, customer);
@@ -68,9 +70,7 @@ public class AppKeyVisitorLogin extends BaseController {
             responseMsg.setMsg(e.getMessage());
         }
 
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-
+        AccessControlAllowUtils.access(response);
         Render.r(response, XMPPUtil.buildJson(responseMsg));
     }
 

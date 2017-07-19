@@ -104,14 +104,18 @@
 				<xmpp.domain>126xmpp</xmpp.domain>
 
 				<jdbc_driverClassName>com.mysql.jdbc.Driver</jdbc_driverClassName>
-				<jdbc_username>xmpp_nanjing</jdbc_username>
-				<jdbc_password>XE9b7Uuv7n98ohfw</jdbc_password>
+				<jdbc_username>kefu_nj_test</jdbc_username>
+				<jdbc_password>3rtPdzdb7Mzgu33Z</jdbc_password>
 				<jdbc_url>
-					<![CDATA[jdbc:mysql://rdsws48qxoud80xy741g.mysql.rds.aliyuncs.com:3306/xmpp_nanjing?useUnicode=true&amp;characterEncoding=UTF-8]]></jdbc_url>
+					<![CDATA[jdbc:mysql://rm-2ze42mo3egs0210g0.mysql.rds.aliyuncs.com/kefu_nanjing_test?useUnicode=true&amp;characterEncoding=utf8]]></jdbc_url>
 
 				<control.id>zwv11132</control.id>
 
 				<broker.url>tcp://101.200.87.16:61616</broker.url>
+
+				<!-- 根据appKey获取客服接口 -->
+
+				<appKey.url>http://xv.wifigx.com/api/webinit</appKey.url>
 			</properties>
 		</profile>
 
@@ -144,16 +148,26 @@
 				<weiXin.callback></weiXin.callback>
 
 				<!--数据库 -->
-				<jdbc_driverClassName>com.mysql.jdbc.Driver</jdbc_driverClassName>
+				<!--<jdbc_driverClassName>com.mysql.jdbc.Driver</jdbc_driverClassName>
 				<jdbc_username>product_admin</jdbc_username>
 				<jdbc_password>JfpooyGTqfxzMm5N</jdbc_password>
 				<jdbc_url>
 					<![CDATA[jdbc:mysql://rm-2ze15w77o950l031o.mysql.rds.aliyuncs.com/product?useUnicode=true&amp;characterEncoding=UTF-8]]></jdbc_url>
+-->
+				<jdbc_driverClassName>com.mysql.jdbc.Driver</jdbc_driverClassName>
+				<jdbc_username>kefu_nanjing</jdbc_username>
+				<jdbc_password>ZawhN07PvVEJbaWZ</jdbc_password>
+				<jdbc_url>
+					<![CDATA[jdbc:mysql://rm-2ze42mo3egs0210g0.mysql.rds.aliyuncs.com/kefu_nanjing?useUnicode=true&amp;characterEncoding=utf8]]></jdbc_url>
 
 				<!--客服总台jid-->
 				<control.id>wangmeng</control.id>
 				<!-- mq 地址-->
 				<broker.url>tcp://localhost:61616</broker.url>
+
+				<!-- 根据appKey获取客服接口 -->
+
+				<appKey.url>http://api.xvkefu.com/api/webinit</appKey.url>
 			</properties>
 		</profile>
 

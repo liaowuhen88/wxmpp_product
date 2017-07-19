@@ -46,9 +46,11 @@ public class LoginFilter implements Filter {
         if (uri.startsWith(request.getContextPath() + "/resouces")
                 //这个api需要放出来
                 || uri.startsWith(request.getContextPath() + "/api/receiveMsg")
+                || uri.startsWith(request.getContextPath() + "/api/addMessage")
                 || uri.startsWith(request.getContextPath() + "/appKeyCheck")
                 || uri.startsWith(request.getContextPath() + "/api/findLoginImage")
                 || uri.startsWith(request.getContextPath() + "/api/loginApi")
+                || uri.startsWith(request.getContextPath() + "/sockjs/newVisitor")
                 || uri.startsWith(request.getContextPath() + "/visitorlogin")
                 || uri.startsWith(request.getContextPath() + "/visitor")
                 || uri.startsWith(request.getContextPath() + "/api/customerLogin")) {

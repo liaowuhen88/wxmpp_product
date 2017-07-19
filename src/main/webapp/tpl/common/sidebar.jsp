@@ -22,9 +22,9 @@
             <li data-toggle="tooltip" data-placement="right" title="历史记录" id="historyBtn">
                 <a href="javascript:void(0);"><i class="nav-icon icon-history"></i></a>
             </li>
-           <%-- <li data-toggle="tooltip" data-placement="right" title="用户留言" id="leaveMessageBtn">
+         <li data-toggle="tooltip" data-placement="right" title="用户留言" id="leaveMessageBtn">
                 <a href="javascript:void(0);"><i class="nav-icon icon-visitor"></i></a>
-            </li>--%>
+            </li>
             <%--<li data-toggle="tooltip" data-placement="right" title="报表">
               <a href="#"><i class="nav-icon icon-report"></i></a>
             </li>--%>

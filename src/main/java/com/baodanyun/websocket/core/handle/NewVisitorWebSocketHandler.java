@@ -42,6 +42,7 @@ public class NewVisitorWebSocketHandler extends VisitorWebSocketHandler {
                 userLifeCycleService.online(visitor);
             }
             sessions.put(session.getId(), sendToken);
+            webSocketService.saveSession(visitor.getId(), session);
         }
 
     }
@@ -49,6 +50,7 @@ public class NewVisitorWebSocketHandler extends VisitorWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         logger.info("session is open --- ip:[" + session.getLocalAddress() + "]---- sessionId:[" + session.getId() + "]  ");
+
     }
 
 

@@ -561,16 +561,16 @@ public class XMPPConnectionClientTest {
 
     }
 
-    public void createRoom(String realname, String room, String nickname) throws Exception {
+    @Test
+    public void createRoom() throws Exception {
         try {
-            MultiUserChatManager mcm = MultiUserChatManager.getInstanceFor(conn);
-            MultiUserChat muc = mcm.getMultiUserChat(room);
+            login();
+            MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(conn);
+            MultiUserChat muc = manager.getMultiUserChat("zzzxx@conference.126xmpp");
 
             //创建聊天室
             muc.create("testbot");
-
             // 发送一个空表单配置这显示我们想要一个instant room
-
             // 获得聊天室的配置表单
             Form form = muc.getConfigurationForm();
             // 根据原始表单创建一个要提交的新表单。
@@ -606,15 +606,19 @@ public class XMPPConnectionClientTest {
             // 允许用户注册房间
             submitForm.setAnswer("x-muc#roomconfig_registration", false);
             // 发送已完成的表单（有默认值）到服务器来配置聊天室
+            // 群描述
+            //submitForm.setAnswer("muc#roomconfig_roomdesc", "₁₈₂₅₁₈₈₀₈₈₁我是ASO加");
+            submitForm.setAnswer("muc#roomconfig_roomdesc", "我是加₁₈₂₅₁₈₈₀₈₈₁");
             muc.sendConfigurationForm(submitForm);
 
             // 假如聊天室
-            muc.join("test");
+            //muc.join("test");
             //enter(realname,room,nickname);
 
 
             System.out.println("会议室加入成功........");
 
+            muc = manager.getMultiUserChat("bbb@conference.126xmpp");
         } catch (XMPPException e) {
             e.printStackTrace();
         }
