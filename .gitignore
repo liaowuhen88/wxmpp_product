@@ -95,3 +95,6 @@ wxmpp.iml
 src/main/webapp/resouces/exam/stylesheets/.svn/
 Wou
 ld remove src/main/webapp/resouces/images/.svn/
+src/main/java/com/baodanyun/websocket/bean/apiBean/
+src/test/java/com/baodanyun/websocket/
+target/

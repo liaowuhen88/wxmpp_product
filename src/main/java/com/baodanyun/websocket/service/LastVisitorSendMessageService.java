@@ -3,10 +3,10 @@ package com.baodanyun.websocket.service;
 import com.baodanyun.websocket.bean.LastSendMessage;
 import com.baodanyun.websocket.model.Transferlog;
 import com.baodanyun.websocket.util.DateUtils;
-import com.baodanyun.websocket.util.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -23,12 +23,10 @@ public class LastVisitorSendMessageService {
     // 保存访客最后一次发送消息的时间戳
     public static final int ninater = 5;
     public static final long delayTime = 1000 * 60 * ninater;
-    public static final String toJid = PropertiesUtil.get(LastVisitorSendMessageService.class.getClassLoader(), "config.properties").get("control-id");
-
     public final static Map<String, LastSendMessage> map = new ConcurrentHashMap<>();
-
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    @Value("${control-id}")
+    public String toJid;
     @Autowired
     private TransferServer transferServer;
 

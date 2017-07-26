@@ -1,4 +1,46 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<style>
+    .file-msg {
+        display: block;
+        width: 200px;
+        height: 60px;
+        margin: -8px -12px;
+        position: relative;
+        text-decoration: none;
+    }
+
+    .file-msg:after {
+        content: 'File';
+        position: absolute;
+        top: 0;
+        right: 5px;
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+        text-align: center;
+        background-color: #fff;
+        color: #999;
+    }
+
+    .file-msg h1.file-name {
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 35px;
+        padding: 0 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 100px;
+        text-decoration: none;
+    }
+
+    .file-msg .file-size {
+        background: #eee;
+        font-size: 12px;
+        color: #666;
+        height: 25px;
+        padding: 0 10px;
+    }
+</style>
 <%--alert--%>
 <script id="alert" type="text/html">
     <div class="alert" id="look_history">查看漫游历史记录</div>
@@ -18,7 +60,23 @@
         <span class="time">{{time}}</span>
         <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
         </div>--%>
-        <span class="message"><a href="{{content}}" rel="lightbox" ><img src="{{content}}" alt=""></a></span>
+        <span class="message"><a href="{{href}}" rel="lightbox"><img src="{{content}}" alt=""></a></span>
+    </div>
+</script>
+
+<script id="attachmentLeft" type="text/html">
+    <div class="timeline timeline-from" id="{{id}}">
+        <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
+        <span class="time">{{time}}</span>
+        <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
+        </div>--%>
+        <span class="message">
+            <a class="file-msg" href="{{content}}">
+                <h1 class="file-name">文件名:{{name}}</h1>
+
+                <div class="file-size">大小:{{size}}</div>
+            </a>
+        </span>
     </div>
 </script>
 
@@ -64,7 +122,21 @@
         <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
         <span class="time">{{time}}</span>
         <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">--%>
-        <span class="message"><a href="{{content}}" rel="lightbox" ><img src="{{content}}" alt=""></a></span>
+        <span class="message"><a href="{{href}}" rel="lightbox"><img src="{{content}}" alt=""></a></span>
+    </div>
+    </div>
+</script>
+
+<script id="attachmentRight" type="text/html">
+    <div class="timeline timeline-go" id="{{id}}">
+        <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
+        <span class="time">{{time}}</span>
+        <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">--%>
+        <span class="message"><a class="file-msg" href="{{content}}">
+            <h1 class="file-name">文件名:{{name}}</h1>
+
+            <div class="file-size">大小:{{size}}</div>
+        </a></span>
     </div>
     </div>
 </script>

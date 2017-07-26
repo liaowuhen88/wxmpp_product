@@ -15,6 +15,8 @@
     <link type="text/css" href="<%=request.getContextPath()%>/resouces/js/webuploader/css/webuploader.css"/>
     <script src="<%=request.getContextPath()%>/resouces/js/webuploader/webuploader.js"></script>
     <script src="<%=request.getContextPath()%>/resouces/js/webuploader/uploadimg.js"></script>
+    <script src="<%=request.getContextPath()%>/resouces/js/webuploader/uploadAttachment.js"></script>
+
     <script src="<%=request.getContextPath()%>/resouces/ajax/common.js"></script>
     <script src="<%=request.getContextPath()%>/resouces/scripts/laypage/laypage.js"></script>
     <script src="<%=request.getContextPath()%>/resouces/scripts/chat.js"></script>

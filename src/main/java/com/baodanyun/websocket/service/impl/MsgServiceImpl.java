@@ -43,7 +43,8 @@ public class MsgServiceImpl implements MsgService {
         sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
         sm.setType(Msg.Type.status.toString());
         sm.setLoginTime(new Date().getTime());
-
+        //
+        sm.setIcon("http://vipkefu.oss-cn-shanghai.aliyuncs.com/vvZhuShou/" + realRoom + ".jpg");
         sm.setFromType(Msg.fromType.group);
         sm.setFrom(realRoom);
         sm.setTo(to);

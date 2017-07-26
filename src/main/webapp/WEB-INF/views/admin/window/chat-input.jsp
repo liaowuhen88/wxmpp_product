@@ -3,7 +3,8 @@
     <ul class="tools">
         <%--<li data-toggle="tooltip" data-placement="top" title="表情"><i class="tools-icon icon-emoji"></i></li>--%>
         <li data-toggle="tooltip" data-placement="top" title="图像"><i class="tools-icon icon-image" id="imgUploader"></i></li>
-        <%--<li data-toggle="tooltip" data-placement="top" title="文件"><i class="tools-icon icon-file"></i></li>--%>
+        <li data-toggle="tooltip" data-placement="top" title="文件"><i class="tools-icon icon-file"
+                                                                     id="attachmentUploader"></i></li>
         <%--<li data-toggle="tooltip" data-placement="top" title="评价"><i class="tools-icon icon-invite" id="modal"></i></li>--%>
     </ul>
 

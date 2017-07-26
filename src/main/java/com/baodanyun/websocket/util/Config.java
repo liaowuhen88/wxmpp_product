@@ -18,14 +18,23 @@ public class Config {
     public static final String appSecret;
     public static final String appKey;
     public static final String mallInfoInterface;
+    public static final String upload_prefix;
+    public static final String nev;
     public static final String weiXinCallback;
     public static final String controlId;
+    public static final String privateBody;
+    public static final String publicBody;
+    public static final String appKeyUrl;
+
+
 
     static {
         Properties p = new Properties();
         InputStream inputStream = null;
         try {
-             inputStream = Config.class.getResourceAsStream("/config.properties");
+            inputStream = Config.class.getResourceAsStream("/spring-config.properties");
+            p.load(inputStream);
+            inputStream = Config.class.getResourceAsStream("/spring-oss.properties");
             p.load(inputStream);
 
         } catch (IOException e) {
@@ -53,6 +62,11 @@ public class Config {
         appKey = p.getProperty("user.info.appKey");
         weiXinCallback = p.getProperty("weiXin.callback");
         controlId = p.getProperty("control.id");
+        nev = p.getProperty("nev");
+        upload_prefix = p.getProperty("upload_prefix");
+        privateBody = p.getProperty("bj.bdy.private");
+        publicBody = p.getProperty("bj.bdy.public");
+        appKeyUrl = p.getProperty("appKey.url");
 
     }
 }

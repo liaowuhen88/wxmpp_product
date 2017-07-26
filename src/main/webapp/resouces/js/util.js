@@ -134,6 +134,8 @@ Utils = (function () {
                 if (item.from == currentId) {
                     if (item.contentType == 'image') {
                         commentTpl = $('#imgRight').html();
+                    } else if (item.contentType == 'attachment') {
+                        commentTpl = $('#attachmentRight').html();
                     } else {
                         commentTpl = $('#mright').html();
                     }
@@ -212,7 +214,12 @@ Utils = (function () {
     };
 
     Utils.prototype.updateImageSrc = function updateImageSrc(id, value) {
-        $(document.getElementById(id)).find(".content").find("img").attr("src", value);
+        //$(document.getElementById(id)).find(".content").find("img").attr("src", value);
+        $(document.getElementById(id)).find(".content").find("a").attr("href", value);
+    };
+
+    Utils.prototype.updateAttachmentSrc = function updateImageSrc(id, value) {
+        //$(document.getElementById(id)).find(".content").find("img").attr("src", value);
         $(document.getElementById(id)).find(".content").find("a").attr("href", value);
     };
 

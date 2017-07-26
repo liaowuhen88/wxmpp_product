@@ -34,7 +34,7 @@
             '<span style="vertical-align: middle; display: inline-block; height: 100%;"></span>' +
             '<img id="img' + file.id + '"  title="' + file.name + '" src="' + window.base + '/resources/images/loading_.gif" /> ' +
             '<div id="wart" style="position:absolute;z-index:99;left:5px;top:10px;"><span style="color: blue">图片正在上传.请等待...</span><div>' +
-            '</div>')
+                '</div>');
         },
         _showError: function (code) {
             //$('body').hideLoading();

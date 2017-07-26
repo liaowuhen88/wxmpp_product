@@ -408,6 +408,7 @@ public class XMPPConnectionClientTest {
                 msg1.setBody("http://duobaojl.oss-cn-hangzhou.aliyuncs.com/wechat2017/2418708985930446407.mp3");
                 msg1.setFrom(realName1);
                 msg1.setSubject("audio");
+                //msg1.setStanzaId("000001");
                 conn.sendStanza(msg1);
 
             /*  Message msg2 = new Message();
@@ -567,7 +568,6 @@ public class XMPPConnectionClientTest {
             login();
             MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(conn);
             MultiUserChat muc = manager.getMultiUserChat("zzzxx@conference.126xmpp");
-
             //创建聊天室
             muc.create("testbot");
             // 发送一个空表单配置这显示我们想要一个instant room
@@ -614,8 +614,6 @@ public class XMPPConnectionClientTest {
             // 假如聊天室
             //muc.join("test");
             //enter(realname,room,nickname);
-
-
             System.out.println("会议室加入成功........");
 
             muc = manager.getMultiUserChat("bbb@conference.126xmpp");

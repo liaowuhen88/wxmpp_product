@@ -1,8 +1,14 @@
 package com.baodanyun.websocket.service;
 
 import com.baodanyun.websocket.bean.msg.Msg;
+import com.baodanyun.websocket.event.ComputationalCostsEvent;
+import com.baodanyun.websocket.event.MessageArchiveAdapterEvent;
+import com.baodanyun.websocket.model.MessageArchiveAdapter;
+import com.baodanyun.websocket.service.impl.JedisServiceImpl;
+import com.baodanyun.websocket.util.EventBusUtils;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
+import org.apache.commons.lang.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +28,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Service
 public class WebSocketService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Map<String, WebSocketSession> WEB_SOCKET_SESSION_MAP = new ConcurrentHashMap<>();
+    BlockingQueue<Msg> basket = new LinkedBlockingQueue<>(100);
     /**
      * key 为用户id
      */
     @Autowired
     private XmppService xmppService;
-
-    private final Map<String, WebSocketSession> WEB_SOCKET_SESSION_MAP = new ConcurrentHashMap<>();
-
-    BlockingQueue<Msg> basket = new LinkedBlockingQueue<>(100);
+    @Autowired
+    private JedisService jedisService;
 
     // 生产消息，放入篮子
     public void produce(Msg msg) throws InterruptedException {
@@ -137,20 +143,55 @@ public class WebSocketService {
             logger.info("jid:[" + jid + "] session is closed or session is null");
             return false;
         }
-
     }
 
     private boolean send(String jid, Msg msg) {
-        String content = XMPPUtil.buildJson(msg);
-        return send(jid, content);
-    }
-
-    private boolean send(String jid, String content) {
 
         try {
             if (isConnected(jid)) {
                 WebSocketSession webSocketSession = getWebSocketSession(jid);
+                if (Msg.Type.msg.toString().equals(msg.getType())) {
+                    String status = jedisService.getFromMap(JedisServiceImpl.displayStatus, msg.getTo());
+
+                    if ("1".equals(status)) {
+                        //TODO 计费接口
+                        Msg clone = (Msg) SerializationUtils.clone(msg);
+                        ComputationalCostsEvent cce = new ComputationalCostsEvent(jid, clone);
+                        EventBusUtils.post(cce);
+
+                    } else {
+                        /**
+                         * 消息加密
+                         */
+                        MessageArchiveAdapter ma = new MessageArchiveAdapter();
+                        ma.setMessageid(msg.getId());
+                        ma.setContent(msg.getContent());
+
+                        MessageArchiveAdapterEvent me = new MessageArchiveAdapterEvent();
+                        me.setMessageArchiveAdapter(ma);
+                        EventBusUtils.post(me);
+
+                        if (Msg.MsgContentType.image.toString().equals(msg.getContentType())) {
+                            msg.setContent("您收到一张图片");
+                            msg.setContentType(Msg.MsgContentType.text.toString());
+                        } else if (Msg.MsgContentType.video.toString().equals(msg.getContentType())) {
+                            msg.setContent("您收到一段视频");
+                            msg.setContentType(Msg.MsgContentType.text.toString());
+                        } else if (Msg.MsgContentType.audio.toString().equals(msg.getContentType())) {
+                            msg.setContent("您收到一段音频");
+                            msg.setContentType(Msg.MsgContentType.text.toString());
+                        } else if (Msg.MsgContentType.text.toString().equals(msg.getContentType())) {
+                            msg.setContent("您收到一条消息");
+                        }
+
+
+                    }
+                }
+
+
+                String content = XMPPUtil.buildJson(msg);
                 webSocketSession.sendMessage(new TextMessage(content));
+
                 return true;
             }
         } catch (Exception e) {

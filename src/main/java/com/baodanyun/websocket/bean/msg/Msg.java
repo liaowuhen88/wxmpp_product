@@ -230,6 +230,10 @@ public class Msg implements Serializable{
     }
 
     //消息种类
+
+    /**
+     * 消息类型 active(动作类), msg(消息), status(状态消息例如上下线)
+     */
     public enum Type {
         active, msg, status
     }

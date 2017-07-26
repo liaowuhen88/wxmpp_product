@@ -68,6 +68,7 @@ xchat.interface = {
 xchat.loginSuccessStatusHandelEvent = function () {
     this.setCustomerProfileEventBind();     //设置客服信息
     this.sendImgEventBind();    //初始化图片发送
+    this.sendAttachmentEventBind();    //初始化图片发送
 };
 //初始化成功
 xchat.initSuccessQueueStatusHandelEvent = function () {
@@ -253,7 +254,19 @@ xchat.recvVideoMsgHandelEvent = function (json) {
 xchat.sendImgEventBind = function () {
     this.imageSendInit(
         "imgUploader",
-        "/up/customer/img/" + window.currentId + "?name=123123.png",
+        "/" + window.currentId,
+        "/api/fileUpload",
+        function (o) {
+            o.removeClass("sending").addClass("timeOut");
+        }
+    );
+};
+
+xchat.sendAttachmentEventBind = function () {
+    this.attachmentSendInit(
+        "attachmentUploader",
+        "/" + window.currentId,
+        "/api/fileUpload",
         function (o) {
             o.removeClass("sending").addClass("timeOut");
         }
@@ -280,12 +293,13 @@ xchat.sendEvent = function (msg) {
 xchat.sendMsgHandelEvent = function (data) {
     data.time = myUtils.formatDate(new Date(data.ct));
     data.src = data.to;
-    myUtils.storage(data);
     if (data.icon === undefined || data.icon === '') {
         data.icon = this.controls.defaultAvatar;
     }
     if (data.contentType == 'image') {
         myUtils.renderDivAdd('imgRight', data, 'chatMsgContainer');
+    } else if (data.contentType == 'attachment') {
+        myUtils.renderDivAdd('attachmentRight', data, 'chatMsgContainer');
     } else {
         myUtils.renderDivAdd('mright', data, 'chatMsgContainer');
     }

@@ -1,6 +1,7 @@
 package com.baodanyun.websocket.springConfig;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.aliyun.oss.OSSClient;
 import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.PropertiesUtil;
 import com.github.pagehelper.PageHelper;
@@ -28,6 +29,10 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import javax.jms.Destination;
 import javax.sql.DataSource;
@@ -40,15 +45,24 @@ import java.util.Properties;
 @Component
 @EnableScheduling
 @ComponentScan(basePackages =
-        {"com.baodanyun.websocket.service",
+        {
+                "com.oss",
+                "com.baodanyun.websocket.service",
                 "com.baodanyun.websocket.controller",
                 "com.baodanyun.websocket.listener"
         })
 //加载资源文件
-@PropertySource({"classpath:config.properties"})
+@PropertySource({"classpath:spring-config.properties",
+        "classpath:spring-oss.properties"
+})
 public class SpringConfig {
     protected static Logger logger = LoggerFactory.getLogger(SpringConfig.class);
-    Map<String, String> map = PropertiesUtil.get(this.getClass().getClassLoader(), "config.properties");
+    Map<String, String> map = PropertiesUtil.get(this.getClass().getClassLoader(), "spring-config.properties");
+    Map<String, String> ossMap = PropertiesUtil.get(this.getClass().getClassLoader(), "spring-oss.properties");
+
+    private String endpoint = ossMap.get("oss.endpoint");
+    private String accessKeyId = ossMap.get("oss.accessKeyId");
+    private String secretAccessKey = ossMap.get("oss.secretAccessKey");
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -147,13 +161,12 @@ public class SpringConfig {
 
     @Bean
     public MemCachedClient getMemCachedClient() {
-        MemCachedClient  memCachedClient= new  MemCachedClient();
+        MemCachedClient memCachedClient = new MemCachedClient();
         return memCachedClient;
     }
 
 
     /**
-     *
      * active
      */
 
@@ -188,5 +201,51 @@ public class SpringConfig {
         return de;
     }
 
+    /*
+     redis 接入
+     */
+    @Bean
+    public JedisPoolConfig jedisPoolConfig() {
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+       /* config.setMaxTotal(60000);//设置最大连接数
+        config.setMaxIdle(1000); //设置最大空闲数
+        config.setMaxWaitMillis(3000);//设置超时时间
+        config.setTestOnBorrow(true);*/
+        return jedisPoolConfig;
+    }
+
+    @Bean
+    public JedisPool jedisPool(@Qualifier("jedisPoolConfig") JedisPoolConfig jedisPoolConfig) {
+        String host = map.get("redis.hostName");
+        int port = Integer.valueOf(map.get("redis.port"));
+        int timeout = Integer.valueOf(map.get("redis.timeout"));
+        String password = map.get("redis.password");
+
+        JedisPool jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
+
+        return jedisPool;
+    }
+
+
+    /**
+     * 文件上传
+     *
+     * @return
+     */
+    @Bean
+    public MultipartResolver multipartResolver() {
+        return new CommonsMultipartResolver();
+    }
+
+
+    /**
+     * oss
+     *
+     * @return
+     */
+    @Bean
+    public OSSClient ossClient() {
+        return new OSSClient(endpoint, accessKeyId, secretAccessKey);
+    }
 
 }

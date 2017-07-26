@@ -68,6 +68,8 @@ public class MsgSendControl {
                 String to = XMPPUtil.removeSource(msg.getTo());
                 sendMsg.setTo(to);
             }
+
+            sendMsg.setId(msg.getStanzaId());
         }else {
             logger.info("body is null");
         }

@@ -7,9 +7,9 @@ import com.baodanyun.websocket.bean.user.AppCustomer;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.AppKeyService;
+import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.HttpUtils;
 import com.baodanyun.websocket.util.JSONUtil;
-import com.baodanyun.websocket.util.PropertiesUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class AppKeyServiceImpl implements AppKeyService {
     protected static Logger logger = LoggerFactory.getLogger(AppKeyServiceImpl.class);
 
     private static Map<String, Visitor> visitors = new ConcurrentHashMap<>();
-    Map<String, String> map = PropertiesUtil.get(this.getClass().getClassLoader(), "config.properties");
+    private String appKeyUrl = Config.appKeyUrl;
 
     /*public static void main(String[] args) throws IOException {
         Map query = new HashMap();
@@ -61,7 +61,7 @@ public class AppKeyServiceImpl implements AppKeyService {
         query.put("appkey", appkey);
 
         try {
-            String result = HttpUtils.get(map.get("appKey.url"), query);
+            String result = HttpUtils.get(appKeyUrl, query);
             logger.info(result);
             if(StringUtils.isEmpty(result)){
                 throw new BusinessException("result is error");
@@ -81,7 +81,7 @@ public class AppKeyServiceImpl implements AppKeyService {
             au.setIcon(appKeyCustomer.getIcon());
             au.setCustomerIsOnline(true);
             au.setSocketUrl(url + "/sockjs/newVisitor");
-            au.setOssUrl(map.get("oss.upload"));
+            au.setOssUrl(url + "/api/fileUpload/" + appKeyCustomer.getcName());
             au.setToken(UUID.randomUUID().toString());
             au.setLoginTime(System.currentTimeMillis());
             return au;

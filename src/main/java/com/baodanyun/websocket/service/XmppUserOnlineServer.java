@@ -2,12 +2,12 @@ package com.baodanyun.websocket.service;
 
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.util.HttpUtils;
-import com.baodanyun.websocket.util.PropertiesUtil;
 import com.baodanyun.websocket.util.XmllUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by liaowuhen on 2016/11/11.
@@ -23,8 +22,9 @@ import java.util.Map;
 @Service
 public class XmppUserOnlineServer {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    @Value("${xmpp.ip}")
     private String ip;
+    @Value("${xmpp.domain}")
     private String domain;
 
     public static void main(String args[]) {
@@ -40,9 +40,6 @@ public class XmppUserOnlineServer {
 
     @PostConstruct
     private void init() {
-        Map<String, String> map = PropertiesUtil.get(XmppUserOnlineServer.class.getClassLoader(), "config.properties");
-        ip = map.get("xmpp.ip");
-        domain = map.get("xmpp.domain");
     }
 
     public boolean isOnline(String uid){
