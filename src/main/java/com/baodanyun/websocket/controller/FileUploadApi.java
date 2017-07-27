@@ -64,7 +64,7 @@ public class FileUploadApi extends BaseController {
 
     @RequestMapping(value = "downLoad", method = {RequestMethod.POST, RequestMethod.GET})
     public void uploadDj(String type, String key, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
+        AccessControlAllowUtils.access(response);
         request.setCharacterEncoding("UTF-8");
         String filename = key.substring(key.lastIndexOf("\\") + 1);
 

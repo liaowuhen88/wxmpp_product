@@ -60,7 +60,7 @@
         <span class="time">{{time}}</span>
         <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
         </div>--%>
-        <span class="message"><a href="{{href}}" rel="lightbox"><img src="{{content}}" alt=""></a></span>
+        <span class="message"><a href="{{content}}" rel="lightbox"><img src="{{dev_content}}" alt=""></a></span>
     </div>
 </script>
 
@@ -122,7 +122,7 @@
         <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
         <span class="time">{{time}}</span>
         <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">--%>
-        <span class="message"><a href="{{href}}" rel="lightbox"><img src="{{content}}" alt=""></a></span>
+        <span class="message"><a href="{{content}}" rel="lightbox"><img src="{{dev_content}}" alt=""></a></span>
     </div>
     </div>
 </script>

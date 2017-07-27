@@ -152,9 +152,9 @@
 				<redis.password>YRGFtBvIeDA1heGslAP7</redis.password>
 
 				<!-- oss -->
-				<oss.endpoint>njkefu.oss-cn-beijing.aliyuncs.com</oss.endpoint>
-				<oss.accessKeyId>LTAIDzuz6IzJIhyP</oss.accessKeyId>
-				<oss.secretAccessKey>k5xjqzE0msB0dxTsfTgTAbGpCBBQ7J</oss.secretAccessKey>
+				<oss.endpoint>oss-cn-beijing.aliyuncs.com</oss.endpoint>
+				<oss.accessKeyId>obTuyP8GflR8U3nO</oss.accessKeyId>
+				<oss.secretAccessKey>mAI1zcXmIL0sJ912J6qLmcPJvixvtp</oss.secretAccessKey>
 
 				<bdy.private>njkefu</bdy.private>
 
@@ -219,9 +219,9 @@
 				<redis.password>BnidCDhdsK5zSl6jPvuC</redis.password>
 
 				<!-- oss -->
-				<oss.endpoint>njkefu.oss-cn-beijing.aliyuncs.com</oss.endpoint>
-				<oss.accessKeyId>LTAIDzuz6IzJIhyP</oss.accessKeyId>
-				<oss.secretAccessKey>k5xjqzE0msB0dxTsfTgTAbGpCBBQ7J</oss.secretAccessKey>
+				<oss.endpoint>oss-cn-beijing.aliyuncs.com</oss.endpoint>
+				<oss.accessKeyId>obTuyP8GflR8U3nO</oss.accessKeyId>
+				<oss.secretAccessKey>mAI1zcXmIL0sJ912J6qLmcPJvixvtp</oss.secretAccessKey>
 
 				<bdy.private>njkefu</bdy.private>
 

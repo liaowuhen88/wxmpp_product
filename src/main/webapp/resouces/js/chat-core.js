@@ -217,7 +217,7 @@ var xChat = function (options) {
                                 function (file, response) {
                                     console.log(file);
                                     console.log(response);
-                                    msg.href = response.src;
+                                    msg.content = response.src;
                                     //更新之前填好的预览图
                                     if (window.user) {
                                         msg.icon = window.user.icon;
@@ -239,8 +239,7 @@ var xChat = function (options) {
                                     //选择文件的动作之后开始计时，一定会执行
                                     _timeOutCheck(msg);
                                     //生成一个预览图 并且渲染界面
-                                    msg.content = src;
-                                    msg.href = 'javascript:';
+                                    msg.dev_content = src;
                                     msg.to = destJid;
                                     msg.size = file.size;
                                     msg.from = window.currentId;

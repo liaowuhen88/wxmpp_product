@@ -67,8 +67,9 @@ public class WebSocketCustomerUserLifeCycleServiceImpl extends CustomerUserLifeC
                         return msg;
                     }
                 }
+            } else {
+                logger.info("msg is null");
             }
-
         } else {
             logger.error("msg is blank");
         }

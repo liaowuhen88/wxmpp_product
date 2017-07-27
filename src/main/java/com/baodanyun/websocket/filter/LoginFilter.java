@@ -47,6 +47,8 @@ public class LoginFilter implements Filter {
                 //这个api需要放出来
                 || uri.startsWith(request.getContextPath() + "/api/receiveMsg")
                 || uri.startsWith(request.getContextPath() + "/api/addMessage")
+                // 下载文件
+                || uri.startsWith(request.getContextPath() + "/api/downLoad")
                 || uri.startsWith(request.getContextPath() + "/appKeyCheck")
                 || uri.startsWith(request.getContextPath() + "/api/findLoginImage")
                 || uri.startsWith(request.getContextPath() + "/api/loginApi")

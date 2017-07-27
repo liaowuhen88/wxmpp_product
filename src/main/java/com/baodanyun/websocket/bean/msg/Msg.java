@@ -62,6 +62,8 @@ public class Msg implements Serializable{
 
                     } else if (Msg.MsgContentType.image.toString().equals(abstractMsg.getContentType())) {
                         return gson.fromJson(bodyMsg, ImgMsg.class);
+                    } else if (MsgContentType.attachment.toString().equals(abstractMsg.getContentType())) {
+                        return abstractMsg;
                     } else if (Msg.MsgContentType.receiptMsg.toString().equals(abstractMsg.getContentType())) {
                         return gson.fromJson(bodyMsg, ReceiptMsg.class);
                     } else{
@@ -222,7 +224,7 @@ public class Msg implements Serializable{
 
     //receiptMsg 回执消息
     public enum MsgContentType {
-        text, video, file, audio, image, receiptMsg
+        text, video, file, audio, image, receiptMsg, attachment
     }
 
     public enum fromType {

@@ -25,7 +25,7 @@
         var defaultOption = {
             packId: "#" + options.packId,
             swf: window.base + '/resources/js/webuploader/Uploader.swf',//ie6,7,8 需要flash支持，默认优先Html5
-            server: options.uploadServer + options.uploadPath,//文件上传的服务器路径
+            server: window.base + options.uploadServer + options.uploadPath,//文件上传的服务器路径
             pick: {
                 id: "#" + options.uploaderId,
                 multiple: options.isMultiple//是否单选
