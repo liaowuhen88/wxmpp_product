@@ -1,14 +1,8 @@
 package com.baodanyun.websocket.service;
 
 import com.baodanyun.websocket.bean.msg.Msg;
-import com.baodanyun.websocket.event.ComputationalCostsEvent;
-import com.baodanyun.websocket.event.MessageArchiveAdapterEvent;
-import com.baodanyun.websocket.model.MessageArchiveAdapter;
-import com.baodanyun.websocket.service.impl.JedisServiceImpl;
-import com.baodanyun.websocket.util.EventBusUtils;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
-import org.apache.commons.lang.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +30,7 @@ public class WebSocketService {
     @Autowired
     private XmppService xmppService;
     @Autowired
-    private JedisService jedisService;
+    private MessageFiterService messageFiterService;
 
     // 生产消息，放入篮子
     public void produce(Msg msg) throws InterruptedException {
@@ -151,41 +145,7 @@ public class WebSocketService {
             if (isConnected(jid)) {
                 WebSocketSession webSocketSession = getWebSocketSession(jid);
                 if (Msg.Type.msg.toString().equals(msg.getType())) {
-                    String status = jedisService.getFromMap(JedisServiceImpl.displayStatus, msg.getTo());
-
-                    if ("1".equals(status)) {
-                        //TODO 计费接口
-                        Msg clone = (Msg) SerializationUtils.clone(msg);
-                        ComputationalCostsEvent cce = new ComputationalCostsEvent(jid, clone);
-                        EventBusUtils.post(cce);
-
-                    } else {
-                        /**
-                         * 消息加密
-                         */
-                        MessageArchiveAdapter ma = new MessageArchiveAdapter();
-                        ma.setMessageid(msg.getId());
-                        ma.setContent(msg.getContent());
-
-                        MessageArchiveAdapterEvent me = new MessageArchiveAdapterEvent();
-                        me.setMessageArchiveAdapter(ma);
-                        EventBusUtils.post(me);
-
-                        if (Msg.MsgContentType.image.toString().equals(msg.getContentType())) {
-                            msg.setContent("您收到一张图片");
-                            msg.setContentType(Msg.MsgContentType.text.toString());
-                        } else if (Msg.MsgContentType.video.toString().equals(msg.getContentType())) {
-                            msg.setContent("您收到一段视频");
-                            msg.setContentType(Msg.MsgContentType.text.toString());
-                        } else if (Msg.MsgContentType.audio.toString().equals(msg.getContentType())) {
-                            msg.setContent("您收到一段音频");
-                            msg.setContentType(Msg.MsgContentType.text.toString());
-                        } else if (Msg.MsgContentType.text.toString().equals(msg.getContentType())) {
-                            msg.setContent("您收到一条消息");
-                        }
-
-
-                    }
+                    messageFiterService.filter(jid, msg);
                 }
 
 

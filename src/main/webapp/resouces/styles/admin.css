@@ -786,6 +786,10 @@ section .section-title {
       background-color: #f5f8ff; }
     .chat-contact-list li.online .avatar:before {
       background-color: #4AD93A; }
+
+.chat-contact-list li.encrypt .avatar:before {
+  background-color: red;
+}
     .chat-contact-list li.offline .avatar:before {
       background-color: #B3B8BA; }
   .chat-contact-list .avatar {
@@ -822,7 +826,6 @@ section .section-title {
     color: #777777; }
 
 .chat-contact-list .time span {
-  margin: 0 0 0 10px;
   font-weight: bold;
 }
   .chat-contact-list .new-message {

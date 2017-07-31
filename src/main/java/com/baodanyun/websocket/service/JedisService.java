@@ -9,6 +9,11 @@ import java.util.List;
  */
 
 public interface JedisService {
+
+    void addValue(String key, String value);
+
+    String getValue(String key);
+
     void addMap(String redisKey, String key, String value);
 
     String getFromMap(String redisKey, String key);

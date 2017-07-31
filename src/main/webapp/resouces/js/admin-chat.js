@@ -333,14 +333,19 @@ xchat.onlineQueueSuccessStatusHandelEvent = function (json) {
     //myUtils.renderQueue(json.from, 'backupfriendList', 'down');
     //myUtils.renderQueue(json.from, 'friendList', 'down');
     myUtils.renderQueue(json.from, 'historyFriendList', 'remove');
+    json.name = json.fromName;
+    json.nickname = json.fromName;
+    json.icon = json.icon || _this.controls.defaultAvatar;
+    json.onlineStatus = 'online';
+    json.time = myUtils.formatDate(json.loginTime);
+
+    if (json.displayStatus == false) {
+        json.onlineStatus = 'encrypt';
+    }
     myUtils.renderQueue(json.from, 'friendList', 'up', function () {
-        json.name = json.fromName;
-        json.nickname = json.fromName;
-        json.icon = json.icon || _this.controls.defaultAvatar;
-        json.onlineStatus = 'online';
-        json.time = myUtils.formatDate(json.loginTime);
         myUtils.renderDivPrepend('onlinefriendListTpl', json, 'friendList');
     })
+
 };
 //等待队列
 xchat.waitQueueSuccessStatusHandelEvent = function (json) {

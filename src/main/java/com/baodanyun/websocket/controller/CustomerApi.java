@@ -50,7 +50,8 @@ public class CustomerApi extends BaseController {
 
     @Autowired
     private ConversationService conversationService;
-
+    @Autowired
+    private MessageFiterService messageFiterService;
 
     @Autowired
     @Qualifier("wcUserLifeCycleService")
@@ -226,7 +227,6 @@ public class CustomerApi extends BaseController {
     }
 
     /**
-     * 关闭访客
      *
      * @param httpServletResponse
      */
@@ -239,6 +239,9 @@ public class CustomerApi extends BaseController {
             Map<String, ConversationMsg> map = conversationService.get(cu.getId());
 
             ConversationMsg cm = map.get(from);
+            boolean dispaly = messageFiterService.dispaly(cu.getId(), from);
+            logger.info("dispaly {}", dispaly);
+            cm.setDisplayStatus(dispaly);
 
             response.setData(cm);
             response.setSuccess(true);

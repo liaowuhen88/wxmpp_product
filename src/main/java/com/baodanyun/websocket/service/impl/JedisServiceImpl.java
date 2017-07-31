@@ -41,6 +41,37 @@ public class JedisServiceImpl implements JedisService {
     }
 
     @Override
+    public void addValue(String key, String value) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.set(key, value);
+        } catch (Exception e) {
+            logger.error("error", e);
+        } finally {
+            if (null != jedis) {
+                jedis.close();
+            }
+        }
+    }
+
+    @Override
+    public String getValue(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.get(key);
+        } catch (Exception e) {
+            logger.error("error", e);
+        } finally {
+            if (null != jedis) {
+                jedis.close();
+            }
+        }
+        return null;
+    }
+
+    @Override
     public String getFromMap(String redisKey, String key) {
         Jedis jedis = null;
         try {

@@ -2,6 +2,7 @@ package com.baodanyun.wxmpp.test;
 
 
 import com.baodanyun.websocket.service.JedisService;
+import com.baodanyun.websocket.service.impl.MessageFiterServiceImpl;
 import com.baodanyun.wxmpp.test.redisMQHandler.RedisMQHandler;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -91,5 +92,17 @@ public class RedisTest extends BaseTest {
     public void getFromMap() {
         String id = jedisService.getFromMap("displayStatus", "yt_zwc@126xmpp");
         System.out.println(id);
+    }
+
+    @Test
+    public void addValue() {
+        jedisService.addValue("zwc" + MessageFiterServiceImpl.MM, "1");
+        jedisService.addValue("zwc@126xmpp", "1");
+        jedisService.addValue("yt_aaaa@126xmpp", "1");
+    }
+
+    @Test
+    public void getValue() {
+        System.out.println(jedisService.getValue("yt_zwc@126xmpp"));
     }
 }

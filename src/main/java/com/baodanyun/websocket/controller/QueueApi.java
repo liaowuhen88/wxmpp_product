@@ -6,7 +6,7 @@ import com.baodanyun.websocket.bean.user.ComparatorConversationMsg;
 import com.baodanyun.websocket.bean.user.Customer;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.service.ConversationService;
-import com.baodanyun.websocket.service.DoubaoFriendsService;
+import com.baodanyun.websocket.service.MessageFiterService;
 import com.baodanyun.websocket.service.UserCacheServer;
 import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.util.Render;
@@ -43,7 +43,7 @@ public class QueueApi extends BaseController {
     private ConversationService conversationService;
 
     @Autowired
-    private DoubaoFriendsService doubaoFriendsService;
+    private MessageFiterService messageFiterService;
 
     @RequestMapping(value = "queue/{q}")
     public void backupQueue(@PathVariable("q") String q, HttpServletRequest request, HttpServletResponse response) {
@@ -66,6 +66,10 @@ public class QueueApi extends BaseController {
 
                 if(null != map){
                     List<ConversationMsg> li = new ArrayList<>(map.values());
+                    for (ConversationMsg cm : li) {
+                        boolean dispaly = messageFiterService.dispaly(customer.getId(), cm.getFrom());
+                        cm.setDisplayStatus(dispaly);
+                    }
                     ComparatorConversationMsg comparator = new ComparatorConversationMsg();
                     Collections.sort(li, comparator);
                     msgResponse.setData(li);

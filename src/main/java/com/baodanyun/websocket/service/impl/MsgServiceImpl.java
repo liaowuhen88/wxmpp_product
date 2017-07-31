@@ -5,6 +5,7 @@ import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.model.Ofmucroom;
+import com.baodanyun.websocket.service.MessageFiterService;
 import com.baodanyun.websocket.service.MsgService;
 import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.util.JSONUtil;
@@ -28,6 +29,8 @@ public class MsgServiceImpl implements MsgService {
     protected static Logger logger = LoggerFactory.getLogger(MsgServiceImpl.class);
     @Autowired
     private XmppService xmppService;
+    @Autowired
+    private MessageFiterService messageFiterService;
 
     public static void main(String[] args) {
         String room = "xvql187@conference.126xmpp/\u003cspan class\u003d\"emoji emoji1f4a2\"\u003e\u003c/span\u003e          导演\u003cspan class\u003d\"emoji emojiae\"\u003e\u003c/span\u003e";
@@ -55,6 +58,9 @@ public class MsgServiceImpl implements MsgService {
             sm.setFromName(ofmucroom.getNaturalname());
             sm.setLoginUsername(ofmucroom.getDescription());
         }
+
+        boolean dispaly = messageFiterService.dispaly(to, realRoom);
+        sm.setDisplayStatus(dispaly);
 
         return sm;
     }
@@ -86,6 +92,9 @@ public class MsgServiceImpl implements MsgService {
                 sm.setIcon("data:image/jpeg;base64," + image);
             }
         }
+
+        boolean dispaly = messageFiterService.dispaly(user.getId(), realFrom);
+        sm.setDisplayStatus(dispaly);
 
         return sm;
     }

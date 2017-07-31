@@ -146,10 +146,10 @@
 				<appKey.url>http://xv.wifigx.com/api/webinit</appKey.url>
 
 				<!-- redis -->
-				<redis.hostName>r-2zeb89972d925914.redis.rds.aliyuncs.com</redis.hostName>
+				<redis.hostName>r-bp169a789202b124.redis.rds.aliyuncs.com</redis.hostName>
 				<redis.port>6379</redis.port>
 				<redis.timeout>5000</redis.timeout>
-				<redis.password>YRGFtBvIeDA1heGslAP7</redis.password>
+				<redis.password>Txredis1685</redis.password>
 
 				<!-- oss -->
 				<oss.endpoint>oss-cn-beijing.aliyuncs.com</oss.endpoint>
@@ -213,10 +213,10 @@
 				<appKey.url>http://api.xvkefu.com/api/webinit</appKey.url>
 
 				<!-- redis -->
-				<redis.hostName>r-2zefbac310117674.redis.rds.aliyuncs.com</redis.hostName>
+				<redis.hostName>r-bp1e230e98784f44.redis.rds.aliyuncs.com</redis.hostName>
 				<redis.port>6379</redis.port>
 				<redis.timeout>5000</redis.timeout>
-				<redis.password>BnidCDhdsK5zSl6jPvuC</redis.password>
+				<redis.password>Txredis1685</redis.password>
 
 				<!-- oss -->
 				<oss.endpoint>oss-cn-beijing.aliyuncs.com</oss.endpoint>
