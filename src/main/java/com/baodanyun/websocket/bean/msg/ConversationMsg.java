@@ -8,8 +8,8 @@ import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 public class ConversationMsg extends StatusMsg {
     private OnlineStatus onlineStatus = OnlineStatus.online;
     private String key;
-    // 消息是否加密   true 不加密  false 加密
-    private Boolean displayStatus = false;
+    /*// 消息是否加密   true 不加密  false 加密
+    private Boolean displayStatus = false;*/
 
     public ConversationMsg() {
         super();
@@ -31,14 +31,6 @@ public class ConversationMsg extends StatusMsg {
         this.onlineStatus = onlineStatus;
     }
 
-    public Boolean getDisplayStatus() {
-        return displayStatus;
-    }
-
-    public void setDisplayStatus(Boolean displayStatus) {
-        this.displayStatus = displayStatus;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null)
@@ -58,6 +50,6 @@ public class ConversationMsg extends StatusMsg {
     }
 
     public enum OnlineStatus {
-        online, wait, backup, history
+        online, wait, backup, history, encrypt
     }
 }

@@ -37,7 +37,11 @@ xchat.controls = {
     claimsContainer: '#claimsContainer',
     contractsContainer: '#contractsContainer',
     orderContainer: '#orderContainer',
-    waitReplyPerson: '#waitReplyPerson'
+    waitReplyPerson: '#waitReplyPerson',
+    settingAll: '#setting_all',
+    settingAllFrom: '#setting_all_from'
+
+
 };
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/
@@ -60,8 +64,9 @@ xchat.interface = {
     getTagsAll: base + '/api/getTagsAll',
     changeProfile: base + '/api/upCustomerInfo',
     closeFriendWindow: base + '/api/closeFriendWindow',
-    getConversation: base + '/api/getConversation'
-
+    getConversation: base + '/api/getConversation',
+    getDisplay: base + '/api/getDisplay',
+    msgShow: base + '/api/msgShow'
 };
 /*=====================================================================================初始化=====================================================================================*/
 //登录成功
@@ -85,6 +90,7 @@ xchat.initSuccessQueueStatusHandelEvent = function () {
     this.getCustomerList();     //获取客服列表
     this.setUserInfoEventBind();    //设置用户详情事件绑定
     this.customerListEventBind();//转接按钮事件
+
 };
 //初始化失败
 xchat.initErrorStatusHandelEvent = function () {
@@ -213,6 +219,7 @@ xchat.recvImageMsgHandelEvent = function (json) {
     json.src = json.from;
     json.icon = json.icon || this.controls.defaultAvatar;
     json.time = myUtils.formatDate(new Date(json.ct));
+    json.dev_content = json.content;
     if (json.from == window.destJid) {
         myUtils.renderDivAdd('imgLeft', json, 'chatMsgContainer');
     }
@@ -336,12 +343,8 @@ xchat.onlineQueueSuccessStatusHandelEvent = function (json) {
     json.name = json.fromName;
     json.nickname = json.fromName;
     json.icon = json.icon || _this.controls.defaultAvatar;
-    json.onlineStatus = 'online';
     json.time = myUtils.formatDate(json.loginTime);
 
-    if (json.displayStatus == false) {
-        json.onlineStatus = 'encrypt';
-    }
     myUtils.renderQueue(json.from, 'friendList', 'up', function () {
         myUtils.renderDivPrepend('onlinefriendListTpl', json, 'friendList');
     })
@@ -418,7 +421,7 @@ xchat.loadChatList = function () {
                         friend.icon = _this.controls.defaultAvatar;
                     }
                     friend.time = myUtils.formatDate(friend.loginTime);
-                    if (friend.onlineStatus == 'online') {
+                    if (friend.onlineStatus == 'online' || friend.onlineStatus == 'encrypt') {
                         myUtils.renderDivAdd('onlinefriendListTpl', friend, 'friendList');
                     } else if (friend.onlineStatus == 'backup') {
                         //backup状态也算是线上状态
@@ -588,6 +591,9 @@ xchat.openFriendWindow = function (isOnline, id, nickname, openId,fromType) {
 
     _this.getUserInfo(window.currentId, id, openId);
     _this.getUserLabel();
+
+    this.setting_allEventBind(window.destJid, nickname);//转接按钮事件
+
 };
 //获取当前用户的详情
 xchat.getUserInfo = function (currentId, destJid, openId) {
@@ -925,6 +931,22 @@ xchat.customerListEventBind = function () {
         _this.getCustomerList();
     });
 };
+xchat.setting_allEventBind = function (destJid, nickname) {
+    var _this = this;
+    var setting_all = $(_this.controls.settingAll);
+    var setting_allConfirm = $('#setting_allConfirm');
+
+    setting_all.modal();
+    setting_all.on('click', function () {
+        _this.getSetting_all(destJid, nickname);
+    });
+
+    setting_allConfirm.on('click', function () {
+        _this.setting_allConfirm(destJid);
+    });
+};
+
+
 xchat.callInEventBind = function () {
     var _this = this;
     $(_this.controls.holdListCont).on('click', '.call_in', function () {
@@ -957,6 +979,73 @@ xchat.getCustomerList = function () {
         }
     })
 };
+
+xchat.getSetting_all = function (destJid, nickname) {
+    var _this = this;
+    $.ajax({
+        url: _this.interface.getDisplay + '?from=' + destJid,
+        type: 'post',
+        success: function (res) {
+            if (res.success) {
+                var html = '<div>' +
+                    '<label for="newPWD">' +
+                    '<span class="tag" style="font-size: 18px;">' + nickname + '</span>' +
+                    '</label>' +
+                    '</div>' +
+                    '<div style="margin: 10px 0 0 0; font-size:14px;">' +
+                    '<label for="newPWD">' +
+                    '<span class="tag">默认解密消息条数：</span>' +
+                    '<input type="text"  name="encryptCount" id="encryptCount" placeholder="默认解密消息条数" value="' + res.data.count + '" style="border: 1px solid #ccc;padding: 6px;color: #666;">' +
+                    '</label>' +
+                    '</div>' +
+                    '<div style="margin: 10px 0 0 0; font-size:14px;line-height: 26px;">' +
+                    '<label for="newPWD">' +
+                    '<span class="tag">是否开启计费：</span>' +
+                    '开启<input type="radio"  name="status" value="1" style="margin: 0 20px 0 5px;">' +
+                    '关闭<input type="radio"  name="status" value="0" style="margin: 0 20px 0 5px;">' +
+                    '</label>' +
+                    '</div>';
+                $(_this.controls.settingAllFrom).html(html);
+                if (res.data.status == 1) {
+                    $("input[name='status'][value='1']").attr("checked", true);
+                } else {
+                    $("input[name='status'][value='0']").attr("checked", true);
+                }
+
+
+            } else {
+                $(_this.controls.settingAllFrom).html('查询失败');
+            }
+
+        },
+        error: function () {
+            $(_this.controls.settingAllFrom).html('查询失败');
+        }
+    })
+};
+
+xchat.setting_allConfirm = function (destJid) {
+    var _this = this;
+    var status = $("input[name='status']:checked").val();
+    var count = $("#encryptCount").val();
+
+    $.ajax({
+        url: _this.interface.msgShow + '?username=' + destJid + "&status=" + status + "&count=" + count,
+        type: 'post',
+        success: function (res) {
+            if (res.success) {
+                $("#setting_all_modal").hide();
+            } else {
+                $(_this.controls.settingAllFrom).html(res.msg);
+            }
+        },
+        error: function () {
+        }
+    })
+};
+
+
+
 xchat.turnComb = function (data) {
     var html = '';
     data.map(function (val) {

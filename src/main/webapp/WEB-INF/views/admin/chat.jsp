@@ -30,13 +30,13 @@
             window.currentId = window.user.id;
             var chat = new Chat();
             var history = new History();
-            var set = new Set();
+            //var set = new Set();
             var leaveMessage = new LeaveMessage();
             //页面初始化建立连接
             xchat.connect();
             chat.init();
             history.init();
-            set.init();
+            //set.init();
             leaveMessage.init();
         });
     </script>

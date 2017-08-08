@@ -10,6 +10,7 @@ import com.baodanyun.websocket.model.PageModel;
 import com.baodanyun.websocket.model.Transferlog;
 import com.baodanyun.websocket.model.UserModel;
 import com.baodanyun.websocket.service.*;
+import com.baodanyun.websocket.service.impl.JedisServiceImpl;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
@@ -28,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +39,6 @@ import java.util.Map;
 public class CustomerApi extends BaseController {
 
     protected static Logger logger = LoggerFactory.getLogger(CustomerApi.class);
-
 
     @Autowired
     private TransferServer transferServer;
@@ -56,6 +57,9 @@ public class CustomerApi extends BaseController {
     @Autowired
     @Qualifier("wcUserLifeCycleService")
     private UserLifeCycleService userLifeCycleService;
+
+    @Autowired
+    private JedisService jedisService;
 
     /**
      * 获取客服的信息
@@ -203,7 +207,6 @@ public class CustomerApi extends BaseController {
     }
 
     /**
-     * 关闭访客
      *
      * @param httpServletResponse
      */
@@ -214,9 +217,39 @@ public class CustomerApi extends BaseController {
         try {
             AbstractUser cu = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
 
-            Map<String, ConversationMsg> map = conversationService.get(cu.getId());
+            Map map = conversationService.get(cu.getId());
 
             response.setData(map.keySet());
+            response.setSuccess(true);
+
+        } catch (Exception e) {
+            logger.error("error", e);
+            response.setSuccess(false);
+        }
+        Render.r(httpServletResponse, JSONUtil.toJson(response));
+    }
+
+    /**
+     *获取消息是否显示
+     * @param httpServletResponse
+     */
+
+    @RequestMapping(value = "getDisplay")
+    public void getDisplay(String from, HttpServletResponse httpServletResponse) {
+        Response response = new Response();
+        try {
+            String status = jedisService.getValue(from);
+
+            String count = jedisService.getFromMap(JedisServiceImpl.ENCRYPTCOUNT, from);
+
+            Map<String, String> map = new HashMap<>();
+            if (StringUtils.isEmpty(count) || "null".equals(count)) {
+                count = "0";
+            }
+            map.put("count", count);
+            map.put("status", status);
+
+            response.setData(map);
             response.setSuccess(true);
 
         } catch (Exception e) {
@@ -236,15 +269,19 @@ public class CustomerApi extends BaseController {
         Response response = new Response();
         try {
             AbstractUser cu = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
-            Map<String, ConversationMsg> map = conversationService.get(cu.getId());
-
-            ConversationMsg cm = map.get(from);
-            boolean dispaly = messageFiterService.dispaly(cu.getId(), from);
-            logger.info("dispaly {}", dispaly);
-            cm.setDisplayStatus(dispaly);
-
-            response.setData(cm);
-            response.setSuccess(true);
+            String json = conversationService.get(cu.getId(), from);
+            if (StringUtils.isNotEmpty(json)) {
+                ConversationMsg cm = JSONUtil.toObject(ConversationMsg.class, json);
+                boolean isEncrypt = messageFiterService.isEncrypt(cu.getId(), from);
+                logger.info("isEncrypt {}", isEncrypt);
+                if (!isEncrypt) {
+                    cm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+                }
+                response.setData(cm);
+                response.setSuccess(true);
+            } else {
+                response.setSuccess(false);
+            }
 
         } catch (Exception e) {
             logger.error("error", e);
@@ -252,7 +289,6 @@ public class CustomerApi extends BaseController {
         }
         Render.r(httpServletResponse, JSONUtil.toJson(response));
     }
-
 
 
     /**

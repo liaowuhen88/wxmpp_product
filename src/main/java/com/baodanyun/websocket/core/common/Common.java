@@ -5,6 +5,7 @@ package com.baodanyun.websocket.core.common;
  */
 public class Common {
     public static final String USER_KEY = "user_key";
+    public static final String APPKEY = "appKey ";
     public static final String VISITOR_USER_HEADER = "visitor_user_header";
     public static final String VISITOR_USER_HTTP_SESSION = "visitor_user_http_session";
 

@@ -25,6 +25,7 @@ public class Config {
     public static final String privateBody;
     public static final String publicBody;
     public static final String appKeyUrl;
+    public static final String sasUrl;
 
 
 
@@ -67,6 +68,7 @@ public class Config {
         privateBody = p.getProperty("bj.bdy.private");
         publicBody = p.getProperty("bj.bdy.public");
         appKeyUrl = p.getProperty("appKey.url");
+        sasUrl = p.getProperty("sas.url");
 
     }
 }

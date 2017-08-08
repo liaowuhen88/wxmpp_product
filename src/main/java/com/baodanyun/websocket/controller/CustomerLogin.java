@@ -40,7 +40,9 @@ public class CustomerLogin extends BaseController {
         ModelAndView mv = new ModelAndView();
         try {
             AbstractUser customer = customerInit(user);
+            ofuserService.checkOfUser(customer.getLoginUsername(), customer.getPassWord());
             request.getSession().setAttribute(Common.USER_KEY, customer);
+            request.getSession().setAttribute(Common.APPKEY, user.getAppkey());
             mv.addObject("user", JSONUtil.toJson(customer));
             mv.setViewName("/customer/chat");
         } catch (BusinessException e) {

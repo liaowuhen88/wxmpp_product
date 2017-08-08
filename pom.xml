@@ -66,6 +66,9 @@
 				<oss.secretAccessKey>k5xjqzE0msB0dxTsfTgTAbGpCBBQ7J</oss.secretAccessKey>
 
 				<bdy.private>nanjin_kefu</bdy.private>
+
+				<!-- sas 平台url -->
+				<sas.url>http://xv.wifigx.com/api/webinit</sas.url>
 			</properties>
 		</profile>
 		<profile>
@@ -109,7 +112,8 @@
 				<oss.secretAccessKey>mAI1zcXmIL0sJ912J6qLmcPJvixvtp</oss.secretAccessKey>
 
 				<bdy.private>njkefu</bdy.private>
-
+				<!-- sas 平台url -->
+				<sas.url>http://xv.wifigx.com/api/webinit</sas.url>
 			</properties>
 		</profile>
 		<profile>
@@ -157,7 +161,8 @@
 				<oss.secretAccessKey>mAI1zcXmIL0sJ912J6qLmcPJvixvtp</oss.secretAccessKey>
 
 				<bdy.private>njkefu</bdy.private>
-
+				<!-- sas 平台url -->
+				<sas.url>http://xv.wifigx.com/api/webinit</sas.url>
 
 			</properties>
 		</profile>
@@ -224,7 +229,8 @@
 				<oss.secretAccessKey>mAI1zcXmIL0sJ912J6qLmcPJvixvtp</oss.secretAccessKey>
 
 				<bdy.private>njkefu</bdy.private>
-
+				<!-- sas 平台url -->
+				<sas.url>http://api.xvkefu.com/api/webinit</sas.url>
 
 			</properties>
 		</profile>

@@ -90,13 +90,13 @@ public class RedisTest extends BaseTest {
 
     @Test
     public void getFromMap() {
-        String id = jedisService.getFromMap("displayStatus", "yt_zwc@126xmpp");
+        String id = jedisService.getFromMap("Conversation_zwc@126xmpp", "666@conference.126xmpp");
         System.out.println(id);
     }
 
     @Test
     public void addValue() {
-        jedisService.addValue("zwc" + MessageFiterServiceImpl.MM, "1");
+        jedisService.addValue("zwc" + MessageFiterServiceImpl.SWITCH, "1");
         jedisService.addValue("zwc@126xmpp", "1");
         jedisService.addValue("yt_aaaa@126xmpp", "1");
     }

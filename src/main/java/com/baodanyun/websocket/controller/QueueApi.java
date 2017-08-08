@@ -9,9 +9,13 @@ import com.baodanyun.websocket.service.ConversationService;
 import com.baodanyun.websocket.service.MessageFiterService;
 import com.baodanyun.websocket.service.UserCacheServer;
 import com.baodanyun.websocket.service.XmppService;
+import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang.StringUtils;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,27 +56,22 @@ public class QueueApi extends BaseController {
             Customer customer = (Customer) request.getSession().getAttribute(Common.USER_KEY);
             if (customer != null) {
 
-                Map<String, ConversationMsg> map = conversationService.get(customer.getId());
-                //xmppService.getHostRoom(customer.getId());
-
-                /*if (!CollectionUtils.isEmpty(map)) {
-                    for (ConversationMsg re : map.values()) {
-                            Friend friend = getFriend(re);
-                            if (null != friend) {
-                                friendList.add(friend);
-                            }
-                    }
-                }*/
+                Map<String, String> map = conversationService.get(customer.getId());
 
                 if(null != map){
-                    List<ConversationMsg> li = new ArrayList<>(map.values());
-                    for (ConversationMsg cm : li) {
-                        boolean dispaly = messageFiterService.dispaly(customer.getId(), cm.getFrom());
-                        cm.setDisplayStatus(dispaly);
+                    List<ConversationMsg> collections = new ArrayList<>();
+                    List<String> li = new ArrayList<>(map.values());
+                    for (String ob : li) {
+                        ConversationMsg cm = JSONUtil.toObject(ConversationMsg.class, ob);
+                        boolean isEncrypt = messageFiterService.isEncrypt(customer.getId(), cm.getFrom());
+                        if (!isEncrypt) {
+                            cm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+                        }
+                        collections.add(cm);
                     }
                     ComparatorConversationMsg comparator = new ComparatorConversationMsg();
-                    Collections.sort(li, comparator);
-                    msgResponse.setData(li);
+                    Collections.sort(collections, comparator);
+                    msgResponse.setData(collections);
                 }
                 msgResponse.setSuccess(true);
             } else {
@@ -139,4 +138,40 @@ public class QueueApi extends BaseController {
 
     }*/
 
+    /**
+     * Created by yutao on 2016/10/4.
+     */
+    @RestController
+    public static class PresenceTypeApi extends BaseController {
+        protected static Logger logger = LoggerFactory.getLogger(PresenceTypeApi.class);
+
+        @Autowired
+        private XmppService xmppService;
+
+        @RequestMapping(value = "GetPresenceType")
+        public void GetPresenceType(String jid, String to, HttpServletResponse httpServletResponse) {
+            Response response = new Response();
+            try {
+                XMPPConnection conn = xmppService.getXMPPConnection(jid);
+                Roster roster = Roster.getInstanceFor(conn);
+                Presence presence = roster.getPresence(jid);
+
+                logger.info(JSONUtil.toJson(presence));
+                if (presence.getType() == Presence.Type.available) {
+                    logger.info("User is online");
+                }
+
+                response.setSuccess(true);
+
+
+            } catch (Exception e) {
+                logger.error("", e);
+                response.setMsg("update error");
+                response.setSuccess(false);
+            }
+            Render.r(httpServletResponse, JSONUtil.toJson(response));
+        }
+
+
+    }
 }

@@ -21,12 +21,16 @@ public interface ConversationService {
      *
      * @param cJid
      */
-    Map<String, ConversationMsg> get(String cJid);
+    Map<String, String> get(String cJid);
+
+    String get(String cJid, String vJid) throws Exception;
 
     void addConversations(String cJid, ConversationMsg cm);
 
     void removeConversations(String cJid, String vJid);
 
     boolean isExist(String cJid, String vJid);
+
+    String getRealKey(String cJid);
 
 }

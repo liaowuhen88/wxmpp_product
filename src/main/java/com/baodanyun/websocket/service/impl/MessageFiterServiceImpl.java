@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MessageFiterServiceImpl implements MessageFiterService {
-    public static final String MM = "_charrging";
+    public static final String SWITCH = "xvkefu_charging";
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private JedisService jedisService;
@@ -59,7 +59,6 @@ public class MessageFiterServiceImpl implements MessageFiterService {
             ComputationalCostsEvent cce = new ComputationalCostsEvent(jid, clone);
             EventBusUtils.post(cce);
         }
-
     }
 
     @Override
@@ -67,10 +66,9 @@ public class MessageFiterServiceImpl implements MessageFiterService {
         // 是否加密
         boolean flag = true;
         // 总开关
-        String key1 = XMPPUtil.jidToName(jid) + MM;
-        String statue1 = jedisService.getValue(key1);
+        String statue1 = jedisService.getValue(SWITCH);
 
-        logger.info("总开关---key:{}----statue1:{}", key1, statue1);
+        logger.info("总开关---key:{}----statue1:{}", SWITCH, statue1);
         if ("1".equals(statue1)) {
             flag = false;
         } else {
@@ -88,6 +86,21 @@ public class MessageFiterServiceImpl implements MessageFiterService {
         }
 
         return !flag;
+    }
+
+    @Override
+    public boolean isEncrypt(String jid, String from) {
+       /* boolean flag = false;
+        String key3 = XMPPUtil.removeRoomSource(from);
+        String status3 = jedisService.getValue(key3);
+        logger.info("好友或者群 {} ------ status3:{}", key3, status3);
+        if ("1".equals(status3)) {
+            flag = true;
+        }
+
+        return flag;*/
+
+        return !dispaly(jid, from);
     }
 
 }

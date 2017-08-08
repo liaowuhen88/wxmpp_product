@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
  */
 public class InitChatMessageListener implements ChatMessageListener {
     protected static Logger logger = LoggerFactory.getLogger(InitChatMessageListener.class);
-    ConversationService conversationService = SpringContextUtil.getBean("conversationServiceImpl", ConversationService.class);
+
+    ConversationService conversationService = SpringContextUtil.getBean("conversationService", ConversationService.class);
     MsgService msgService = SpringContextUtil.getBean("msgServiceImpl", MsgService.class);
     private MsgSendControl msgSendControl;
     private AbstractUser user;

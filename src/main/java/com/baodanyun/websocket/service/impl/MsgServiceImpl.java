@@ -59,8 +59,10 @@ public class MsgServiceImpl implements MsgService {
             sm.setLoginUsername(ofmucroom.getDescription());
         }
 
-        boolean dispaly = messageFiterService.dispaly(to, realRoom);
-        sm.setDisplayStatus(dispaly);
+        boolean isEncrypt = messageFiterService.isEncrypt(to, realRoom);
+        if (!isEncrypt) {
+            sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+        }
 
         return sm;
     }
@@ -93,9 +95,10 @@ public class MsgServiceImpl implements MsgService {
             }
         }
 
-        boolean dispaly = messageFiterService.dispaly(user.getId(), realFrom);
-        sm.setDisplayStatus(dispaly);
-
+        boolean isEncrypt = messageFiterService.isEncrypt(user.getId(), realFrom);
+        if (!isEncrypt) {
+            sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+        }
         return sm;
     }
 

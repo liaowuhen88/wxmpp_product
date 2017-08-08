@@ -11,6 +11,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by liaowuhen on 2017/7/20.
@@ -19,6 +20,8 @@ import java.util.List;
 @Service
 public class JedisServiceImpl implements JedisService {
     public static final String displayStatus = "displayStatus";
+    public static final String ENCRYPTCOUNT = "encryptCount";
+
     private static Logger logger = LoggerFactory.getLogger(JedisServiceImpl.class);
     @Autowired
     private JedisPool jedisPool;
@@ -72,6 +75,21 @@ public class JedisServiceImpl implements JedisService {
     }
 
     @Override
+    public void removeKey(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.del(key);
+        } catch (Exception e) {
+            logger.error("error", e);
+        } finally {
+            if (null != jedis) {
+                jedis.close();
+            }
+        }
+    }
+
+    @Override
     public String getFromMap(String redisKey, String key) {
         Jedis jedis = null;
         try {
@@ -89,6 +107,55 @@ public class JedisServiceImpl implements JedisService {
         }
 
         return null;
+    }
+
+    @Override
+    public Boolean isExitMap(String redisKey, String key) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.hexists(redisKey, key);
+        } catch (Exception e) {
+            logger.error("error", e);
+        } finally {
+            if (null != jedis) {
+                jedis.close();
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public Map<String, String> getAllFromMap(String redisKey) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.hgetAll(redisKey);
+        } catch (Exception e) {
+            logger.error("error", e);
+        } finally {
+            if (null != jedis) {
+                jedis.close();
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public void removeFromMap(String redisKey, String key) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.hdel(redisKey, key);
+        } catch (Exception e) {
+            logger.error("error", e);
+        } finally {
+            if (null != jedis) {
+                jedis.close();
+            }
+        }
     }
 
     /**

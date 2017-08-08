@@ -7,6 +7,7 @@ public class LoginModel {
     private String username;
     private String password;
     private String type;
+    private String appkey;
     private String to;
     private String ic;
     private String nk;
@@ -57,5 +58,13 @@ public class LoginModel {
 
     public void setNk(String nk) {
         this.nk = nk;
+    }
+
+    public String getAppkey() {
+        return appkey;
+    }
+
+    public void setAppkey(String appkey) {
+        this.appkey = appkey;
     }
 }
