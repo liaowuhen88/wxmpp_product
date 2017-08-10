@@ -80,7 +80,7 @@ public abstract class VisitorUserLifeCycleServiceImpl extends UserLifeCycleServi
         AbstractUser customer = visitor.getCustomer();
 
         getMsgSendService().sendSMMsgToVisitor(visitor, customer, StatusMsg.Status.onlineQueueSuccess);
-        getMsgSendService().sendSMMsgToCustomer(visitor, customer, StatusMsg.Status.onlineQueueSuccess);
+        //getMsgSendService().sendSMMsgToCustomer(visitor, customer, StatusMsg.Status.onlineQueueSuccess);
 
         getMsgSendService().sendHelloToVisitor(visitor);
         getMsgSendService().sendHelloToCustomer(customer);

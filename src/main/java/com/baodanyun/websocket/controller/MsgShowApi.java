@@ -1,6 +1,7 @@
 package com.baodanyun.websocket.controller;
 
 import com.baodanyun.websocket.bean.Response;
+import com.baodanyun.websocket.bean.request.MaterialPageBean;
 import com.baodanyun.websocket.bean.request.MsgShowBean;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.service.externalInterface.MsgShowService;
@@ -47,4 +48,32 @@ public class MsgShowApi extends BaseController {
         Render.r(httpServletResponse, XMPPUtil.buildJson(response));
     }
 
+    /**
+     * 获取第三方素材
+     *
+     * @param re
+     * @param request
+     * @param httpServletResponse
+     * @throws IOException
+     * @throws XMPPException
+     * @throws SmackException
+     */
+    @RequestMapping(value = "getMaterial", method = {RequestMethod.GET, RequestMethod.POST})
+    public void getMaterial(MaterialPageBean re, HttpServletRequest request, HttpServletResponse httpServletResponse) throws IOException, XMPPException, SmackException {
+        Response response;
+        try {
+            String appkey = (String) request.getSession().getAttribute(Common.APPKEY);
+
+            response = msgShowService.getMaterial(appkey, re);
+
+        } catch (Exception e) {
+            logger.error("", e);
+            response = new Response();
+            response.setSuccess(false);
+            response.setMsg(e.getMessage());
+        }
+
+        AccessControlAllowUtils.access(httpServletResponse);
+        Render.r(httpServletResponse, XMPPUtil.buildJson(response));
+    }
 }

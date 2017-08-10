@@ -132,8 +132,12 @@ Utils = (function () {
                     item.time = myUtils.formatDate(new Date(item.ct));
                 }
                 if (item.from == currentId) {
-                    if (item.contentType == 'image') {
+                    if (item.contentType == 'image' || item.contentType == 'img') {
                         commentTpl = $('#imgRight').html();
+                    } else if (item.contentType == 'audio') {
+                        commentTpl = $('#audioRight').html();
+                    } else if (item.contentType == 'video') {
+                        commentTpl = $('#videoRight').html();
                     } else if (item.contentType == 'attachment') {
                         commentTpl = $('#attachmentRight').html();
                     } else {

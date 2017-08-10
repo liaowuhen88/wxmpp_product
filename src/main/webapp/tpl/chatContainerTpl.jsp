@@ -54,6 +54,15 @@
     </div>
 </script>
 
+<%--客服信息--%>
+<script id="mright" type="text/html">
+    <div class="timeline timeline-go">
+        <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
+        <span class="time">{{time}}</span>
+        <span class="message">{{&content}}</span>
+    </div>
+</script>
+
 <script id="imgLeft" type="text/html">
     <div class="timeline timeline-from" id="{{id}}">
         <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
@@ -108,14 +117,7 @@
     </div>
 </script>
 
-<%--客服信息--%>
-<script id="mright" type="text/html">
-    <div class="timeline timeline-go">
-        <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
-        <span class="time">{{time}}</span>
-        <span class="message">{{&content}}</span>
-    </div>
-</script>
+
 
 <script id="imgRight" type="text/html">
     <div class="timeline timeline-go" id="{{id}}">
@@ -138,5 +140,33 @@
             <div class="file-size">大小:{{size}}</div>
         </a></span>
     </div>
+    </div>
+</script>
+
+<script id="audioRight" type="text/html">
+    <div class="timeline timeline-go" id="{{id}}">
+        <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
+        <span class="time">{{time}}</span>
+        <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
+        </div>--%>
+        <span class="message"><audio src="{{content}}" controls="controls"></audio></span>
+    </div>
+</script>
+
+<script id="videoRight" type="text/html">
+    <div class="timeline timeline-go" id="{{id}}">
+        <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
+        <span class="time">{{time}}</span>
+        <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
+        </div>--%>
+        <span class="message">
+            <video width="320" height="240" controls="controls" autoplay="autoplay">
+
+                <%-- <source src="http://duobaojl.oss-cn-hangzhou.aliyuncs.com/wechat2017/2843883166980356279.mp4" type="video/mp4" controls="controls"/>--%>
+                <source src="{{content}}" type="video/mp4"/>
+
+            </video>
+
+        </span>
     </div>
 </script>

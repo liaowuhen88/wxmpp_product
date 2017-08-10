@@ -27,8 +27,8 @@ public class MessageFiterServiceImpl implements MessageFiterService {
 
     @Override
     public void filter(String jid, Msg msg) {
-        boolean flag = dispaly(jid, msg.getFrom());
-        if (!flag) {
+        boolean flag = isEncrypt(jid, msg.getFrom());
+        if (flag) {
             /**
              * 消息加密
              */
@@ -62,35 +62,36 @@ public class MessageFiterServiceImpl implements MessageFiterService {
     }
 
     @Override
-    public boolean dispaly(String jid, String from) {
+    public boolean isEncrypt(String jid, String from) {
         // 是否加密
-        boolean flag = true;
+        boolean flag = false;
         // 总开关
         String statue1 = jedisService.getValue(SWITCH);
 
         logger.info("总开关---key:{}----statue1:{}", SWITCH, statue1);
-        if ("1".equals(statue1)) {
-            flag = false;
-        } else {
+        // 总开关为计费模式
+        if ("0".equals(statue1)) {
             // 坐席是否欠费
             String status2 = jedisService.getValue(jid);
             logger.info("坐席Jid {} ------ statue2:{}", jid, status2);
-            if ("1".equals(status2)) {
+            if ("0".equals(status2)) {
+                flag = true;
+            } else {
                 String key3 = XMPPUtil.removeRoomSource(from);
                 String status3 = jedisService.getValue(key3);
                 logger.info("好友或者群 {} ------ status3:{}", key3, status3);
-                if ("1".equals(status3)) {
-                    flag = false;
+                if ("0".equals(status3)) {
+                    flag = true;
                 }
             }
         }
 
-        return !flag;
+        return flag;
     }
 
-    @Override
+   /* @Override
     public boolean isEncrypt(String jid, String from) {
-       /* boolean flag = false;
+       *//* boolean flag = false;
         String key3 = XMPPUtil.removeRoomSource(from);
         String status3 = jedisService.getValue(key3);
         logger.info("好友或者群 {} ------ status3:{}", key3, status3);
@@ -98,9 +99,9 @@ public class MessageFiterServiceImpl implements MessageFiterService {
             flag = true;
         }
 
-        return flag;*/
+        return flag;*//*
 
         return !dispaly(jid, from);
-    }
+    }*/
 
 }

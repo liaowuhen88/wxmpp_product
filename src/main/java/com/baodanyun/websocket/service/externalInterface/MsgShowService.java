@@ -1,6 +1,7 @@
 package com.baodanyun.websocket.service.externalInterface;
 
 import com.baodanyun.websocket.bean.Response;
+import com.baodanyun.websocket.bean.request.MaterialPageBean;
 import com.baodanyun.websocket.bean.request.MsgShowBean;
 
 /**
@@ -11,4 +12,6 @@ import com.baodanyun.websocket.bean.request.MsgShowBean;
 public interface MsgShowService {
 
     Response update(String appKey, String action, MsgShowBean re) throws Exception;
+
+    Response getMaterial(String appKey, MaterialPageBean re) throws Exception;
 }

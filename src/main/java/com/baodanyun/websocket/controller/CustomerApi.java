@@ -274,8 +274,10 @@ public class CustomerApi extends BaseController {
                 ConversationMsg cm = JSONUtil.toObject(ConversationMsg.class, json);
                 boolean isEncrypt = messageFiterService.isEncrypt(cu.getId(), from);
                 logger.info("isEncrypt {}", isEncrypt);
-                if (!isEncrypt) {
+                if (isEncrypt) {
                     cm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+                } else {
+                    cm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
                 }
                 response.setData(cm);
                 response.setSuccess(true);

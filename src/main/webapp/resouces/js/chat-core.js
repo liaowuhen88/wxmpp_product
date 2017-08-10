@@ -355,7 +355,11 @@ var xChat = function (options) {
 
         //发送普通消息消息
         this.buildNormalMsg = function (msg) {
-            msg.contentType = "text";
+            if (msg.contentType) {
+            } else {
+                msg.contentType = "text";
+            }
+            msg.dev_content = msg.content;
             msg.type = "msg";
             return $.extend({}, _baseSendMsg(), msg);
         };

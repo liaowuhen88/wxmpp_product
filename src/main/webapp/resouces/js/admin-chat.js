@@ -66,7 +66,8 @@ xchat.interface = {
     closeFriendWindow: base + '/api/closeFriendWindow',
     getConversation: base + '/api/getConversation',
     getDisplay: base + '/api/getDisplay',
-    msgShow: base + '/api/msgShow'
+    msgShow: base + '/api/msgShow',
+    getMaterial: base + '/api/getMaterial'
 };
 /*=====================================================================================初始化=====================================================================================*/
 //登录成功
@@ -90,6 +91,7 @@ xchat.initSuccessQueueStatusHandelEvent = function () {
     this.getCustomerList();     //获取客服列表
     this.setUserInfoEventBind();    //设置用户详情事件绑定
     this.customerListEventBind();//转接按钮事件
+    this.library_init();// 加载素材库
 
 };
 //初始化失败
@@ -280,7 +282,7 @@ xchat.sendAttachmentEventBind = function () {
     );
 };
 //发送信息
-xchat.sendEvent = function (msg) {
+xchat.sendEvent = function (msg, contentType) {
     if (msg) {
         $("#enterChat").val("");
         xchat.normalSend({
@@ -289,6 +291,7 @@ xchat.sendEvent = function (msg) {
             "icon": window.user.icon,
             "fromType": window.fromType,
             "from": window.currentId,
+            "contentType": contentType,
             "timeOutCall": function (o) {
                 o.removeClass("sending").addClass("timeOut");
             }
@@ -303,10 +306,14 @@ xchat.sendMsgHandelEvent = function (data) {
     if (data.icon === undefined || data.icon === '') {
         data.icon = this.controls.defaultAvatar;
     }
-    if (data.contentType == 'image') {
+    if (data.contentType == 'image' || data.contentType == 'img') {
         myUtils.renderDivAdd('imgRight', data, 'chatMsgContainer');
-    } else if (data.contentType == 'attachment') {
-        myUtils.renderDivAdd('attachmentRight', data, 'chatMsgContainer');
+    } else if (data.contentType == 'audio') {
+        myUtils.renderDivAdd('audioRight', data, 'chatMsgContainer');
+    } else if (data.contentType == 'audio') {
+        myUtils.renderDivAdd('audioRight', data, 'chatMsgContainer');
+    } else if (data.contentType == 'video') {
+        myUtils.renderDivAdd('videoRight', data, 'chatMsgContainer');
     } else {
         myUtils.renderDivAdd('mright', data, 'chatMsgContainer');
     }
@@ -1088,3 +1095,75 @@ xchat.addAlert = function () {
     $(Mustache.to_html($('#alert').html())).prependTo("#chatMsgContainer");
 };
 /*=====================================================================================工具=====================================================================================*/
+xchat.library_getData = function ($library, val, index) {
+    var _this = this;
+    $.ajax({
+        url: _this.interface.getMaterial + '?offset=0&limit=100&type=' + val,
+        type: 'post',
+        success: function (res) {
+            if (res.success) {
+                var html = '';
+                $.each(res.data, function (index, value) {
+                    if (value.type == 'text') {
+                        html += '<li class="item" value="' + value.type + '">' +
+                            '<h3 class="title">' + value.title + '</h3>' +
+                            '<div class="cont">' + value.content + '</div>' +
+                            '</li>';
+                    } else if (value.type == 'image') {
+                        html += '<li class="item" value="' + value.type + '">' +
+                            '<div class="cont" hidden>' + value.url + '</div>' +
+                            '<image class="cont" src="' + value.url + '" style="width: 50px;height: 40px"></image>' +
+                            '</li>';
+                    } else if (value.type == 'audio') {
+                        html += '<li class="item" value="' + value.type + '">' +
+                            '<div class="cont" hidden>' + value.url + '</div>' +
+                            '<audio class="cont" src="' + value.url + '"></audio>' +
+                            '</li>';
+                    } else if (value.type == 'video') {
+                        html += '<li class="item" value="' + value.type + '">' +
+                            '<div class="cont" hidden>' + value.url + '</div>' +
+                            ' <video width="320" height="240" controls="controls" autoplay="autoplay">' +
+                            '<source src="' + value.url + '"  type="video/mp4"/>' +
+                            '</video>' +
+                            '</li>';
+                    }
+
+                });
+                $library.find('.info .content').eq(index).find('ul').html(html);
+            } else {
+                $library.find('.info .content').eq(index).html(res.msg);
+            }
+        },
+        error: function () {
+        }
+    })
+}
+xchat.library_init = function () {
+    var _this = this;
+    var $library = $('#library');
+    var $chatInput = $('#chatInput');
+    _this.library_getData($library, 'text', 0)
+    // 绑定事件
+    $library.on('click', '.bars li', function () {
+        var index = $(this).index();
+        var val = $(this).attr("value");
+        _this.library_getData($library, val, index)
+        $(this).addClass('active').siblings().removeClass('active')
+        $library.find('.info .content').eq(index).addClass('active').siblings().removeClass('active')
+    });
+    $library.on('click', '.libraries .item', function () {
+        var msg = $(this).find('.cont').text();
+        var val = $(this).attr("value");
+        xchat.sendEvent(msg, val);
+        //console.log(msg,val);
+        $library.removeClass('library_show').addClass('library_hide')
+    })
+    //
+    $chatInput.on('click', '.icon-emoji', function () {
+        if ($library.attr('class').indexOf('show') > 0) {
+            $library.removeClass('library_show').addClass('library_hide')
+        } else {
+            $library.removeClass('library_hide').addClass('library_show')
+        }
+    })
+};

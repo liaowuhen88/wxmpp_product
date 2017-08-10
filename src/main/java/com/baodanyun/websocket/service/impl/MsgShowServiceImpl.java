@@ -1,6 +1,7 @@
 package com.baodanyun.websocket.service.impl;
 
 import com.baodanyun.websocket.bean.Response;
+import com.baodanyun.websocket.bean.request.MaterialPageBean;
 import com.baodanyun.websocket.bean.request.MsgShowBean;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.JedisService;
@@ -38,9 +39,9 @@ public class MsgShowServiceImpl implements MsgShowService {
         mm.put("content", JSONUtil.toJson(re));
 
         logger.info(JSONUtil.toJson(mm));
-        String str = HttpUtils.post(Config.sasUrl, mm);
-
         jedisService.addMap(JedisServiceImpl.ENCRYPTCOUNT, re.getUsername(), re.getCount() + "");
+        String str = HttpUtils.post(Config.sasUrl, mm);
+        logger.info(str);
 
         if (StringUtils.isNotEmpty(str)) {
             return JSONUtil.toObject(Response.class, str);
@@ -48,5 +49,42 @@ public class MsgShowServiceImpl implements MsgShowService {
             throw new BusinessException("返回结果为空");
         }
 
+    }
+
+    @Override
+    public Response getMaterial(String appKey, MaterialPageBean re) throws Exception {
+        if (StringUtils.isEmpty(appKey)) {
+            throw new BusinessException("appKey为空");
+        }
+
+        String action = null;
+        if (StringUtils.isEmpty(re.getType())) {
+            throw new BusinessException("获取素材类别为空");
+        } else {
+            if ("text".equals(re.getType())) {
+                action = "gettextlist";
+            } else if ("img".equals(re.getType())) {
+                action = "getallpicturelist";
+            } else if ("video".equals(re.getType())) {
+                action = "getvideolist";
+            } else if ("audio".equals(re.getType())) {
+                action = "getvoicelist";
+            } else {
+                throw new BusinessException("不支持的类别" + re.getType());
+            }
+        }
+
+        Map<String, String> mm = new HashMap<>();
+        mm.put("appkey", appKey);
+        mm.put("action", action);
+        mm.put("content", JSONUtil.toJson(re));
+        logger.info(JSONUtil.toJson(mm));
+        String str = HttpUtils.post(Config.sasUrl, mm);
+
+        if (StringUtils.isNotEmpty(str)) {
+            return JSONUtil.toObject(Response.class, str);
+        } else {
+            throw new BusinessException("返回结果为空");
+        }
     }
 }

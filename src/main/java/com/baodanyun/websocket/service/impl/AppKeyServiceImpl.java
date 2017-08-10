@@ -108,7 +108,12 @@ public class AppKeyServiceImpl implements AppKeyService {
         au.setOpenId(re.getId());
         au.setUserName(re.getNickname());
         au.setIcon(re.getAvatar());
-        au.setNickName(re.getNickname()+"[pc网站]");
+        if (StringUtils.isNotEmpty(re.getNickname())) {
+            au.setNickName(re.getNickname() + "[pc网站]");
+        } else {
+            au.setNickName("[pc网站]");
+        }
+
         au.setPassWord("00818863ff056f1d66c8427836f94a87");
 
         visitors.put(token, au);

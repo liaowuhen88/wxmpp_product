@@ -39,6 +39,33 @@ public class MsgServiceImpl implements MsgService {
     }
 
     @Override
+    public ConversationMsg getNewWebJoines(AbstractUser user, String to) {
+        String realJid = XMPPUtil.removeRoomSource(user.getId());
+        ConversationMsg sm = new ConversationMsg();
+        sm.setKey(realJid);
+        sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
+        sm.setType(Msg.Type.status.toString());
+        sm.setLoginTime(new Date().getTime());
+        //
+        sm.setFromType(Msg.fromType.personal);
+        sm.setFrom(realJid);
+        sm.setTo(to);
+        sm.setCt(new Date().getTime());
+
+        sm.setFromName(user.getLoginUsername());
+        sm.setLoginUsername(user.getNickName());
+
+        boolean isEncrypt = messageFiterService.isEncrypt(to, realJid);
+        if (isEncrypt) {
+            sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+        } else {
+            sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
+        }
+
+        return sm;
+    }
+
+    @Override
     public ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to) {
         String realRoom = XMPPUtil.removeRoomSource(room);
         ConversationMsg sm = new ConversationMsg();
@@ -60,8 +87,10 @@ public class MsgServiceImpl implements MsgService {
         }
 
         boolean isEncrypt = messageFiterService.isEncrypt(to, realRoom);
-        if (!isEncrypt) {
+        if (isEncrypt) {
             sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+        } else {
+            sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
         }
 
         return sm;
@@ -96,8 +125,10 @@ public class MsgServiceImpl implements MsgService {
         }
 
         boolean isEncrypt = messageFiterService.isEncrypt(user.getId(), realFrom);
-        if (!isEncrypt) {
+        if (isEncrypt) {
             sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+        } else {
+            sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
         }
         return sm;
     }

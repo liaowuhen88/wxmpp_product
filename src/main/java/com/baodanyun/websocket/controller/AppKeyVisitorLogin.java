@@ -1,14 +1,13 @@
 package com.baodanyun.websocket.controller;
 
 import com.baodanyun.websocket.bean.Response;
+import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.request.AppKeyVisitorLoginBean;
 import com.baodanyun.websocket.bean.user.AppCustomer;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.exception.BusinessException;
-import com.baodanyun.websocket.service.AppKeyService;
-import com.baodanyun.websocket.service.XmppService;
-import com.baodanyun.websocket.service.XmppUserOnlineServer;
+import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.AccessControlAllowUtils;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
@@ -41,6 +40,11 @@ public class AppKeyVisitorLogin extends BaseController {
 
     @Autowired
     private XmppService xmppService;
+    @Autowired
+    private MsgService msgService;
+    @Autowired
+    private ConversationService conversationService;
+
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
     public void visitor(AppKeyVisitorLoginBean re, HttpServletRequest request, HttpServletResponse response) throws IOException, XMPPException, SmackException {
@@ -54,6 +58,17 @@ public class AppKeyVisitorLogin extends BaseController {
             customer = appKeyService.getCustomerByAppKey(re.getAppKey(), url);
             Visitor visitor = appKeyService.getVisitor(re, customer.getToken());
 
+            boolean isExist = conversationService.isExist(customer.getId(), visitor.getId());
+
+            if (isExist) {
+                logger.info(" user {}, room {} isExist", customer.getId(), visitor.getId());
+            } else {
+                logger.info(" user {}, room {} notExist", customer.getId(), visitor.getId());
+                ConversationMsg msgConversation = msgService.getNewWebJoines(visitor, customer.getId());
+                logger.info(JSONUtil.toJson(msgConversation));
+                // msgSendControl.sendMsg(msgConversation);
+                conversationService.addConversations(customer.getId(), msgConversation);
+            }
             visitor.setCustomer(customer);
             request.getSession().setAttribute(Common.USER_KEY, visitor);
             boolean flag = customerOnline(customer.getId());
