@@ -19,6 +19,7 @@ public class Msg implements Serializable{
     private static final Logger logger = LoggerFactory.getLogger(Msg.class);
     // 表示用户从那个入口接入
     //  0 默认h5客服端   1 微信直接聊天入口
+    private boolean encrypt;
     private Integer toType;
     private String token;
     private String fromName;//from的昵称
@@ -222,6 +223,16 @@ public class Msg implements Serializable{
         this.toType = toType;
     }
 
+    public boolean isEncrypt() {
+        return encrypt;
+    }
+
+    public void setEncrypt(boolean encrypt) {
+        this.encrypt = encrypt;
+    }
+
+    //消息种类
+
     //receiptMsg 回执消息
     public enum MsgContentType {
         text, video, file, audio, image, receiptMsg, attachment
@@ -230,8 +241,6 @@ public class Msg implements Serializable{
     public enum fromType {
         personal, group
     }
-
-    //消息种类
 
     /**
      * 消息类型 active(动作类), msg(消息), status(状态消息例如上下线)

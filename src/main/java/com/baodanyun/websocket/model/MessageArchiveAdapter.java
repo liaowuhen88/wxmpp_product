@@ -7,6 +7,12 @@ public class MessageArchiveAdapter {
 
     private String messageid;
 
+    private String toJid;
+
+    private String fromJid;
+
+    private String contentType;
+
     private String content;
 
     private Date ct;
@@ -41,5 +47,29 @@ public class MessageArchiveAdapter {
 
     public void setCt(Date ct) {
         this.ct = ct;
+    }
+
+    public String getToJid() {
+        return toJid;
+    }
+
+    public void setToJid(String toJid) {
+        this.toJid = toJid;
+    }
+
+    public String getFromJid() {
+        return fromJid;
+    }
+
+    public void setFromJid(String fromJid) {
+        this.fromJid = fromJid;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

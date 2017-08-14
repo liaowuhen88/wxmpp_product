@@ -52,7 +52,7 @@ public class MsgServiceImpl implements MsgService {
         sm.setTo(to);
         sm.setCt(new Date().getTime());
 
-        sm.setFromName(user.getLoginUsername());
+        sm.setFromName("访客(" + user.getLoginUsername() + ")");
         sm.setLoginUsername(user.getNickName());
 
         boolean isEncrypt = messageFiterService.isEncrypt(to, realJid);

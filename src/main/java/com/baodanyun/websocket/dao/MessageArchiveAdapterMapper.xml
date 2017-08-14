@@ -4,11 +4,14 @@
     <resultMap id="BaseResultMap" type="com.baodanyun.websocket.model.MessageArchiveAdapter">
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="messageId" property="messageid" jdbcType="VARCHAR"/>
+        <result column="fromJid" property="fromJid" jdbcType="VARCHAR"/>
+        <result column="toJid" property="toJid" jdbcType="VARCHAR"/>
+        <result column="contentType" property="contentType" jdbcType="VARCHAR"/>
         <result column="content" property="content" jdbcType="VARCHAR"/>
         <result column="ct" property="ct" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, messageId, content, ct
+        id, messageId,fromJid,toJid, contentType,content, ct
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -24,6 +27,17 @@
     </select>
 
 
+    <select id="selectByFromAndTo" resultMap="BaseResultMap"
+            parameterType="com.baodanyun.websocket.model.MessageArchiveAdapter">
+        select
+        <include refid="Base_Column_List"/>
+        from messagearchiveadapter
+        where fromJid = #{fromJid,jdbcType=VARCHAR} and toJid = #{toJid,jdbcType=VARCHAR}
+
+        ORDER BY id desc
+    </select>
+
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete from messagearchiveadapter
         where id = #{id,jdbcType=INTEGER}
@@ -34,9 +48,11 @@
     where messageId = #{messageid,jdbcType=VARCHAR}
   </delete>
     <insert id="insert" parameterType="com.baodanyun.websocket.model.MessageArchiveAdapter">
-    insert into messagearchiveadapter (id, messageId, content, 
+        insert into messagearchiveadapter (id, messageId, fromJid,toJid,contentType,content,
       ct)
-    values (#{id,jdbcType=INTEGER}, #{messageid,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+        values (#{id,jdbcType=INTEGER},
+        #{messageid,jdbcType=VARCHAR},#{fromJid,jdbcType=VARCHAR},#{toJid,jdbcType=VARCHAR},
+        #{contentType,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},
       #{ct,jdbcType=TIMESTAMP})
   </insert>
     <insert id="insertSelective" parameterType="com.baodanyun.websocket.model.MessageArchiveAdapter">
@@ -47,6 +63,16 @@
             </if>
             <if test="messageid != null">
                 messageId,
+            </if>
+            <if test="fromJid != null">
+                fromJid,
+            </if>
+            <if test="toJid != null">
+                toJid,
+            </if>
+
+            <if test="contentType != null">
+                contentType,
             </if>
             <if test="content != null">
                 content,
@@ -62,6 +88,15 @@
             <if test="messageid != null">
                 #{messageid,jdbcType=VARCHAR},
             </if>
+            <if test="fromJid != null">
+                #{fromJid,jdbcType=VARCHAR},
+            </if>
+            <if test="toJid != null">
+                #{toJid,jdbcType=VARCHAR},
+            </if>
+            <if test="contentType != null">
+                #{contentType,jdbcType=VARCHAR},
+            </if>
             <if test="content != null">
                 #{content,jdbcType=VARCHAR},
             </if>
@@ -75,6 +110,12 @@
         <set>
             <if test="messageid != null">
                 messageId = #{messageid,jdbcType=VARCHAR},
+            </if>
+            <if test="fromJid != null">
+                fromJid = #{fromJid,jdbcType=VARCHAR},
+            </if>
+            <if test="toJid != null">
+                toJid = #{toJid,jdbcType=VARCHAR},
             </if>
             <if test="content != null">
                 content = #{content,jdbcType=VARCHAR},

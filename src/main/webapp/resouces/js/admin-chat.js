@@ -92,6 +92,7 @@ xchat.initSuccessQueueStatusHandelEvent = function () {
     this.setUserInfoEventBind();    //设置用户详情事件绑定
     this.customerListEventBind();//转接按钮事件
     this.library_init();// 加载素材库
+    this.setting_allEventBind();//转接按钮事件
 
 };
 //初始化失败
@@ -153,9 +154,8 @@ xchat.recvMsgEvent = function (json) {
     if (json.from != window.destJid) {
         // 未打开当前窗口
         if (jQuery.inArray(json.from, this.recvMsg) == -1) {
-            this.recvMsg.push(json.from);
-            // alert(this.recvMsg.length);
-            $(this.controls.waitReplyPerson).html(this.recvMsg.length);
+            //_this.recvMsg.push(json.from);
+            //$(_this.controls.waitReplyPerson).html(_this.recvMsg.length);
         }
 
         var li = document.getElementById(json.from);
@@ -170,7 +170,7 @@ xchat.recvMsgEvent = function (json) {
                 success: function (res) {
                     if (res.success) {
                         _this.onlineQueueSuccessStatusHandelEvent(res.data);
-                        //_this.userLabelComb(res.data);
+                        _this.changeNewMessageStatus(res.data);
                     }
                 },
                 error: function () {
@@ -179,27 +179,33 @@ xchat.recvMsgEvent = function (json) {
             });
             console.log("not exit");
         }
-        // 新消息移动到表头
-        $('#friendList').find('li').each(function () {
-            if($(this).attr('id')===json.from){
-                $('#friendList').prepend($(this));
-            }
-        });
-        // 单个用户
-        $(document.getElementById('m' + json.from)).attr("class", "new-message");
-        var from = json.from;
-        var count = xchat.recvMsgOne[from];
-        if (count) {
-            count = count + 1;
-        } else {
-            count = 1;
-        }
-        xchat.recvMsgOne[from] = count;
-        $(document.getElementById('m' + from)).html(count);
-
     }
 };
 
+xchat.changeNewMessageStatus = function (json) {
+    // 新消息移动到表头
+    $('#friendList').find('li').each(function () {
+        if ($(this).attr('id') === json.from) {
+            $('#friendList').prepend($(this));
+        }
+    });
+    // 单个用户
+    if (json.encrypt) {
+        $(document.getElementById(json.from)).attr("class", "encrypt have-message");
+    } else {
+        $(document.getElementById(json.from)).attr("class", "online have-message");
+
+    }
+    var from = json.from;
+    var count = xchat.recvMsgOne[from];
+    if (count) {
+        count = count + 1;
+    } else {
+        count = 1;
+    }
+    xchat.recvMsgOne[from] = count;
+    $(document.getElementById('m' + from)).html(count);
+}
 
 //接收到文本消息
 xchat.recvTextMsgHandelEvent = function (json) {
@@ -254,8 +260,6 @@ xchat.recvVideoMsgHandelEvent = function (json) {
     myUtils.storage(json);
     xchat.goBottom();
 };
-
-
 
 
 /*=====================================================================================接收消息=====================================================================================*/
@@ -449,14 +453,14 @@ xchat.loadChatList = function () {
 xchat.loadChatListEvent = function () {
     var _this = this;
     $(_this.controls.friendList).on("click", 'li', function () {
-        $(_this.controls.backupfriendList).find("li").removeClass("active");
+        $(_this.controls.friendList).find("li").removeClass("active");
         var myFriendId = $(this).attr("id");
         var openId = $(this).attr("openId");
         var fromType = $(this).attr("fromType");
         var nickname = $(this).find('.name').text();
         var isOnline = $(this).attr("class").indexOf("online");
 
-        _this.openFriendWindow(isOnline, myFriendId, nickname, openId,fromType);
+        _this.openFriendWindow(isOnline, myFriendId, nickname, openId, fromType);
         $(this).addClass("active");
     });
 
@@ -487,8 +491,37 @@ xchat.loadChatListEvent = function () {
 /*=====================================================================================队列事件=====================================================================================*/
 //ws关闭后的处理方式
 xchat.wsClose = function () {
-   // window.location.href = this.interface.login;
+    // window.location.href = this.interface.login;
 };
+
+//本地缓存历史数据
+xchat.unEncryptLocalHistory = function (id, list) {
+    var _this = this;
+    //console.log(list);
+    //console.log(id);
+    var map = {};
+    if (list) {
+        $.each(list, function (index, val) {
+            //console.log(val);
+            map[val.messageid] = val;
+        });
+    }
+    //console.log(map);
+    var dataList = myUtils.getStorage(id);
+    if (dataList) {
+        dataList = eval("(" + dataList + ")");
+        dataList.map(function (val) {
+            var li = map[val.id];
+            //console.log(li);
+            if (li) {
+                val.content = li.content;
+                console.log(val);
+            }
+        });
+        localStorage.setItem("msg:" + id, JSON.stringify(dataList));
+    }
+};
+
 //本地缓存历史数据
 xchat.getLocalHistory = function (id) {
     var _this = this;
@@ -570,9 +603,10 @@ xchat.visitorProperties = function () {
 };
 /*=====================================================================================打开对话=====================================================================================*/
 //打开对话的窗口
-xchat.openFriendWindow = function (isOnline, id, nickname, openId,fromType) {
+xchat.openFriendWindow = function (isOnline, id, nickname, openId, fromType) {
     var _this = this;
     window.destJid = id;
+    window.destJid_nickName = nickname;
     window.fromType = fromType;
     //$(id).addClass("active").siblings().removeClass("active");  //设置当前的好友为激活 且 把消息变成已阅读
     $("#currentChatId").empty().append("您正在和" + nickname + "聊天 ").data('id', id); //设置聊天标题
@@ -598,8 +632,6 @@ xchat.openFriendWindow = function (isOnline, id, nickname, openId,fromType) {
 
     _this.getUserInfo(window.currentId, id, openId);
     _this.getUserLabel();
-
-    this.setting_allEventBind(window.destJid, nickname);//转接按钮事件
 
 };
 //获取当前用户的详情
@@ -647,7 +679,7 @@ xchat.getUserInfo = function (currentId, destJid, openId) {
                             }
                         }
 
-                        if(company && company[0]){
+                        if (company && company[0]) {
                             personalInfo.company = company[0].ename;
                         }
 
@@ -938,18 +970,18 @@ xchat.customerListEventBind = function () {
         _this.getCustomerList();
     });
 };
-xchat.setting_allEventBind = function (destJid, nickname) {
+xchat.setting_allEventBind = function () {
     var _this = this;
     var setting_all = $(_this.controls.settingAll);
     var setting_allConfirm = $('#setting_allConfirm');
 
     setting_all.modal();
     setting_all.on('click', function () {
-        _this.getSetting_all(destJid, nickname);
+        _this.getSetting_all(window.destJid);
     });
 
     setting_allConfirm.on('click', function () {
-        _this.setting_allConfirm(destJid);
+        _this.setting_allConfirm(window.destJid);
     });
 };
 
@@ -987,7 +1019,7 @@ xchat.getCustomerList = function () {
     })
 };
 
-xchat.getSetting_all = function (destJid, nickname) {
+xchat.getSetting_all = function (destJid) {
     var _this = this;
     $.ajax({
         url: _this.interface.getDisplay + '?from=' + destJid,
@@ -996,27 +1028,54 @@ xchat.getSetting_all = function (destJid, nickname) {
             if (res.success) {
                 var html = '<div>' +
                     '<label for="newPWD">' +
-                    '<span class="tag" style="font-size: 18px;">' + nickname + '</span>' +
+                    '<span class="tag" style="font-size: 18px;">' + window.destJid_nickName + '</span>' +
                     '</label>' +
                     '</div>' +
                     '<div style="margin: 10px 0 0 0; font-size:14px;">' +
                     '<label for="newPWD">' +
                     '<span class="tag">默认解密消息条数：</span>' +
-                    '<input type="text"  name="encryptCount" id="encryptCount" placeholder="默认解密消息条数" value="' + res.data.count + '" style="border: 1px solid #ccc;padding: 6px;color: #666;">' +
+                    '<select name="encryptCount" id="encryptCount">' +
+                    '<option value="50" selected>50</option>' +
+                    '<option value="100">100</option>' +
+                    '<option value="200">200</option>' +
+                    '</select>' +
+                        //'<input type="text"   placeholder="默认解密消息条数" value="' + res.data.count + '" style="border: 1px solid #ccc;padding: 6px;color: #666;">' +
                     '</label>' +
-                    '</div>' +
                     '<div style="margin: 10px 0 0 0; font-size:14px;line-height: 26px;">' +
                     '<label for="newPWD">' +
                     '<span class="tag">是否开启计费：</span>' +
-                    '开启<input type="radio"  name="status" value="1" style="margin: 0 20px 0 5px;">' +
-                    '关闭<input type="radio"  name="status" value="0" style="margin: 0 20px 0 5px;">' +
+                    '</div>' +
+                    '关闭' +
+                    ' <div class="v-switch" id="v-switch">' +
+                    ' <div class="v-switch-slider">' +
+                    '</div>' +
+                    '</div>' +
+                    '开启' +
+
+                        //'开启<input type="radio"  name="status" value="1" style="margin: 0 20px 0 5px;">' +
+                        //'关闭<input type="radio"  name="status" value="0" style="margin: 0 20px 0 5px;">' +
                     '</label>' +
                     '</div>';
                 $(_this.controls.settingAllFrom).html(html);
+
+                document.querySelector('.v-switch').addEventListener('click', function (e) {
+                    e.target.classList.toggle('opened');
+                });
+                /* $('#v-switch').on('click', function () {
+                 });*/
+
+                $("#encryptCount").find("option[value='" + res.data.count + "']").attr("selected", true);
+
                 if (res.data.status == 1) {
-                    $("input[name='status'][value='1']").attr("checked", true);
+                    if ($('.v-switch.opened').length == 0) {
+                        //alert('开启');
+                        $('.v-switch').addClass("opened");
+                    }
                 } else {
-                    $("input[name='status'][value='0']").attr("checked", true);
+                    if ($('.v-switch.opened').length == 1) {
+                        //alert('关闭');
+                        $('.v-switch').removeClass("opened");
+                    }
                 }
 
 
@@ -1033,7 +1092,11 @@ xchat.getSetting_all = function (destJid, nickname) {
 
 xchat.setting_allConfirm = function (destJid) {
     var _this = this;
-    var status = $("input[name='status']:checked").val();
+    var status = 0;
+    if ($('.v-switch.opened').length > 0) {
+        status = 1;
+    }
+
     var count = $("#encryptCount").val();
 
     $.ajax({
@@ -1042,6 +1105,16 @@ xchat.setting_allConfirm = function (destJid) {
         success: function (res) {
             if (res.success) {
                 $("#setting_all_modal").hide();
+                // 单个用户
+                if (status == 0) {
+                    $(document.getElementById(destJid)).attr("class", "encrypt have-message");
+                } else {
+                    $(document.getElementById(destJid)).attr("class", "online have-message");
+                    if (res.data.msg.list) {
+                        _this.unEncryptLocalHistory(destJid, res.data.msg.list);
+                    }
+                }
+
             } else {
                 $(_this.controls.settingAllFrom).html(res.msg);
             }
@@ -1050,7 +1123,6 @@ xchat.setting_allConfirm = function (destJid) {
         }
     })
 };
-
 
 
 xchat.turnComb = function (data) {
@@ -1127,7 +1199,6 @@ xchat.library_getData = function ($library, val, index) {
                             '</video>' +
                             '</li>';
                     }
-
                 });
                 $library.find('.info .content').eq(index).find('ul').html(html);
             } else {

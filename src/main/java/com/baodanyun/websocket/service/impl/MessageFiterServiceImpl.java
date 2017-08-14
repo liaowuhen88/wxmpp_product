@@ -34,12 +34,16 @@ public class MessageFiterServiceImpl implements MessageFiterService {
              */
             MessageArchiveAdapter ma = new MessageArchiveAdapter();
             ma.setMessageid(msg.getId());
+            ma.setContentType(msg.getContentType());
             ma.setContent(msg.getContent());
+            ma.setFromJid(msg.getFrom());
+            ma.setToJid(msg.getTo());
 
             MessageArchiveAdapterEvent me = new MessageArchiveAdapterEvent();
             me.setMessageArchiveAdapter(ma);
             EventBusUtils.post(me);
 
+            msg.setEncrypt(true);
             if (Msg.MsgContentType.image.toString().equals(msg.getContentType())) {
                 msg.setContent("您收到一张图片");
                 msg.setContentType(Msg.MsgContentType.text.toString());
@@ -55,9 +59,7 @@ public class MessageFiterServiceImpl implements MessageFiterService {
 
         } else {
             //TODO 计费接口
-            Msg clone = SerializationUtils.clone(msg);
-            ComputationalCostsEvent cce = new ComputationalCostsEvent(jid, clone);
-            EventBusUtils.post(cce);
+            computationalCosts(jid, msg);
         }
     }
 
@@ -87,6 +89,29 @@ public class MessageFiterServiceImpl implements MessageFiterService {
         }
 
         return flag;
+    }
+
+    @Override
+    public boolean computationalCosts(String jid, Msg msg) {
+        Msg clone = SerializationUtils.clone(msg);
+        ComputationalCostsEvent cce = new ComputationalCostsEvent(jid, clone);
+        EventBusUtils.post(cce);
+
+        return true;
+    }
+
+    @Override
+    public boolean computationalCosts(String jid, MessageArchiveAdapter ma) {
+        Msg msg = new Msg();
+        msg.setContent(ma.getContent());
+        msg.setContentType(ma.getContentType());
+        msg.setFrom(ma.getFromJid());
+        msg.setTo(ma.getToJid());
+        msg.setCt(ma.getCt().getTime());
+        msg.setType(Msg.Type.msg.toString());
+        ComputationalCostsEvent cce = new ComputationalCostsEvent(jid, msg);
+        EventBusUtils.post(cce);
+        return true;
     }
 
    /* @Override
