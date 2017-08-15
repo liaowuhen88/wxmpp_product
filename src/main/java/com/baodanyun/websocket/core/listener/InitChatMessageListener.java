@@ -44,7 +44,9 @@ public class InitChatMessageListener implements ChatMessageListener {
     public void processMessage(Chat chat, Message msg) {
         try {
             logger.info("{} xmpp receive message :" + JSONUtil.toJson(msg),this.getUser().getId());
+
             Msg sendMsg = msgSendControl.getMsg(msg);
+
             String from = msg.getFrom();
             String realFrom = XMPPUtil.removeRoomSource(from);
             if (null != sendMsg) {

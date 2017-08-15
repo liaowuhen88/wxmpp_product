@@ -51,8 +51,6 @@ public class CustomerApi extends BaseController {
 
     @Autowired
     private ConversationService conversationService;
-    @Autowired
-    private MessageFiterService messageFiterService;
 
     @Autowired
     @Qualifier("wcUserLifeCycleService")
@@ -60,6 +58,9 @@ public class CustomerApi extends BaseController {
 
     @Autowired
     private JedisService jedisService;
+
+    @Autowired
+    private MessageFiterService messageFiterService;
 
     /**
      * 获取客服的信息
@@ -235,13 +236,17 @@ public class CustomerApi extends BaseController {
      */
 
     @RequestMapping(value = "getDisplay")
-    public void getDisplay(String from, HttpServletResponse httpServletResponse) {
+    public void getDisplay(String from, HttpServletRequest request,HttpServletResponse httpServletResponse) {
         Response response = new Response();
         try {
-            String status = jedisService.getValue(from);
+            AbstractUser cu = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
+            boolean isEncrypt = messageFiterService.isEncrypt(cu.getId(),from);
+            String status = "1";
+            if(isEncrypt){
+                status = "0";
+            }
 
             String count = jedisService.getFromMap(JedisServiceImpl.ENCRYPTCOUNT, from);
-
             Map<String, String> map = new HashMap<>();
             if (StringUtils.isEmpty(count) || "null".equals(count)) {
                 count = "0";

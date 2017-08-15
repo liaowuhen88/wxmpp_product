@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by liaowuhen on 2017/1/12.
@@ -68,8 +69,8 @@ public class MsgSendControl {
                 String to = XMPPUtil.removeSource(msg.getTo());
                 sendMsg.setTo(to);
             }
-
-            sendMsg.setId(msg.getStanzaId());
+            sendMsg.setId(UUID.randomUUID().toString());
+            //sendMsg.setId(msg.getStanzaId());
         }else {
             logger.info("body is null");
         }

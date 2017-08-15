@@ -161,6 +161,7 @@ xchat.recvMsgEvent = function (json) {
         var li = document.getElementById(json.from);
         if (li) {
             console.log("exit");
+            _this.changeNewMessageStatus(json);
         } else {
 
             $.ajax({
@@ -191,9 +192,9 @@ xchat.changeNewMessageStatus = function (json) {
     });
     // 单个用户
     if (json.encrypt) {
-        $(document.getElementById(json.from)).attr("class", "encrypt have-message");
+        $(document.getElementById('m' + json.from)).attr("class", "new-message encrypt");
     } else {
-        $(document.getElementById(json.from)).attr("class", "online have-message");
+        $(document.getElementById('m' + json.from)).attr("class", "new-message");
 
     }
     var from = json.from;
@@ -1107,9 +1108,9 @@ xchat.setting_allConfirm = function (destJid) {
                 $("#setting_all_modal").hide();
                 // 单个用户
                 if (status == 0) {
-                    $(document.getElementById(destJid)).attr("class", "encrypt have-message");
+                    $(document.getElementById(destJid)).attr("class", "encrypt have-message active");
                 } else {
-                    $(document.getElementById(destJid)).attr("class", "online have-message");
+                    $(document.getElementById(destJid)).attr("class", "online have-message active");
                     if (res.data.msg.list) {
                         _this.unEncryptLocalHistory(destJid, res.data.msg.list);
                     }
