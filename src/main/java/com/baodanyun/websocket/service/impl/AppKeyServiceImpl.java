@@ -2,7 +2,7 @@ package com.baodanyun.websocket.service.impl;
 
 import com.baodanyun.websocket.bean.Response;
 import com.baodanyun.websocket.bean.request.AppKeyVisitorLoginBean;
-import com.baodanyun.websocket.bean.response.AppKeyCustomer;
+import com.baodanyun.websocket.bean.response.AppKeyResponse;
 import com.baodanyun.websocket.bean.user.AppCustomer;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.exception.BusinessException;
@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -42,80 +41,80 @@ public class AppKeyServiceImpl implements AppKeyService {
             logger.info(result);
     }*/
 
-    /**
-     * 如果校验出错，抛异常
-     *
-     * @param appkey
-     * @return
-     */
     @Override
-    public AppCustomer getCustomerByAppKey(String appkey, String url) throws BusinessException {
-
-        if (StringUtils.isEmpty(appkey)) {
+    public AppKeyResponse getAppKeyResponse(AppKeyVisitorLoginBean re) throws Exception {
+        if (StringUtils.isEmpty(re.getAppKey())) {
             throw new BusinessException("appKey is null");
         }
 
         Map query = new HashMap();
         query.put("action", "getwebzx");
-        query.put("content", "1");
-        query.put("appkey", appkey);
+        query.put("appkey", re.getAppKey());
+        query.put("content", JSONUtil.toJson(re));
 
-        try {
-            String result = HttpUtils.get(appKeyUrl, query);
-            logger.info(result);
-            if(StringUtils.isEmpty(result)){
-                throw new BusinessException("result is error");
-            }
-            Response response = JSONUtil.toObject(Response.class, result);
-            if (null == response.getData()) {
-                throw new BusinessException("appkey is error");
-            }
-
-            Map mapappKey = (Map) response.getData();
-            AppKeyCustomer appKeyCustomer = JSONUtil.toObject(AppKeyCustomer.class, JSONUtil.toJson(mapappKey));
-            AppCustomer au = new AppCustomer();
-            au.setId(XMPPUtil.nameToJid(appKeyCustomer.getcName()));
-            au.setLoginUsername(appKeyCustomer.getcName());
-            au.setOpenId(appKeyCustomer.getcName());
-            au.setUserName(appKeyCustomer.getNickName());
-            au.setIcon(appKeyCustomer.getIcon());
-            au.setCustomerIsOnline(true);
-            au.setSocketUrl(url + "/sockjs/newVisitor");
-            au.setOssUrl(url + "/api/fileUpload/" + appKeyCustomer.getcName());
-            au.setToken(UUID.randomUUID().toString());
-            au.setLoginTime(System.currentTimeMillis());
-            return au;
-
-        } catch (IOException e) {
-            logger.error("error", e);
-            new BusinessException("请求接口异常");
-        } catch (Exception e) {
-            logger.error("error", e);
-            new BusinessException("解析异常");
+        String result = HttpUtils.get(appKeyUrl, query);
+        logger.info(result);
+        if (StringUtils.isEmpty(result)) {
+            throw new BusinessException("result is error");
         }
-        return null;
+        Response response = JSONUtil.toObject(Response.class, result);
+        if (null == response.getData()) {
+            throw new BusinessException("appkey is error");
+        }
+
+        Map mapappKey = (Map) response.getData();
+
+        return JSONUtil.toObject(AppKeyResponse.class, JSONUtil.toJson(mapappKey));
+
+    }
+
+    /**
+     * 如果校验出错，抛异常
+     *
+     * @param re
+     * @return
+     */
+    @Override
+    public AppCustomer getCustomerByAppKey(AppKeyResponse re, String url) throws BusinessException {
+
+        AppCustomer au = new AppCustomer();
+        au.setId(XMPPUtil.nameToJid(re.getcName()));
+        au.setLoginUsername(re.getcName());
+        au.setOpenId(re.getcName());
+        au.setUserName(re.getNickName());
+        au.setIcon(re.getIcon());
+        au.setCustomerIsOnline(true);
+        au.setSocketUrl(url + "/sockjs/newVisitor");
+        au.setOssUrl(url + "/api/fileUpload/" + re.getcName());
+        au.setToken(UUID.randomUUID().toString());
+        au.setLoginTime(System.currentTimeMillis());
+
+        return au;
+
     }
 
     @Override
-    public Visitor getVisitor(AppKeyVisitorLoginBean re, String token) throws BusinessException {
+    public Visitor getVisitor(AppKeyVisitorLoginBean re, AppKeyResponse ar, String uname, String token) throws BusinessException {
+        String loginName = uname + "-web";
+
         if (StringUtils.isEmpty(re.getId())) {
             throw new BusinessException("id is null");
         }
-        Visitor au = new Visitor();
-        au.setId(XMPPUtil.nameToJid(re.getId()));
-        au.setLoginUsername(re.getId());
-        au.setLoginTime(System.currentTimeMillis());
-        au.setOpenId(re.getId());
-        au.setUserName(re.getNickname());
-        au.setIcon(re.getAvatar());
-        if (StringUtils.isNotEmpty(re.getNickname())) {
-            au.setNickName(re.getNickname() + "[网站名称1]");
-        } else {
-            au.setNickName("[网站名称1]");
+
+        if (StringUtils.isEmpty(uname)) {
+            throw new BusinessException("uname is null");
         }
+        Visitor au = new Visitor();
 
+        au.setLoginUsername(loginName);
+        au.setLoginTime(System.currentTimeMillis());
+        au.setOpenId(loginName);
+        au.setUserName(re.getId());
+        au.setNickName(ar.getName());
+        au.setIcon(ar.getWebsite_icon());
         au.setPassWord("00818863ff056f1d66c8427836f94a87");
-
+        au.setAgency(true);
+        au.setId(au.getAgencyFrom());
         visitors.put(token, au);
         return au;
     }

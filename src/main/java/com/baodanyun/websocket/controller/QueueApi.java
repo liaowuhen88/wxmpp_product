@@ -63,14 +63,12 @@ public class QueueApi extends BaseController {
                     List<String> li = new ArrayList<>(map.values());
                     for (String ob : li) {
                         ConversationMsg cm = JSONUtil.toObject(ConversationMsg.class, ob);
-                        boolean isEncrypt = messageFiterService.isEncrypt(customer.getId(), cm.getFrom());
-                        if (isEncrypt) {
-                            cm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
-                        } else {
-                            cm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
-                        }
+
                         collections.add(cm);
                     }
+
+                    messageFiterService.initCollections(customer.getId(), collections);
+
                     ComparatorConversationMsg comparator = new ComparatorConversationMsg();
                     Collections.sort(collections, comparator);
                     msgResponse.setData(collections);

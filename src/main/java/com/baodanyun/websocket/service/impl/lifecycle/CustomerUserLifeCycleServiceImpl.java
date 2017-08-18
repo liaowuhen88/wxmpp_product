@@ -5,7 +5,6 @@ import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Customer;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.ConversationService;
-import com.baodanyun.websocket.util.CommonConfig;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +24,6 @@ public abstract  class CustomerUserLifeCycleServiceImpl extends UserLifeCycleSer
     @Override
     public boolean online(AbstractUser user) throws InterruptedException, BusinessException, SmackException.NotLoggedInException, XMPPException.XMPPErrorException, SmackException.NotConnectedException, SmackException.NoResponseException {
         super.online(user);
-        //conversationService.clear(user.getId());
-        logger.info("保存到缓存[USER_CUSTOMER]["+user.getId()+"]--->" + userCacheServer.add(CommonConfig.USER_CUSTOMER, user));
         return true;
     }
 

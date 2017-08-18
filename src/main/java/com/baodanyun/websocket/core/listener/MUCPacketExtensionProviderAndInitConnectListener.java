@@ -51,7 +51,7 @@ public class MUCPacketExtensionProviderAndInitConnectListener extends IQProvider
 
     @Override
     public void authenticated(XMPPConnection xmppConnection, boolean b) {
-        xmppService.saveXMPPConnection(user.getId(), xmppConnection);
+        xmppService.saveXMPPConnection(user.getRealFrom(), xmppConnection);
 
         if (null != rooms) {
             for (JoinRoomEvent room : rooms) {

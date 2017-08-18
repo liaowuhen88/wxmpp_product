@@ -119,9 +119,13 @@ public abstract class VisitorUserLifeCycleServiceImpl extends UserLifeCycleServi
     @Override
     public Msg receiveMessage(AbstractUser user, String content) throws InterruptedException, SmackException.NotConnectedException, BusinessException {
         Msg msg = getMsg(user,content);
-
         if(null != msg){
-            xmppService.sendMessageNoChange(msg );
+            if (user.isAgency()) {
+                xmppService.sendMessageAgent(msg, user.getRealFrom());
+            } else {
+                xmppService.sendMessageNoChange(msg);
+            }
+
         }
         Visitor visitor = (Visitor) user;
         visitorListener.chat(msg.getContent(), visitor);

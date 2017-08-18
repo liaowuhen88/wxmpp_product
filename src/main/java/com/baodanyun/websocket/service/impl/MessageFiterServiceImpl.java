@@ -1,5 +1,6 @@
 package com.baodanyun.websocket.service.impl;
 
+import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.event.ComputationalCostsEvent;
 import com.baodanyun.websocket.event.MessageArchiveAdapterEvent;
@@ -13,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by liaowuhen on 2017/7/31.
@@ -63,18 +67,47 @@ public class MessageFiterServiceImpl implements MessageFiterService {
         }
     }
 
+
+    @Override
+    public List<ConversationMsg> initCollections(String jid, List<ConversationMsg> collections) {
+        // 是否加密
+        if (null != collections && collections.size() > 0) {
+            List<ConversationMsg> list = new ArrayList<>();
+            String statue1 = jedisService.getValue(SWITCH);
+            String status2 = jedisService.getValue(jid);
+
+            for (ConversationMsg cm : collections) {
+                boolean isEncrypt = isEncrypt(statue1, status2, jid, cm.getFrom());
+                if (isEncrypt) {
+                    cm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+                } else {
+                    cm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
+                }
+            }
+
+            return list;
+        }
+
+        return null;
+    }
+
+
     @Override
     public boolean isEncrypt(String jid, String from) {
+        String statue1 = jedisService.getValue(SWITCH);
+        String status2 = jedisService.getValue(jid);
+
+        return isEncrypt(statue1, status2, jid, from);
+    }
+
+    @Override
+    public boolean isEncrypt(String statue1, String status2, String jid, String from) {
         // 是否加密
         boolean flag = false;
-        // 总开关
-        String statue1 = jedisService.getValue(SWITCH);
-
         logger.info("总开关---key:{}----statue1:{}", SWITCH, statue1);
         // 总开关为计费模式
         if ("0".equals(statue1)) {
             // 坐席是否欠费
-            String status2 = jedisService.getValue(jid);
             logger.info("坐席Jid {} ------ statue2:{}", jid, status2);
             if ("0".equals(status2)) {
                 flag = true;

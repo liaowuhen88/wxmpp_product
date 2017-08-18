@@ -7,9 +7,7 @@ public class AppKeyVisitorLoginBean {
     //LOGIN_USER  登录用户名
     private String appKey;
     private String id;
-    private String nickname;
-    private String avatar;
-    private String source;
+    private String website_id = "1";
 
     public String getId() {
         return id;
@@ -19,35 +17,19 @@ public class AppKeyVisitorLoginBean {
         this.id = id;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
     public String getAppKey() {
         return appKey;
     }
 
     public void setAppKey(String appKey) {
         this.appKey = appKey;
+    }
+
+    public String getWebsite_id() {
+        return website_id;
+    }
+
+    public void setWebsite_id(String website_id) {
+        this.website_id = website_id;
     }
 }

@@ -67,6 +67,8 @@ public interface XmppService {
 
     void sendPresence(String jid, Presence.Type type) throws SmackException.NotConnectedException ;
 
+    void sendMessageAgent(Msg msg, String realFrom) throws SmackException.NotConnectedException, BusinessException;
+
     void sendMessageNoChange(Msg msg) throws SmackException.NotConnectedException, BusinessException ;
 
     void sendMessage(Msg msg) throws SmackException.NotConnectedException, BusinessException ;

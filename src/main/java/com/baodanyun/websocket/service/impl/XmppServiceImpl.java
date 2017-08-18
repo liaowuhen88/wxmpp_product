@@ -205,6 +205,24 @@ public class XmppServiceImpl implements XmppService {
 
     }
 
+    public void sendMessageAgent(Msg msg, String realFrom) throws SmackException.NotConnectedException, BusinessException {
+        Message xmppMsg = new Message();
+
+        xmppMsg.setFrom(msg.getFrom());
+
+        if (null != msg.getFromType() && Msg.fromType.group.toString().equals(msg.getFromType().toString())) {
+            xmppMsg.setType(Message.Type.groupchat);
+        } else {
+            xmppMsg.setType(Message.Type.chat);
+        }
+
+        xmppMsg.setBody(msg.getContent());
+        xmppMsg.setSubject(msg.getContentType());
+        xmppMsg.setTo(msg.getTo());
+        sendMessageAgent(xmppMsg, realFrom);
+
+    }
+
     public void sendMessage(Msg msg) throws SmackException.NotConnectedException, BusinessException {
         sendMessageNoChange(msg);
     }
@@ -212,6 +230,13 @@ public class XmppServiceImpl implements XmppService {
     public void sendMessage(Message xmppMsg) throws BusinessException, SmackException.NotConnectedException {
         logger.info("xmpp send message:" + JSONUtil.toJson(xmppMsg));
         XMPPConnection connection = this.getXMPPConnectionAuthenticated(xmppMsg.getFrom());
+        connection.sendStanza(xmppMsg);
+    }
+
+    public void sendMessageAgent(Message xmppMsg, String realFrom) throws BusinessException, SmackException.NotConnectedException {
+        logger.info("xmpp send message:" + JSONUtil.toJson(xmppMsg));
+        XMPPConnection connection = this.getXMPPConnectionAuthenticated(realFrom);
+
         connection.sendStanza(xmppMsg);
     }
 

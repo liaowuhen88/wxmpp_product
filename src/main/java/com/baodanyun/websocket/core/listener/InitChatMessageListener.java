@@ -46,12 +46,24 @@ public class InitChatMessageListener implements ChatMessageListener {
             logger.info("{} xmpp receive message :" + JSONUtil.toJson(msg),this.getUser().getId());
 
             Msg sendMsg = msgSendControl.getMsg(msg);
-
             String from = msg.getFrom();
+            String to = msg.getTo();
+            if (user.isAgency()) {
+                String realTo = "";
+                String[] froms = from.split("_");
+                if (froms.length == 1) {
+                    realTo = XMPPUtil.jidToName(to) + "_" + froms[0];
+                } else if (froms.length == 2) {
+                    realTo = XMPPUtil.jidToName(to) + "_" + froms[1];
+                }
+                sendMsg.setTo(realTo);
+            }
+            logger.info(msg.getFrom());
+
             String realFrom = XMPPUtil.removeRoomSource(from);
             if (null != sendMsg) {
                 // 手机app端发送过来的数据subject 为空
-                logger.info(msg.getFrom());
+
                 boolean isExist = conversationService.isExist(user.getId(), realFrom);
 
                 if (isExist) {

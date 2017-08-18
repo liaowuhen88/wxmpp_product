@@ -15,4 +15,6 @@ public interface MsgService {
     ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to);
 
     ConversationMsg getNewPersionalJoines(String realFrom, AbstractUser user, Msg cloneMsg);
+
+    void filter(ConversationMsg conversationMsg);
 }

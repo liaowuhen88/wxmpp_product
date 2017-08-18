@@ -3,6 +3,7 @@ package com.baodanyun.websocket.controller;
 import com.baodanyun.websocket.bean.Response;
 import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.request.AppKeyVisitorLoginBean;
+import com.baodanyun.websocket.bean.response.AppKeyResponse;
 import com.baodanyun.websocket.bean.user.AppCustomer;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
@@ -55,8 +56,11 @@ public class AppKeyVisitorLogin extends BaseController {
             String url = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
             logger.info("visitorLogin:[" + JSONUtil.toJson(re.getAppKey()) + "]---- url {}", url);
             // 初始化用户,以及用户节点
-            customer = appKeyService.getCustomerByAppKey(re.getAppKey(), url);
-            Visitor visitor = appKeyService.getVisitor(re, customer.getToken());
+            AppKeyResponse ar = appKeyService.getAppKeyResponse(re);
+
+            customer = appKeyService.getCustomerByAppKey(ar, url);
+
+            Visitor visitor = appKeyService.getVisitor(re, ar, customer.getLoginUsername(), customer.getToken());
 
             boolean isExist = conversationService.isExist(customer.getId(), visitor.getId());
 
@@ -64,6 +68,7 @@ public class AppKeyVisitorLogin extends BaseController {
                 logger.info(" user {}, room {} isExist", customer.getId(), visitor.getId());
             } else {
                 logger.info(" user {}, room {} notExist", customer.getId(), visitor.getId());
+
                 ConversationMsg msgConversation = msgService.getNewWebJoines(visitor, customer.getId());
                 logger.info(JSONUtil.toJson(msgConversation));
                 // msgSendControl.sendMsg(msgConversation);
