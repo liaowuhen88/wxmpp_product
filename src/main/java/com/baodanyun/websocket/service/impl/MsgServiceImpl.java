@@ -5,10 +5,7 @@ import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.model.Ofmucroom;
-import com.baodanyun.websocket.service.MessageFiterService;
-import com.baodanyun.websocket.service.MsgService;
-import com.baodanyun.websocket.service.VcardService;
-import com.baodanyun.websocket.service.XmppService;
+import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +32,9 @@ public class MsgServiceImpl implements MsgService {
 
     @Autowired
     private MessageFiterService messageFiterService;
+
+    @Autowired
+    private ConversationService conversationService;
 
     public static void main(String[] args) {
         String room = "xvql187@conference.126xmpp/\u003cspan class\u003d\"emoji emoji1f4a2\"\u003e\u003c/span\u003e          导演\u003cspan class\u003d\"emoji emojiae\"\u003e\u003c/span\u003e";
@@ -67,6 +67,8 @@ public class MsgServiceImpl implements MsgService {
             sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
         }
         filter(sm);
+
+        conversationService.addConversations(to, sm);
         return sm;
     }
 
@@ -96,11 +98,12 @@ public class MsgServiceImpl implements MsgService {
             sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
         }
         filter(sm);
+        conversationService.addConversations(to, sm);
         return sm;
     }
 
     @Override
-    public ConversationMsg getNewPersionalJoines(String realFrom, AbstractUser user, Msg cloneMsg) {
+    public ConversationMsg getNewPersionalJoines(String realFrom, AbstractUser user) {
 
         ConversationMsg sm = new ConversationMsg();
         sm.setKey(realFrom);
@@ -127,6 +130,9 @@ public class MsgServiceImpl implements MsgService {
         }
 
         filter(sm);
+
+        conversationService.addConversations(user.getId(), sm);
+
         return sm;
     }
 

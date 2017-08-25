@@ -198,13 +198,14 @@ xchat.changeNewMessageStatus = function (json) {
 
     }
     var from = json.from;
-    var count = xchat.recvMsgOne[from];
+
+    var count = parseInt(myUtils.get_unread(from));
     if (count) {
         count = count + 1;
     } else {
         count = 1;
     }
-    xchat.recvMsgOne[from] = count;
+    myUtils.storage_unread(from, count);
     $(document.getElementById('m' + from)).html(count);
 }
 
@@ -217,7 +218,11 @@ xchat.recvTextMsgHandelEvent = function (json) {
     json.content = wechatFace.faceToHTML(json.content, window.base); //表情字符转换对象的图片
 
     if (json.from == window.destJid) {
-        myUtils.renderDivAdd('mleft', json, 'chatMsgContainer');
+        if ("system" == json.fromType) {
+            myUtils.renderDivAdd('mRight', json, 'chatMsgContainer');
+        } else {
+            myUtils.renderDivAdd('mleft', json, 'chatMsgContainer');
+        }
     }
     myUtils.storage(json);
     xchat.goBottom();
@@ -230,7 +235,11 @@ xchat.recvImageMsgHandelEvent = function (json) {
     json.time = myUtils.formatDate(new Date(json.ct));
     json.dev_content = json.content;
     if (json.from == window.destJid) {
-        myUtils.renderDivAdd('imgLeft', json, 'chatMsgContainer');
+        if ("system" == json.fromType) {
+            myUtils.renderDivAdd('imgRight', json, 'chatMsgContainer');
+        } else {
+            myUtils.renderDivAdd('imgLeft', json, 'chatMsgContainer');
+        }
     }
     myUtils.storage(json);
     xchat.goBottom();
@@ -243,7 +252,11 @@ xchat.recvAudioMsgHandelEvent = function (json) {
     json.icon = json.icon || this.controls.defaultAvatar;
     json.time = myUtils.formatDate(new Date(json.ct));
     if (json.from == window.destJid) {
-        myUtils.renderDivAdd('audioLeft', json, 'chatMsgContainer');
+        if ("system" == json.fromType) {
+            myUtils.renderDivAdd('audioRight', json, 'chatMsgContainer');
+        } else {
+            myUtils.renderDivAdd('audioLeft', json, 'chatMsgContainer');
+        }
     }
     myUtils.storage(json);
     xchat.goBottom();
@@ -256,7 +269,11 @@ xchat.recvVideoMsgHandelEvent = function (json) {
     json.icon = json.icon || this.controls.defaultAvatar;
     json.time = myUtils.formatDate(new Date(json.ct));
     if (json.from == window.destJid) {
-        myUtils.renderDivAdd('videoLeft', json, 'chatMsgContainer');
+        if ("system" == json.fromType) {
+            myUtils.renderDivAdd('videoRight', json, 'chatMsgContainer');
+        } else {
+            myUtils.renderDivAdd('videoLeft', json, 'chatMsgContainer');
+        }
     }
     myUtils.storage(json);
     xchat.goBottom();
@@ -442,8 +459,12 @@ xchat.loadChatList = function () {
                         myUtils.renderDivAdd('onlinefriendListTpl', friend, 'historyFriendList');
                     }
 
-                    var count = xchat.recvMsgOne[friend.from];
-                    $(document.getElementById('m' + friend.from)).html(count);
+                    var count = myUtils.get_unread(friend.from);
+                    if (count && count != 0) {
+                        // 单个用户
+                        $(document.getElementById('m' + friend.from)).attr("class", "new-message");
+                        $(document.getElementById('m' + friend.from)).html(count);
+                    }
 
                 }
             }
@@ -487,6 +508,7 @@ xchat.loadChatListEvent = function () {
     $(".chat-source-detail-btn").click(function () {
         _this.visitorProperties();
     });
+
 
 };
 /*=====================================================================================队列事件=====================================================================================*/
@@ -626,7 +648,7 @@ xchat.openFriendWindow = function (isOnline, id, nickname, openId, fromType) {
     }
     _this.getLocalHistory(id);
     $(document.getElementById('m' + id)).attr("class", "");     //清空有新消息的提示
-    this.recvMsgOne[id] = 0;
+    myUtils.storage_unread(id, 0);
     $(document.getElementById('m' + id)).html("");
 
 

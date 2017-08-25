@@ -69,8 +69,6 @@ public class UcMessageListener implements MessageListener {
                 logger.info(JSONUtil.toJson(conversation));
                 // msgSendControl.sendMsg(msgConversation);
 
-                conversationService.addConversations(user.getId(), conversation);
-
             }
 
             if (!StringUtils.isEmpty(msg.getFrom()) && msg.getFrom().contains("/")) {

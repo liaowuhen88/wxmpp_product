@@ -72,7 +72,6 @@ public class AppKeyVisitorLogin extends BaseController {
                 ConversationMsg msgConversation = msgService.getNewWebJoines(visitor, customer.getId());
                 logger.info(JSONUtil.toJson(msgConversation));
                 // msgSendControl.sendMsg(msgConversation);
-                conversationService.addConversations(customer.getId(), msgConversation);
             }
             visitor.setCustomer(customer);
             request.getSession().setAttribute(Common.USER_KEY, visitor);

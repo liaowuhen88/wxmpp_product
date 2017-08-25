@@ -25,7 +25,7 @@ public class Msg implements Serializable{
     private String fromName;//from的昵称
     private String icon;  //头像
     private String from;//jid
-    private fromType fromType;    //发送者类别,         // 个人 或者群    1 为 个人  2 为群
+    private fromType fromType;    //发送者类别,
     private String to;//jid
     private String toName;
     private String content;
@@ -239,7 +239,7 @@ public class Msg implements Serializable{
     }
 
     public enum fromType {
-        personal, group
+        personal, group,system
     }
 
     /**

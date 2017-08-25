@@ -44,11 +44,6 @@ var xChat = function (options) {
     //下线
     this.offlineStatusHandelEvent = function (json) {
     };
-
-    //转接下线
-    this.changeOfflineStatusHandelEvent = function (json) {
-    };
-
     //初始化失败
     this.initErrorStatusHandelEvent = function (json) {
     };
@@ -73,11 +68,13 @@ var xChat = function (options) {
     //在临时队列中
     this.backUpStatusHandelEvent = function () {
     };
-    // 消息发送失败
-    this.msgFailEvent = function () {
-    };
     //离开临时队列
     this.offlineBackUpStatusHandelEvent = function () {
+    };
+    //ws关闭
+    this.wsClose = function () {
+        console.log("wsClose")
+        disConnect();
     };
     //接收到服务器对消息的回执
     this.sendACKStatusHandelEvent = function () {
@@ -195,6 +192,8 @@ var xChat = function (options) {
                             return _msgFactory.buildNormalMsg(msg);
                         },
                         function (msg) {
+                            msg.src = msg.to;
+                            myUtils.storage(msg);
                             _this.sendMsgHandelEvent(msg);
                         }
                     );
@@ -217,18 +216,20 @@ var xChat = function (options) {
                                 //网络异常不会执行此方法，正常情况下 上传成功后 赋值消息内容为图片地址 并且调用发送回调
                                 function (file, response) {
                                     console.log(file);
-                                    msg.content = _pluginsConfig.upload.downUrl + "?key=" + response.src;
+                                    console.log(response);
+                                    msg.content = response.src;
                                     //更新之前填好的预览图
                                     if (window.user) {
                                         msg.icon = window.user.icon;
                                     }
                                     msg.to = destJid;
                                     msg.from = window.currentId;
-                                    send();
+                                    msg.fromType = window.fromType;
                                     msg.time = myUtils.formatDate(new Date(msg.ct));
                                     msg.src = msg.to;
+                                    send();
                                     myUtils.storage(msg);
-                                    myUtils.updateImageSrc(msg.id, msg.content);
+                                    myUtils.updateImageSrc(msg.id, msg.href);
                                 },
                                 function () {
 
@@ -238,8 +239,57 @@ var xChat = function (options) {
                                     //选择文件的动作之后开始计时，一定会执行
                                     _timeOutCheck(msg);
                                     //生成一个预览图 并且渲染界面
-                                    msg.content = src;
-                                    msg.to = _options.destJid;
+                                    msg.dev_content = src;
+                                    msg.to = destJid;
+                                    msg.size = file.size;
+                                    msg.from = window.currentId;
+                                    _this.sendMsgHandelEvent(msg);
+                                }
+                            );
+                        }
+                    );
+
+                case "attachment":
+                    //异步的sender
+                    return new _Sender(
+                        function (msg) {
+                            return _msgFactory.buildAttachmentMsg(msg);
+                        },
+                        null,
+                        function (msg, send) {
+                            plugins.uploaderAttachment(
+                                _options,
+                                //网络异常不会执行此方法，正常情况下 上传成功后 赋值消息内容为图片地址 并且调用发送回调
+                                function (file, response) {
+                                    console.log(file);
+                                    msg.content = response.src;
+                                    //更新之前填好的预览图
+                                    if (window.user) {
+                                        msg.icon = window.user.icon;
+                                    }
+                                    msg.to = destJid;
+                                    msg.from = window.currentId;
+                                    msg.fromType = window.fromType;
+                                    msg.time = myUtils.formatDate(new Date(msg.ct));
+                                    msg.src = msg.to;
+                                    send();
+                                    myUtils.storage(msg);
+                                    myUtils.updateAttachmentSrc(msg.id, msg.content);
+
+                                },
+                                function () {
+
+                                },
+                                function (file) {
+                                    msg.id = createMsgId();
+                                    //选择文件的动作之后开始计时，一定会执行
+                                    _timeOutCheck(msg);
+                                    //生成一个预览图 并且渲染界面
+                                    msg.name = file.name;
+                                    msg.size = file.size;
+                                    msg.to = destJid;
+                                    msg.from = window.currentId;
+                                    msg.content = 'javascript:';
                                     _this.sendMsgHandelEvent(msg);
                                 }
                             );
@@ -288,6 +338,14 @@ var xChat = function (options) {
             return $.extend({}, _baseSendMsg(), msg);
         };
 
+        //发送图片类消息
+        this.buildAttachmentMsg = function (msg) {
+            msg.contentType = "attachment";
+            msg.type = "msg";
+
+            return $.extend({}, _baseSendMsg(), msg);
+        };
+
         //发送音频消息
         this.buildAudio = function (msg) {
             msg.contentType = "audio";
@@ -297,7 +355,11 @@ var xChat = function (options) {
 
         //发送普通消息消息
         this.buildNormalMsg = function (msg) {
-            msg.contentType = "text";
+            if (msg.contentType) {
+            } else {
+                msg.contentType = "text";
+            }
+            msg.dev_content = msg.content;
             msg.type = "msg";
             return $.extend({}, _baseSendMsg(), msg);
         };
@@ -311,7 +373,7 @@ var xChat = function (options) {
                 "uploaderId": options.uploaderId,
                 "isMultiple": false,
                 "uploadPath": options.uploadPath,
-                "uploadServer": _pluginsConfig.upload.uploadUrl,
+                "uploadServer": options.uploadUrl,
                 startUpload: function () {
                     startUpload();
                 },
@@ -327,6 +389,27 @@ var xChat = function (options) {
             })
         };
 
+
+        this.uploaderAttachment = function (options, success, startUpload, thumb) {
+            $.attachmentUploader({
+                "uploaderId": options.uploaderId,
+                "isMultiple": false,
+                "uploadPath": options.uploadPath,
+                "uploadServer": options.uploadUrl,
+                startUpload: function () {
+                    startUpload();
+                },
+                callback: function (file, src) {
+                    console.log("callback");
+                    if (thumb) {
+                        thumb(file, src);
+                    }
+                },
+                success: function (file, response) {
+                    success(file, response);
+                }
+            })
+        };
     };
 
     //当前filter用于控制事件
@@ -413,7 +496,6 @@ var xChat = function (options) {
                 {"loginError": _this.loginErrorStatusHandelEvent},
                 {"loginSuccess": _this.loginSuccessStatusHandelEvent},
                 {"offline": _this.offlineStatusHandelEvent},
-                {"changeOffline": _this.changeOfflineStatusHandelEvent},
                 {"offlineWaitQueue": _this.offlineWaitQueueStatusHandelEvent},
                 {"offlineBackUpQueue": _this.offlineBackQueueStatusHandelEvent},
                 {"kickOff": _this.kickOffStatusHandelEvent},
@@ -425,9 +507,7 @@ var xChat = function (options) {
                 {"backUpQueueSuccess": _this.backUpStatusHandelEvent},
                 {"offlineBackUpQueueSuccess": _this.offlineBackUpStatusHandelEvent},
                 {"serverACK": _this.sendACKStatusHandelEvent},
-                {"customerOffline": _this.customerOfflineStatusHandelEvent},
-                {"msgFail": _this.msgFailEvent}
-
+                {"customerOffline": _this.customerOfflineStatusHandelEvent}
             ]
         }
     };

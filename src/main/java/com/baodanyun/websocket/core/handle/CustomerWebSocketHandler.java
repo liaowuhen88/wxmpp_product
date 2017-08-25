@@ -8,6 +8,7 @@ import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.SpringContextUtil;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 /**
@@ -38,6 +39,11 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
             Customer customer = (Customer) session.getHandshakeAttributes().get(Common.USER_KEY);
             logger.info("webSocket receive message:" + JSONUtil.toJson(message));
             String content = message.getPayload();
+            if ("HeartBeat".equals(content)) {
+                WebSocketMessage wm = new TextMessage("HeartBeat");
+                session.sendMessage(wm);
+                return;
+            }
             userLifeCycleService.receiveMessage(customer, content);
         } catch (Exception e) {
             logger.info("", e);

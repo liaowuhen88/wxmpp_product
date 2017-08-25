@@ -131,7 +131,7 @@ Utils = (function () {
                 if (item.ct) {
                     item.time = myUtils.formatDate(new Date(item.ct));
                 }
-                if (item.from == currentId) {
+                if (item.from == currentId || "system" == item.fromType) {
                     if (item.contentType == 'image' || item.contentType == 'img') {
                         commentTpl = $('#imgRight').html();
                     } else if (item.contentType == 'audio') {
@@ -362,7 +362,33 @@ Utils = (function () {
     Utils.prototype.friendListRender = function () {
 
     };
- 
+
+    // 统计一个用户有多少消息未读
+    var recvMsgOne = {};
+    //本地存储
+    Utils.prototype.storage_unread = function (src, count) {
+        if (localStorage) {
+            //存储to的id
+            localStorage.setItem("count:" + src, count);
+        } else {
+            recvMsgOne[src] = count;
+            console.log("浏览器不支持本地存储");
+        }
+    };
+
+    //本地存储
+    Utils.prototype.get_unread = function (src) {
+        if (localStorage) {
+            //存储to的id
+            return localStorage.getItem("count:" + src);
+        } else {
+            console.log("浏览器不支持本地存储");
+            return recvMsgOne[src];
+
+        }
+    };
+
+
     //本地存储
     Utils.prototype.storage = function (data) {
         if (localStorage) {

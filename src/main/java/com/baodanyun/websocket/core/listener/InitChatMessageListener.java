@@ -9,7 +9,6 @@ import com.baodanyun.websocket.service.MsgService;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.SpringContextUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jivesoftware.smack.chat.Chat;
@@ -102,10 +101,9 @@ public class InitChatMessageListener implements ChatMessageListener {
                     logger.info(" user {}, realFrom {} isExist", user.getId(), sendMsg.getFrom());
                 } else {
                     logger.info(" user {}, realFrom {} notExist", user.getId(), sendMsg.getFrom());
-                    Msg cloneMsg = (Msg) SerializationUtils.clone(sendMsg);
-                    conversation = msgService.getNewPersionalJoines(sendMsg.getFrom(), user, cloneMsg);
+                    conversation = msgService.getNewPersionalJoines(sendMsg.getFrom(), user);
                     //msgSendControl.sendMsg(conversation);
-                    conversationService.addConversations(user.getId(), conversation);
+
                 }
 
                 if (!isSysMsg) {
@@ -153,20 +151,41 @@ public class InitChatMessageListener implements ChatMessageListener {
      */
     public boolean dealSystem(Msg sendMsg, String from) {
         //system@126xmpp/__xvjq48_8497@126xmpp__xvjq48@126xmpp_1
-        String[] ffs = from.split("/");
+        //system@126xmpp/__xvjq48_8497@conference.126xmpp/昵称__xvjq48@126xmpp_1
+        String[] ffs = from.split("__");
         if (null != ffs && ffs.length > 1 && ffs[0].startsWith("system")) {
-            String resource = ffs[1];
-            String[] froms = resource.split("__");
 
-            String realFrom = froms[1];
-            //String machine = froms[2];
-            String type = froms[3];
-            sendMsg.setFrom(realFrom);
+            String realFrom = ffs[1];
+            String machine = ffs[2];
+            String type = ffs[3];
+            sendMsg.setFrom(XMPPUtil.removeRoomSource(realFrom));
+            sendMsg.setFromType(Msg.fromType.system);
 
+            ConversationMsg conversation = null;
+            String json = null;
+            try {
+                json = conversationService.get(user.getId(), sendMsg.getFrom());
+                if (StringUtils.isNotEmpty(json)) {
+                    conversation = JSONUtil.toObject(ConversationMsg.class, json);
+                } else {
+                    conversation = msgService.getNewPersionalJoines(machine, user);
+                }
 
-            if (StringUtils.isEmpty(sendMsg.getFromName())) {
-                sendMsg.setFromName("系统消息【" + getTypeName(type) + "】");
+            } catch (Exception e) {
+                logger.error("error", e);
             }
+
+            if (null != conversation) {
+                if (StringUtils.isEmpty(sendMsg.getFromName())) {
+                    sendMsg.setFromName(conversation.getFromName() + "【" + getTypeName(type) + "】");
+                }
+            } else {
+                if (StringUtils.isEmpty(sendMsg.getFromName())) {
+                    sendMsg.setFromName("系统消息【" + getTypeName(type) + "】");
+                }
+            }
+
+
             return true;
         }
 
