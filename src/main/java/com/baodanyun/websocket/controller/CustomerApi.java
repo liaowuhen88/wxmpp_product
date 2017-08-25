@@ -16,6 +16,7 @@ import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,9 @@ public class CustomerApi extends BaseController {
     private JedisService jedisService;
 
     @Autowired
+    private MsgService msgService;
+
+    @Autowired
     private MessageFiterService messageFiterService;
 
     /**
@@ -70,7 +74,7 @@ public class CustomerApi extends BaseController {
      */
 
     @RequestMapping(value = "customer/{cjid}", method = RequestMethod.GET)
-    public void customer(@PathVariable("cjid") String cjid,HttpServletRequest request, HttpServletResponse httpServletResponse) {
+    public void customer(@PathVariable("cjid") String cjid, HttpServletRequest request, HttpServletResponse httpServletResponse) {
         Response response = new Response();
         try {
             AbstractUser user = userServer.getCustomers().get(cjid);
@@ -88,6 +92,32 @@ public class CustomerApi extends BaseController {
         Render.r(httpServletResponse, JSONUtil.toJson(response));
     }
 
+
+    /**
+     * 修改昵称等信息
+     *
+     * @param
+     * @param httpServletResponse
+     */
+
+    @RequestMapping(value = "getVcard")
+    public void getVcard(HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        Response response = new Response();
+        try {
+            AbstractUser user = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
+            VCard vCard = vcardService.loadVcard(user.getId(), user.getId());
+            ConversationMsg sm = new ConversationMsg();
+            msgService.initByVCard(sm, vCard);
+            response.setData(sm);
+            response.setSuccess(true);
+        } catch (Exception e) {
+            logger.error("", e);
+            response.setSuccess(false);
+        }
+        Render.r(httpServletResponse, JSONUtil.toJson(response));
+    }
+
+
     /**
      * 修改昵称等信息
      *
@@ -96,7 +126,7 @@ public class CustomerApi extends BaseController {
      */
 
     @RequestMapping(value = "upCustomerInfo", method = RequestMethod.POST)
-    public void upCustomerInfo(UserModel user, HttpServletRequest request,HttpServletResponse httpServletResponse) {
+    public void upCustomerInfo(UserModel user, HttpServletRequest request, HttpServletResponse httpServletResponse) {
         Response response = new Response();
         AbstractUser cu = userServer.getCustomers().get(user.getCjid());
         try {
@@ -122,7 +152,7 @@ public class CustomerApi extends BaseController {
 
                 //AbstractUser u = vcardService.updateBaseVCard(cu.getId(), Common.userVcard, cu);
 
-               // response.setData(u);
+                // response.setData(u);
                 response.setSuccess(true);
             }
 
@@ -142,13 +172,13 @@ public class CustomerApi extends BaseController {
      */
 
     @RequestMapping(value = "upCustomerPwd", method = RequestMethod.POST)
-    public void upCustomerPwd(UserSetPW pw, HttpServletRequest request,HttpServletResponse httpServletResponse) {
+    public void upCustomerPwd(UserSetPW pw, HttpServletRequest request, HttpServletResponse httpServletResponse) {
         Response response = new Response();
         AbstractUser cu = userServer.getCustomers().get(pw.getCjid());
 
         try {
 
- 
+
             if (!StringUtils.isEmpty(pw.getNewPWD())) {
                 if (pw.getNewPWD().trim().equals(pw.getConfirmPWD())) {
                     if (cu.getPassWord().equals(pw.getOldPWD())) {
@@ -208,7 +238,6 @@ public class CustomerApi extends BaseController {
     }
 
     /**
-     *
      * @param httpServletResponse
      */
 
@@ -231,18 +260,19 @@ public class CustomerApi extends BaseController {
     }
 
     /**
-     *获取消息是否显示
+     * 获取消息是否显示
+     *
      * @param httpServletResponse
      */
 
     @RequestMapping(value = "getDisplay")
-    public void getDisplay(String from, HttpServletRequest request,HttpServletResponse httpServletResponse) {
+    public void getDisplay(String from, HttpServletRequest request, HttpServletResponse httpServletResponse) {
         Response response = new Response();
         try {
             AbstractUser cu = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
-            boolean isEncrypt = messageFiterService.isEncrypt(cu.getId(),from);
+            boolean isEncrypt = messageFiterService.isEncrypt(cu.getId(), from);
             String status = "1";
-            if(isEncrypt){
+            if (isEncrypt) {
                 status = "0";
             }
 
@@ -265,7 +295,6 @@ public class CustomerApi extends BaseController {
     }
 
     /**
-     *
      * @param httpServletResponse
      */
 
@@ -316,7 +345,7 @@ public class CustomerApi extends BaseController {
             userLifeCycleService.logout(customer);
 
             mv.setViewName("/index");
-            mv.addObject("msg","您已退出");
+            mv.addObject("msg", "您已退出");
         } catch (Exception e) {
             logger.error("error", e);
         }

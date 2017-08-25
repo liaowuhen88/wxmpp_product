@@ -8,6 +8,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,25 @@ public class VcardService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private XmppService xmppService;
+
+
+    /**
+     * 获取Vcard
+     *
+     * @param xmppid
+     * @param Jid
+     * @return
+     */
+    public VCard loadVcard(String xmppid, String Jid) {
+        VCard vcard = null;
+        try {
+            vcard = VCardManager.getInstanceFor(xmppService.getXMPPConnectionAuthenticated(xmppid)).loadVCard(Jid);
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return vcard;
+    }
+
 
     /**
      * 获取客服信息

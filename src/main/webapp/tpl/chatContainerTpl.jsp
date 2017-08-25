@@ -66,7 +66,7 @@
 <script id="imgLeft" type="text/html">
     <div class="timeline timeline-from" id="{{id}}">
         <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
-        <span class="time">{{time}}</span>
+        <span class="time">{{fromName}} {{time}}</span>
         <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
         </div>--%>
         <span class="message"><a href="{{content}}" rel="lightbox"><img src="{{dev_content}}" alt=""></a></span>
@@ -76,7 +76,7 @@
 <script id="attachmentLeft" type="text/html">
     <div class="timeline timeline-from" id="{{id}}">
         <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
-        <span class="time">{{time}}</span>
+        <span class="time">{{fromName}} {{time}}</span>
         <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
         </div>--%>
         <span class="message">
@@ -92,7 +92,7 @@
 <script id="audioLeft" type="text/html">
     <div class="timeline timeline-from" id="{{id}}">
         <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
-        <span class="time">{{time}}</span>
+        <span class="time">{{fromName}} {{time}}</span>
         <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
         </div>--%>
         <span class="message"><audio src="{{content}}" controls="controls"></audio></span>
@@ -102,7 +102,7 @@
 <script id="videoLeft" type="text/html">
     <div class="timeline timeline-from" id="{{id}}">
         <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
-        <span class="time">{{time}}</span>
+        <span class="time">{{fromName}} {{time}}</span>
         <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
         </div>--%>
         <span class="message">

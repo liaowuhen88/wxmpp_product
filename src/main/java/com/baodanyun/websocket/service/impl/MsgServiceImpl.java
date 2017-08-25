@@ -7,11 +7,11 @@ import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.model.Ofmucroom;
 import com.baodanyun.websocket.service.MessageFiterService;
 import com.baodanyun.websocket.service.MsgService;
+import com.baodanyun.websocket.service.VcardService;
 import com.baodanyun.websocket.service.XmppService;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +30,9 @@ public class MsgServiceImpl implements MsgService {
     protected static Logger logger = LoggerFactory.getLogger(MsgServiceImpl.class);
     @Autowired
     private XmppService xmppService;
+    @Autowired
+    private VcardService vcardService;
+
     @Autowired
     private MessageFiterService messageFiterService;
 
@@ -112,17 +115,9 @@ public class MsgServiceImpl implements MsgService {
         sm.setFromName(realFrom);
         sm.setLoginUsername(realFrom);
 
-        VCard vCard = loadVcard(user.getId(), realFrom);
-        logger.info(JSONUtil.toJson(vCard));
-        if (null != vCard) {
-            sm.setFromName(vCard.getNickName());
-            sm.setLoginUsername(vCard.getField("FN"));
-            byte[] avatar = vCard.getAvatar();
-            if (null != avatar) {
-                String image = new sun.misc.BASE64Encoder().encode(avatar);
-                sm.setIcon("data:image/jpeg;base64," + image);
-            }
-        }
+        VCard vCard = vcardService.loadVcard(user.getId(), realFrom);
+
+        initByVCard(sm, vCard);
 
         boolean isEncrypt = messageFiterService.isEncrypt(user.getId(), realFrom);
         if (isEncrypt) {
@@ -136,6 +131,20 @@ public class MsgServiceImpl implements MsgService {
     }
 
     @Override
+    public void initByVCard(ConversationMsg conversationMsg, VCard vCard) {
+        logger.info(JSONUtil.toJson(vCard));
+        if (null != vCard) {
+            conversationMsg.setFromName(vCard.getNickName());
+            conversationMsg.setLoginUsername(vCard.getField("FN"));
+            byte[] avatar = vCard.getAvatar();
+            if (null != avatar) {
+                String image = new sun.misc.BASE64Encoder().encode(avatar);
+                conversationMsg.setIcon("data:image/jpeg;base64," + image);
+            }
+        }
+    }
+
+    @Override
     public void filter(ConversationMsg conversationMsg) {
         if (StringUtils.isEmpty(conversationMsg.getFromName())) {
             conversationMsg.setFromName("未设置");
@@ -143,16 +152,6 @@ public class MsgServiceImpl implements MsgService {
         if (StringUtils.isEmpty(conversationMsg.getLoginUsername())) {
             conversationMsg.setLoginUsername("未设置");
         }
-    }
-
-    public VCard loadVcard(String xmppid, String Jid) {
-        VCard vcard = null;
-        try {
-            vcard = VCardManager.getInstanceFor(xmppService.getXMPPConnectionAuthenticated(xmppid)).loadVCard(Jid);
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-        return vcard;
     }
 
 

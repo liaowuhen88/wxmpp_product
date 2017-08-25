@@ -105,9 +105,9 @@ xchat.loginErrorStatusHandelEvent = function () {
 };
 //客服个人信息设置
 xchat.setCustomerProfileEventBind = function () {
-    myUtils.load(window.base + "/api/customer/" + window.currentId, 'get', function (customer) {
+    myUtils.load(window.base + "/api/getVcard", 'get', function (response) {
         var $customer = $('#customerInfo').find('img').eq(0);
-        customerInfo = customer.data;
+        customerInfo = response.data;
         if (customerInfo.icon !== null && customerInfo.icon !== '' && customerInfo.icon !== 'ic') {
             $customer.attr('src', customerInfo.icon);
         }
@@ -516,6 +516,9 @@ xchat.unEncryptLocalHistory = function (id, list) {
             //console.log(li);
             if (li) {
                 val.content = li.content;
+                val.contentType = li.contentType;
+                val.dev_content = li.content;
+
                 console.log(val);
             }
         });

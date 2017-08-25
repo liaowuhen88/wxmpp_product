@@ -54,18 +54,22 @@ public class UcMessageListener implements MessageListener {
                 return;
             }
             String realRoom = XMPPUtil.removeRoomSource(sendMsg.getFrom());
-            boolean isExist = conversationService.isExist(user.getId(), realRoom);
+            ConversationMsg conversation = null;
+            String json = conversationService.get(user.getId(), realRoom);
+            if (StringUtils.isNotEmpty(json)) {
+                conversation = JSONUtil.toObject(ConversationMsg.class, json);
+            }
 
-            if (isExist) {
+            if (null != conversation) {
                 logger.info(" user {}, room {} isExist", user.getId(), realRoom);
             } else {
                 logger.info(" user {}, room {} notExist", user.getId(), realRoom);
                 Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(realRoom));
-                ConversationMsg msgConversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId());
-                logger.info(JSONUtil.toJson(msgConversation));
+                conversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId());
+                logger.info(JSONUtil.toJson(conversation));
                 // msgSendControl.sendMsg(msgConversation);
 
-                conversationService.addConversations(user.getId(), msgConversation);
+                conversationService.addConversations(user.getId(), conversation);
 
             }
 
@@ -79,6 +83,8 @@ public class UcMessageListener implements MessageListener {
             } else {
                 sendMsg.setFromName(msg.getFrom());
             }
+
+            sendMsg.setIcon(conversation.getIcon());
 
             if (null != sendMsg) {
                 // 手机app端发送过来的数据subject 为空
