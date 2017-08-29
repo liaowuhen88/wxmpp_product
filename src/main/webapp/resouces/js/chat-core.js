@@ -21,7 +21,10 @@ var xChat = function (options) {
     this.recvFileMsgHandelEvent = function (json) {
     };
     //接收到图片信息
-    this.recvImageMsgHandelEvent = function () {
+    this.recvImageMsgHandelEvent = function (json) {
+    };
+    //接收到微信分享信息
+    this.recvWxShareHandelEvent = function (json) {
     };
     //接收到音频信息
     this.recvAudioMsgHandelEvent = function (json) {
@@ -485,7 +488,8 @@ var xChat = function (options) {
                 {"video": _this.recvVideoMsgHandelEvent},
                 {"file": _this.recvFileMsgHandelEvent},
                 {"audio": _this.recvAudioMsgHandelEvent},
-                {"image": _this.recvImageMsgHandelEvent}
+                {"image": _this.recvImageMsgHandelEvent},
+                {"url": _this.recvWxShareHandelEvent}
             ],
             active: [
                 {"move": _this.moveMsgHandelEvent}
@@ -579,6 +583,7 @@ var xChat = function (options) {
         };
         _ws.onopen = function () {
             //心跳检测重置
+            $("#onlineStatus").hide();
             heartCheck.reset().start();
         };
         _ws.onmessage = function (_event) {
@@ -593,6 +598,7 @@ var xChat = function (options) {
     }
 
     this.reconnect = function (url) {
+        $("#onlineStatus").show();
         var _this = this;
         if (lockReconnect) return;
         lockReconnect = true;

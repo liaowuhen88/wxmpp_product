@@ -73,6 +73,26 @@
     </div>
 </script>
 
+<script id="wx_share_Left" type="text/html">
+    <div class="timeline timeline-from" id="{{id}}">
+        <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>
+        <span class="time">{{fromName}} {{time}}</span>
+        <%--<div class="message-wrapper emoji" style="width:265px;height:201px;"><img src="{{content}}" width="265">
+        </div>--%>
+        <div class="message" style="max-width: 500px;">
+            <a href="{{content.url}}" target="view_window"
+               style="color: #323c38; text-decoration: none;display: block;">
+                <div style="font-size: 16px; margin: 0 0 10px;">{{content.title}}</div>
+                <span style="float: left;width: 120px;height: 120px; border-radius: 3px;"><img
+                        src="{{content.thumburl}}" alt=""
+                        style="width: 120px;height: 120px; border-radius: 3px;"></span>
+
+                <p style="margin: 0 0 0 130px; font-size: 12px; line-height: 20px;">{{content.des}}</p>
+            </a>
+        </div>
+    </div>
+</script>
+
 <script id="attachmentLeft" type="text/html">
     <div class="timeline timeline-from" id="{{id}}">
         <div class="avatar"><img src="{{icon}}" alt="{{username}}"></div>

@@ -3,9 +3,11 @@ package com.baodanyun.websocket.core.listener;
 import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
+import com.baodanyun.websocket.model.Ofmucroom;
 import com.baodanyun.websocket.service.ConversationService;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.MsgService;
+import com.baodanyun.websocket.service.OfmucroomService;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.SpringContextUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
@@ -25,6 +27,7 @@ public class InitChatMessageListener implements ChatMessageListener {
 
     ConversationService conversationService = SpringContextUtil.getBean("conversationService", ConversationService.class);
     MsgService msgService = SpringContextUtil.getBean("msgServiceImpl", MsgService.class);
+    OfmucroomService ofmucroomService = SpringContextUtil.getBean("ofmucroomServiceImpl", OfmucroomService.class);
     private MsgSendControl msgSendControl;
     private AbstractUser user;
 
@@ -44,7 +47,8 @@ public class InitChatMessageListener implements ChatMessageListener {
     }
 
     public static String getTypeName(String type) {
-        //1：固定回复，2：智能行情，3：关键词回复，4：机器人回复，5：定时回复
+        // 1：固定回复，2：智能行情，3：关键词回复，4：机器人回复，5：定时回复  6：加好友自动回复  7：好友进群自动回复
+
         if (NumberUtils.isNumber(type)) {
             Integer index = Integer.valueOf(type);
             switch (index) {
@@ -58,6 +62,10 @@ public class InitChatMessageListener implements ChatMessageListener {
                     return "机器人回复";
                 case 5:
                     return "定时回复";
+                case 6:
+                    return "加好友自动回复";
+                case 7:
+                    return "好友进群自动回复";
             }
         }
 
@@ -101,7 +109,14 @@ public class InitChatMessageListener implements ChatMessageListener {
                     logger.info(" user {}, realFrom {} isExist", user.getId(), sendMsg.getFrom());
                 } else {
                     logger.info(" user {}, realFrom {} notExist", user.getId(), sendMsg.getFrom());
-                    conversation = msgService.getNewPersionalJoines(sendMsg.getFrom(), user);
+                    // 为了解决系统发送的群消息
+                    if (XMPPUtil.isRoom(sendMsg.getFrom())) {
+                        Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(sendMsg.getFrom()));
+                        conversation = msgService.getNewRoomJoines(sendMsg.getFrom(), ofmucroom, user.getId());
+                    } else {
+                        conversation = msgService.getNewPersionalJoines(sendMsg.getFrom(), user);
+                    }
+
                     //msgSendControl.sendMsg(conversation);
 
                 }

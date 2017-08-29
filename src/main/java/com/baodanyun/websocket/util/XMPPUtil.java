@@ -33,6 +33,12 @@ public class XMPPUtil {
         return jid;
     }
 
+    public static boolean isRoom(String jid) {
+        if (StringUtils.isNotBlank(jid) && jid.contains("@conference")) {
+            return true;
+        }
+        return false;
+    }
 
     public static String getRoomName(String room) {
         if (StringUtils.isNotBlank(room) && room.contains("@")) {

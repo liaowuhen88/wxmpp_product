@@ -234,8 +234,10 @@ public class Msg implements Serializable{
     //消息种类
 
     //receiptMsg 回执消息
+    //Url微信分享
+    //{"title":"xxx","des":"xxx","thumburl":"dd.com/kkk.jpg"，"url":"ddd.com/jj.html "}
     public enum MsgContentType {
-        text, video, file, audio, image, receiptMsg, attachment
+        text, video, file, audio, image, receiptMsg, attachment, url
     }
 
     public enum fromType {

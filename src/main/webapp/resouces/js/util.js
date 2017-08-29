@@ -140,6 +140,8 @@ Utils = (function () {
                         commentTpl = $('#videoRight').html();
                     } else if (item.contentType == 'attachment') {
                         commentTpl = $('#attachmentRight').html();
+                    } else if (item.contentType == 'url') {
+                        commentTpl = $('#wx_share_Right').html();
                     } else {
                         commentTpl = $('#mright').html();
                     }
@@ -150,6 +152,8 @@ Utils = (function () {
                         commentTpl = $('#audioLeft').html();
                     } else if (item.contentType == 'video') {
                         commentTpl = $('#videoLeft').html();
+                    } else if (item.contentType == 'url') {
+                        commentTpl = $('#wx_share_Left').html();
                     } else {
                         commentTpl = $('#mleft').html();
                     }

@@ -62,6 +62,7 @@ xchat.interface = {
     turn: base + '/api/changeVisitorTo',
     updateUserInfo: base + '/api/upVisitorInfo',
     getTagsAll: base + '/api/getTagsAll',
+    conversationInit: base + '/api/conversationInit',
     changeProfile: base + '/api/upCustomerInfo',
     closeFriendWindow: base + '/api/closeFriendWindow',
     getConversation: base + '/api/getConversation',
@@ -219,7 +220,7 @@ xchat.recvTextMsgHandelEvent = function (json) {
 
     if (json.from == window.destJid) {
         if ("system" == json.fromType) {
-            myUtils.renderDivAdd('mRight', json, 'chatMsgContainer');
+            myUtils.renderDivAdd('mright', json, 'chatMsgContainer');
         } else {
             myUtils.renderDivAdd('mleft', json, 'chatMsgContainer');
         }
@@ -239,6 +240,24 @@ xchat.recvImageMsgHandelEvent = function (json) {
             myUtils.renderDivAdd('imgRight', json, 'chatMsgContainer');
         } else {
             myUtils.renderDivAdd('imgLeft', json, 'chatMsgContainer');
+        }
+    }
+    myUtils.storage(json);
+    xchat.goBottom();
+};
+
+//接收到微信分享信息
+xchat.recvWxShareHandelEvent = function (json) {
+    document.getElementById("msgTipAudio").play();
+    json.src = json.from;
+    json.icon = json.icon || this.controls.defaultAvatar;
+    json.time = myUtils.formatDate(new Date(json.ct));
+    json.content = eval('(' + json.content + ')');
+    if (json.from == window.destJid) {
+        if ("system" == json.fromType) {
+            myUtils.renderDivAdd('wx_share_Left', json, 'chatMsgContainer');
+        } else {
+            myUtils.renderDivAdd('wx_share_Left', json, 'chatMsgContainer');
         }
     }
     myUtils.storage(json);
@@ -658,6 +677,7 @@ xchat.openFriendWindow = function (isOnline, id, nickname, openId, fromType) {
 
     _this.getUserInfo(window.currentId, id, openId);
     _this.getUserLabel();
+    _this.conversationInit(id);
 
 };
 //获取当前用户的详情
@@ -780,6 +800,25 @@ xchat.getUserLabel = function () {
         }
     });
 };
+
+//获取用户标签
+xchat.conversationInit = function (vjid) {
+    var _this = this;
+    $.ajax({
+        url: _this.interface.conversationInit + "?vjid=" + vjid,
+        type: 'GET',
+        timeout: 3000,
+        success: function (res) {
+            if (res.success) {
+                console.log("conversationInit success");
+            }
+        },
+        error: function () {
+            console.log("conversationInit error");
+        }
+    });
+};
+
 //用户标签拼接
 xchat.userLabelComb = function (data) {
     var _this = this;
