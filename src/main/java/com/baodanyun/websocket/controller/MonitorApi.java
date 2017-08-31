@@ -134,10 +134,6 @@ public class MonitorApi extends BaseController {
                 }
             }
 
-        if (webSocketService.isConnected(user.getId())) {
-            ns.setWsIsOnline(true);
-        }
-
 
         return ns;
 

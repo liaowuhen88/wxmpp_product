@@ -116,9 +116,7 @@ public class InitChatMessageListener implements ChatMessageListener {
                     } else {
                         conversation = msgService.getNewPersionalJoines(sendMsg.getFrom(), user);
                     }
-
                     //msgSendControl.sendMsg(conversation);
-
                 }
 
                 if (!isSysMsg) {

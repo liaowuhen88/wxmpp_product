@@ -164,15 +164,19 @@ xchat.recvMsgEvent = function (json) {
             console.log("exit");
             _this.changeNewMessageStatus(json);
         } else {
-
             $.ajax({
                 url: _this.interface.getConversation + "?from=" + json.from,
                 type: 'GET',
                 timeout: 3000,
                 success: function (res) {
                     if (res.success) {
-                        _this.onlineQueueSuccessStatusHandelEvent(res.data);
-                        _this.changeNewMessageStatus(res.data);
+                        var li = document.getElementById(json.from);
+                        if (li) {
+                            console.log("exit");
+                        } else {
+                            _this.onlineQueueSuccessStatusHandelEvent(res.data);
+                            _this.changeNewMessageStatus(res.data);
+                        }
                     }
                 },
                 error: function () {
@@ -219,7 +223,7 @@ xchat.recvTextMsgHandelEvent = function (json) {
     json.content = wechatFace.faceToHTML(json.content, window.base); //表情字符转换对象的图片
 
     if (json.from == window.destJid) {
-        if ("system" == json.fromType) {
+        if ("system" == json.fromType || "synchronize" == json.fromType) {
             myUtils.renderDivAdd('mright', json, 'chatMsgContainer');
         } else {
             myUtils.renderDivAdd('mleft', json, 'chatMsgContainer');
@@ -236,7 +240,7 @@ xchat.recvImageMsgHandelEvent = function (json) {
     json.time = myUtils.formatDate(new Date(json.ct));
     json.dev_content = json.content;
     if (json.from == window.destJid) {
-        if ("system" == json.fromType) {
+        if ("system" == json.fromType || "synchronize" == json.fromType) {
             myUtils.renderDivAdd('imgRight', json, 'chatMsgContainer');
         } else {
             myUtils.renderDivAdd('imgLeft', json, 'chatMsgContainer');
@@ -254,7 +258,7 @@ xchat.recvWxShareHandelEvent = function (json) {
     json.time = myUtils.formatDate(new Date(json.ct));
     json.content = eval('(' + json.content + ')');
     if (json.from == window.destJid) {
-        if ("system" == json.fromType) {
+        if ("system" == json.fromType || "synchronize" == json.fromType) {
             myUtils.renderDivAdd('wx_share_Left', json, 'chatMsgContainer');
         } else {
             myUtils.renderDivAdd('wx_share_Left', json, 'chatMsgContainer');
@@ -271,7 +275,7 @@ xchat.recvAudioMsgHandelEvent = function (json) {
     json.icon = json.icon || this.controls.defaultAvatar;
     json.time = myUtils.formatDate(new Date(json.ct));
     if (json.from == window.destJid) {
-        if ("system" == json.fromType) {
+        if ("system" == json.fromType || "synchronize" == json.fromType) {
             myUtils.renderDivAdd('audioRight', json, 'chatMsgContainer');
         } else {
             myUtils.renderDivAdd('audioLeft', json, 'chatMsgContainer');
@@ -288,7 +292,7 @@ xchat.recvVideoMsgHandelEvent = function (json) {
     json.icon = json.icon || this.controls.defaultAvatar;
     json.time = myUtils.formatDate(new Date(json.ct));
     if (json.from == window.destJid) {
-        if ("system" == json.fromType) {
+        if ("system" == json.fromType || "synchronize" == json.fromType) {
             myUtils.renderDivAdd('videoRight', json, 'chatMsgContainer');
         } else {
             myUtils.renderDivAdd('videoLeft', json, 'chatMsgContainer');

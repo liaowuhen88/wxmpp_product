@@ -4,7 +4,6 @@ import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Visitor;
-import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.service.MsgSendService;
 import com.baodanyun.websocket.service.WebSocketService;
 import com.baodanyun.websocket.util.JSONUtil;
@@ -14,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
 
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -43,14 +40,6 @@ public class WebSocketVisitorUserLifeCycleServiceImpl extends VisitorUserLifeCyc
         getMsgSendService().sendSMMsgToVisitor(visitor,customer,StatusMsg.Status.customerOffline);
         getMsgSendService().sendSMMsgToCustomer(visitor,customer,StatusMsg.Status.offline);
 
-        WebSocketSession session = webSocketService.getWebSocketSession(user.getId());
-        //获取websession 关闭
-        if (session != null) {
-            HttpSession httpSession = (HttpSession) session.getHandshakeAttributes().get(Common.CUSTOMER_USER_HTTP_SESSION);
-            if (httpSession != null) {
-                httpSession.invalidate();
-            }
-        }
         //关闭ws连接
         try {
             webSocketService.closed(user.getId());

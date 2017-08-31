@@ -49,7 +49,6 @@ public class WebSocketCustomerUserLifeCycleServiceImpl extends CustomerUserLifeC
     @Override
     public Msg receiveMessage(AbstractUser user, String content) throws InterruptedException, SmackException.NotConnectedException, BusinessException {
         Msg msg = super.receiveMessage(user,content);
-
         return msg;
     }
 

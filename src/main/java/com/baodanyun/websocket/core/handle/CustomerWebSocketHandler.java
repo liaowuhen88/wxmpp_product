@@ -1,11 +1,13 @@
 package com.baodanyun.websocket.core.handle;
 
+import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.Customer;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.service.UserLifeCycleService;
 import com.baodanyun.websocket.service.WebSocketService;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.SpringContextUtil;
+import org.apache.commons.lang.SerializationUtils;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
@@ -44,7 +46,13 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
                 session.sendMessage(wm);
                 return;
             }
-            userLifeCycleService.receiveMessage(customer, content);
+            Msg msg = userLifeCycleService.receiveMessage(customer, content);
+            Msg clone = (Msg) SerializationUtils.clone(msg);
+            clone.setFrom(msg.getTo());
+            clone.setTo(msg.getFrom());
+            clone.setFromType(Msg.fromType.synchronize);
+            webSocketService.synchronousMsg(session.getId(), customer.getId(), clone);
+
         } catch (Exception e) {
             logger.info("", e);
         }

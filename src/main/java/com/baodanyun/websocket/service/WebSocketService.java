@@ -11,6 +11,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Service
 public class WebSocketService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final Map<String, WebSocketSession> WEB_SOCKET_SESSION_MAP = new ConcurrentHashMap<>();
+    private final Map<String, Map<String, WebSocketSession>> WEB_SOCKET_SESSION_MAP = new ConcurrentHashMap<>();
     BlockingQueue<Msg> basket = new LinkedBlockingQueue<>(100);
     /**
      * key 为用户id
@@ -58,27 +60,46 @@ public class WebSocketService {
     }
 
     public void saveSession(String jid, WebSocketSession webSocketSession) {
-        WEB_SOCKET_SESSION_MAP.put(jid, webSocketSession);
+        Map<String, WebSocketSession> map = WEB_SOCKET_SESSION_MAP.get(jid);
+        if (null == map) {
+            map = new HashMap<>();
+            WEB_SOCKET_SESSION_MAP.put(jid, map);
+        }
+        map.put(webSocketSession.getId(), webSocketSession);
     }
 
-    public WebSocketSession getWebSocketSession(String jid) {
-        return WEB_SOCKET_SESSION_MAP.get(jid);
+    public void removeSession(String jid, WebSocketSession webSocketSession) {
+        Map<String, WebSocketSession> map = WEB_SOCKET_SESSION_MAP.get(jid);
+        if (null != map) {
+            map.remove(webSocketSession.getId());
+        }
+
+    }
+
+    public Collection<WebSocketSession> getWebSocketSession(String jid) {
+        if (null != WEB_SOCKET_SESSION_MAP.get(jid)) {
+            return WEB_SOCKET_SESSION_MAP.get(jid).values();
+        }
+        return null;
     }
 
     public boolean isConnected(String jid) {
-        WebSocketSession webSocketSession = getWebSocketSession(jid);
-        if (null != webSocketSession) {
-            if (webSocketSession.isOpen()) {
-                return true;
-            } else {
-                logger.info("jid:[" + jid + "] session is closed");
-                return false;
+        Collection<WebSocketSession> webSocketSessions = getWebSocketSession(jid);
+        boolean flag = false;
+        if (null != webSocketSessions && webSocketSessions.size() > 0) {
+            for (WebSocketSession ws : webSocketSessions) {
+                if (ws.isOpen()) {
+                    return true;
+                } else {
+                    removeSession(jid, ws);
+                }
             }
         } else {
             logger.info("jid:[" + jid + "] session is null");
             return false;
         }
 
+        return flag;
     }
 
     /**
@@ -87,7 +108,7 @@ public class WebSocketService {
      * @throws IOException
      * @throws InterruptedException
      */
-    private boolean closedAndXmpp(String jid) throws IOException, InterruptedException {
+    /*private boolean closedAndXmpp(String jid) throws IOException, InterruptedException {
         // 为了防止刷新 需要延迟关闭
         Thread.sleep(1000);
 
@@ -102,7 +123,7 @@ public class WebSocketService {
             return f1 && f2;
         }
 
-    }
+    }*/
 
 
     /**
@@ -126,34 +147,68 @@ public class WebSocketService {
     }
 
     public boolean closed(String jid) throws IOException {
-        WebSocketSession webSocketSession = getWebSocketSession(jid);
-        if (null != webSocketSession) {
-            if (webSocketSession.isOpen()) {
-                webSocketSession.close();
+        Collection<WebSocketSession> webSocketSessions = getWebSocketSession(jid);
+        if (null != webSocketSessions && webSocketSessions.size() > 0) {
+            for (WebSocketSession ws : webSocketSessions) {
+                if (ws.isOpen()) {
+                    ws.close();
+                }
             }
-            WEB_SOCKET_SESSION_MAP.remove(jid);
-            return true;
-        } else {
-            logger.info("jid:[" + jid + "] session is closed or session is null");
-            return false;
         }
+        WEB_SOCKET_SESSION_MAP.remove(jid);
+        return true;
     }
 
     private boolean send(String jid, Msg msg) {
 
         try {
-            if (isConnected(jid)) {
-                WebSocketSession webSocketSession = getWebSocketSession(jid);
-                if (Msg.Type.msg.toString().equals(msg.getType())) {
+
+
+            if (Msg.Type.msg.toString().equals(msg.getType())) {
                     messageFiterService.filter(jid, msg);
                 }
 
-
                 String content = XMPPUtil.buildJson(msg);
-                webSocketSession.sendMessage(new TextMessage(content));
+            Collection<WebSocketSession> webSocketSessions = getWebSocketSession(jid);
+            if (null != webSocketSessions && webSocketSessions.size() > 0) {
+                for (WebSocketSession ws : webSocketSessions) {
+                    if (ws.isOpen()) {
+                        ws.sendMessage(new TextMessage(content));
+                    }
+                }
+            }
+
 
                 return true;
+
+        } catch (Exception e) {
+            logger.error("webSocketSession send error", e);
+        }
+        return false;
+    }
+
+
+    public boolean synchronousMsg(String sessionId, String jid, Msg msg) {
+        try {
+            String content = XMPPUtil.buildJson(msg);
+            Collection<WebSocketSession> webSocketSessions = getWebSocketSession(jid);
+            if (null != webSocketSessions && webSocketSessions.size() > 0) {
+                for (WebSocketSession ws : webSocketSessions) {
+                    if (!sessionId.equals(ws.getId())) {
+                        if (ws.isOpen()) {
+                            try {
+                                ws.sendMessage(new TextMessage(content));
+                                logger.info("jid {}--- synchronousMsg send msg {}", jid, JSONUtil.toJson(msg));
+                            } catch (Exception e) {
+                                logger.error("error", e);
+                            }
+
+                        }
+                    }
+                }
             }
+            return true;
+
         } catch (Exception e) {
             logger.error("webSocketSession send error", e);
         }

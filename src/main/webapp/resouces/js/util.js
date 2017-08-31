@@ -131,7 +131,7 @@ Utils = (function () {
                 if (item.ct) {
                     item.time = myUtils.formatDate(new Date(item.ct));
                 }
-                if (item.from == currentId || "system" == item.fromType) {
+                if (item.from == currentId || "system" == item.fromType || "synchronize" == item.fromType) {
                     if (item.contentType == 'image' || item.contentType == 'img') {
                         commentTpl = $('#imgRight').html();
                     } else if (item.contentType == 'audio') {

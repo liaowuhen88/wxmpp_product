@@ -241,7 +241,7 @@ public class Msg implements Serializable{
     }
 
     public enum fromType {
-        personal, group,system
+        personal, group, system, synchronize
     }
 
     /**
