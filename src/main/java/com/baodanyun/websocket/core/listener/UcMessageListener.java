@@ -68,7 +68,6 @@ public class UcMessageListener implements MessageListener {
                 conversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId());
                 logger.info(JSONUtil.toJson(conversation));
                 // msgSendControl.sendMsg(msgConversation);
-
             }
 
             if (!StringUtils.isEmpty(msg.getFrom()) && msg.getFrom().contains("/")) {
@@ -81,8 +80,6 @@ public class UcMessageListener implements MessageListener {
             } else {
                 sendMsg.setFromName(msg.getFrom());
             }
-
-            sendMsg.setIcon(conversation.getIcon());
 
             if (null != sendMsg) {
                 // 手机app端发送过来的数据subject 为空

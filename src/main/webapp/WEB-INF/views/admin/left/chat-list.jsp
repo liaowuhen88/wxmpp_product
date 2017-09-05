@@ -3,10 +3,18 @@
 <jsp:include page="/tpl/backupfriendListTpl.jsp"/>
 <jsp:include page="/tpl/waitfriendListTpl.jsp"/>
 <div class="chat-list">
+    <div style="margin: 10px;">
+        <label for="searchConversationInput">
+            <input type="text" style="padding: 6px; width: 80%;" name="searchConversationInput"
+                   id="searchConversationInput"
+                   placeholder="请输入会话昵称">
+        </label>
+    </div>
+
     <div class="chat-list-item">
-        <div class="chat-title">
+        <%--<div class="chat-title">
             对话列表
-            <%--<select name="access" id="access">
+            <select name="access" id="access">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -17,8 +25,10 @@
             <option value="8">8</option>
             <option value="9">9</option>
             <option value="10">10</option>
-            </select>--%>
-        </div>
+            </select>
+        </div>--%>
+
+
         <ul class="chat-contact-list" id="friendList"></ul>
         <ul class="chat-contact-list" id="backupFriendList"></ul>
         <ul class="chat-contact-list" id="historyFriendList"></ul>

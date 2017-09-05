@@ -5,6 +5,7 @@
 //当前打开的窗口,值为当前菜单的id
 var destJid;
 var customerInfo = {};
+var groupUsers = {};
 var base = window.base;
 var xchat = new xChat({
     url: base + '/sockjs/customer/chat',
@@ -39,7 +40,8 @@ xchat.controls = {
     orderContainer: '#orderContainer',
     waitReplyPerson: '#waitReplyPerson',
     settingAll: '#setting_all',
-    settingAllFrom: '#setting_all_from'
+    settingAllFrom: '#setting_all_from',
+    searchConversationInput: '#searchConversationInput'
 
 
 };
@@ -66,6 +68,7 @@ xchat.interface = {
     changeProfile: base + '/api/upCustomerInfo',
     closeFriendWindow: base + '/api/closeFriendWindow',
     getConversation: base + '/api/getConversation',
+    getGroupUsers: base + '/api/getGroupUsers',
     getDisplay: base + '/api/getDisplay',
     msgShow: base + '/api/msgShow',
     getMaterial: base + '/api/getMaterial'
@@ -76,6 +79,8 @@ xchat.loginSuccessStatusHandelEvent = function () {
     this.setCustomerProfileEventBind();     //设置客服信息
     this.sendImgEventBind();    //初始化图片发送
     this.sendAttachmentEventBind();    //初始化图片发送
+    this.searchConversationEventBind();    //搜索会话事件绑定
+
 };
 //初始化成功
 xchat.initSuccessQueueStatusHandelEvent = function () {
@@ -159,32 +164,40 @@ xchat.recvMsgEvent = function (json) {
             //$(_this.controls.waitReplyPerson).html(_this.recvMsg.length);
         }
 
-        var li = document.getElementById(json.from);
-        if (li) {
-            console.log("exit");
-            _this.changeNewMessageStatus(json);
-        } else {
-            $.ajax({
-                url: _this.interface.getConversation + "?from=" + json.from,
-                type: 'GET',
-                timeout: 3000,
-                success: function (res) {
-                    if (res.success) {
-                        var li = document.getElementById(json.from);
-                        if (li) {
-                            console.log("exit");
-                        } else {
-                            _this.onlineQueueSuccessStatusHandelEvent(res.data);
-                            _this.changeNewMessageStatus(res.data);
-                        }
+        _this.initConversation(json);
+
+    }
+
+
+};
+
+xchat.initConversation = function (json) {
+    var _this = this;
+    var li = document.getElementById(json.from);
+    if (li) {
+        console.log("exit");
+        _this.changeNewMessageStatus(json);
+    } else {
+        $.ajax({
+            url: _this.interface.getConversation + "?from=" + json.from,
+            type: 'GET',
+            timeout: 3000,
+            success: function (res) {
+                if (res.success) {
+                    var li = document.getElementById(json.from);
+                    if (li) {
+                        console.log("exit");
+                    } else {
+                        _this.onlineQueueSuccessStatusHandelEvent(res.data);
+                        _this.changeNewMessageStatus(res.data);
                     }
-                },
-                error: function () {
-                    $(_this.controls.userTags).html('获取会话消息失败');
                 }
-            });
-            console.log("not exit");
-        }
+            },
+            error: function () {
+                $(_this.controls.userTags).html('获取会话消息失败');
+            }
+        });
+        console.log("not exit");
     }
 };
 
@@ -326,6 +339,26 @@ xchat.sendAttachmentEventBind = function () {
         }
     );
 };
+
+xchat.searchConversationEventBind = function () {
+    var _this = this;
+    $(_this.controls.searchConversationInput).blur(function () {
+        var searchName = $(this).val().trim();
+        if (searchName) {
+            $('#friendList').find('li').each(function () {
+                var name = $(this).attr('data-id');
+                /* alert("name:"+name );
+                 alert("searchName:"+searchName );
+                 alert(name.indexOf(searchName) >= 0 );*/
+                if (name.indexOf(searchName) >= 0) {
+                    $('#friendList').prepend($(this));
+                }
+            });
+        }
+
+    });
+};
+
 //发送信息
 xchat.sendEvent = function (msg, contentType) {
     if (msg) {
@@ -422,7 +455,8 @@ xchat.offlineWaitQueueStatusHandelEvent = function (json) {
 
 //客服下线后调用
 xchat.customerOfflineStatusHandelEvent = function () {
-    this.alertShow('托管微信已下线，请你重新登录');
+    var _this = this;
+    _this.alertShow('托管微信已下线，请你重新登录');
 };
 
 
@@ -679,96 +713,11 @@ xchat.openFriendWindow = function (isOnline, id, nickname, openId, fromType) {
     this.recvMsg.splice(jQuery.inArray(id, this.recvMsg), 1);
     $(this.controls.waitReplyPerson).html(this.recvMsg.length);
 
-    _this.getUserInfo(window.currentId, id, openId);
     _this.getUserLabel();
     _this.conversationInit(id);
 
 };
-//获取当前用户的详情
-xchat.getUserInfo = function (currentId, destJid, openId) {
-    var _this = this;
-    $.ajax({
-        url: _this.interface.userInfo + '?id=' + destJid + '&openid=' + openId,
-        type: 'GET',
-        success: function (res) {
-            if (res.success) {
-                var data = res.data;
-                if (data) {
-                    var basic = data.basic;
-                    var vCard = data.vCard;
-                    if (basic) {
-                        var personalInfo = basic.personalInfo;
-                        var claims = basic.claimsInfos;
-                        var company = basic.company;
-                        var order = basic.orderInfos;
-                        var contract = basic.contractInfos;
-                        if (personalInfo) {
-                            switch (personalInfo.sex) {
-                                case 1:
-                                    personalInfo.sex = '男';
-                                    break;
-                                case 2:
-                                    personalInfo.sex = '女';
-                                    break;
-                                default:
-                                    personalInfo.sex = '保密';
-                            }
 
-                            if (personalInfo.birthday) {
-                                personalInfo.birthday = myUtils.formatDate(personalInfo.birthday, 'yyyy-MM-dd');
-                            }
-                            switch (personalInfo.idcardtype) {
-                                case 1:
-                                    personalInfo.idcardtype = '身份证';
-                                    break;
-                                case 2:
-                                    personalInfo.idcardtype = '其他证件';
-                                    break;
-                                default:
-                                    personalInfo.idcardtype = '其他证件';
-                            }
-                        }
-
-                        if (company && company[0]) {
-                            personalInfo.company = company[0].ename;
-                        }
-
-                        $('#userDetail').empty();
-                        myUtils.renderDivAdd('visitorDetail', personalInfo, 'userDetail');
-
-
-                        if (claims) {
-                            _this.claimsComb(claims);                //理赔
-                        }
-
-                        if (order) {
-                            _this.orderComb(order);           //订单
-                        }
-
-                        if (contract) {
-                            _this.contractComb(contract);   //合同
-                        }
-                    } else {
-                        $("#userDetail").empty();
-                        $(_this.controls.claimsContainer).empty();
-                        $(_this.controls.contractsContainer).empty();
-                        $(_this.controls.orderContainer).empty();
-                    }
-
-                    if (vCard) {
-                        var tags = vCard.tags;
-                        var remark = vCard.remark;
-                        _this.setUserLabel(tags);
-                        $(_this.controls.remark).val(remark);
-                    }
-                }
-            }
-        },
-        error: function () {
-            $('#userDetail').html('获取用户数据失败');
-        }
-    });
-};
 //设置当前用户详情
 xchat.setUserInfo = function (cjid, remark, tags) {
     var _this = this;
@@ -1196,11 +1145,11 @@ xchat.setting_allConfirm = function (destJid) {
 
 xchat.turnComb = function (data) {
     var html = '';
-    data.map(function (val) {
+    /* data.map(function (val) {
         if (val.id !== window.currentId) {
             html += '<li data-id="' + val.id + '">' + val.loginUsername + '<span class="chooseBtn">分配</span></li>';
         }
-    });
+     });*/
     $('#turn-list').html(html);
 };
 xchat.turn = function (vjid, toJid) {

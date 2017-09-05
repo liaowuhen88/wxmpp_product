@@ -19,14 +19,17 @@
                 <span class="msg" id="waitReplyPerson">0</span>
                 <a href="javascript:void(0);"><i class="nav-icon icon-chat"></i></a>
             </li>
+            <li data-toggle="tooltip" data-placement="right" title="通讯录" id="friendAndGroupBtn">
+                <a href="javascript:void(0);"><i class="nav-icon icon-visitor"></i></a>
+            </li>
             <li data-toggle="tooltip" data-placement="right" title="历史记录" id="historyBtn">
                 <a href="javascript:void(0);"><i class="nav-icon icon-history"></i></a>
             </li>
-         <li data-toggle="tooltip" data-placement="right" title="用户留言" id="leaveMessageBtn">
-                <a href="javascript:void(0);"><i class="nav-icon icon-visitor"></i></a>
+            <li data-toggle="tooltip" data-placement="right" title="用户留言" id="leaveMessageBtn">
+                <a href="javascript:void(0);"><i class="nav-icon icon-report"></i></a>
             </li>
             <%--<li data-toggle="tooltip" data-placement="right" title="报表">
-              <a href="#"><i class="nav-icon icon-report"></i></a>
+                <a href="javascript:void(0);"><i class="nav-icon icon-report"></i></a>
             </li>--%>
         </ul>
     </nav>

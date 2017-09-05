@@ -7,6 +7,8 @@
  */
 var xChat = function (options) {
     options = options || {};
+    var base = window.base;
+
     //定义接口
     //接收到信息
     this.recvMsgEvent = function (json) {
@@ -453,6 +455,7 @@ var xChat = function (options) {
     };
 
     var _ws = null;
+    var disable = false;//避免重复连接
     var lockReconnect = false;//避免重复连接
     var _url = options.url;
     var _transports = [];
@@ -530,7 +533,6 @@ var xChat = function (options) {
                 if (topType == "msg") {
                     _this.recvMsgEvent(data);
                 }
-
                 for (var i = 0; i < objList.length; i++) {
                     var obj = objList[i];
                     if (obj && obj[type]) {
@@ -538,20 +540,19 @@ var xChat = function (options) {
                         if (_ut == 'visitor') {
                             if (_filterEvent.blockIt(type)) {
                                 return;
-                            }
-                        }
+                    }
+                }
                         obj[type].call(_this, data);
                         //只有消息类 才开启消息回执 状态类消息不会发送回执
                         //if (('text' == type || 'image' == type) && _sr && 'visitor' == _ut) {
                         //    _senderFactory.getSender('receipt').send(data);
                         //}
                         break;
-                    }
-                }
+            }
+        }
             }
         }
     };
-
     //开始创建连接
     this.connect = function () {
         var _this = this;
@@ -563,13 +564,13 @@ var xChat = function (options) {
 
         _this.initEventHandle();
         /* _ws.onopen = function () {
-            _this.handsUp();
-        };
-        _ws.onmessage = function (_event) {
-            _routeProtocolEvents.call(_this, _event.data);
-        };
-        _ws.onclose = function (_event) {
-            _this.wsClose();
+         _this.handsUp();
+         };
+         _ws.onmessage = function (_event) {
+         _routeProtocolEvents.call(_this, _event.data);
+         };
+         _ws.onclose = function (_event) {
+         _this.wsClose();
          };*/
     };
 
@@ -591,6 +592,17 @@ var xChat = function (options) {
             //拿到任何消息都说明当前连接是正常的
             heartCheck.reset().start();
             //console.log( _event.data);
+
+            if (disable) {
+                return;
+            }
+
+            if ("notHeartBeat" == _event.data) {
+                $("#onlineStatus").show();
+                disable = true;
+                return;
+            }
+
             if ("HeartBeat" != _event.data) {
                 _routeProtocolEvents.call(_this, _event.data);
             }

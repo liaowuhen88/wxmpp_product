@@ -52,6 +52,9 @@
 
 
 				<broker.url>tcp://101.200.87.16:61616</broker.url>
+				<!-- 根据appKey获取客服接口 -->
+
+				<appKey.url>http://xv.wifigx.com/api/webinit</appKey.url>
 
 				<!-- redis -->
 				<redis.hostName>10.3.2.124</redis.hostName>
@@ -100,6 +103,9 @@
 				<control.id>zwv11132</control.id>
 
 				<broker.url>tcp://101.200.87.16:61616</broker.url>
+				<!-- 根据appKey获取客服接口 -->
+
+				<appKey.url>http://xv.wifigx.com/api/webinit</appKey.url>
 
 				<!-- redis -->
 				<redis.hostName>10.3.2.124</redis.hostName>

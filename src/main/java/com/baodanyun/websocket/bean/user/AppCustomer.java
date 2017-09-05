@@ -10,6 +10,24 @@ public class AppCustomer extends AbstractUser {
     private String socketUrl;
     private String ossUrl;
     private String token;
+    private String website_icon;
+    private String skin;
+
+    public String getWebsite_icon() {
+        return website_icon;
+    }
+
+    public void setWebsite_icon(String website_icon) {
+        this.website_icon = website_icon;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
+    }
 
     public String getToken() {
         return token;

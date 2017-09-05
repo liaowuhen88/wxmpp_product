@@ -1,7 +1,6 @@
 package com.baodanyun.websocket.controller;
 
 import com.baodanyun.websocket.bean.Response;
-import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.request.AppKeyVisitorLoginBean;
 import com.baodanyun.websocket.bean.response.AppKeyResponse;
 import com.baodanyun.websocket.bean.user.AppCustomer;
@@ -62,17 +61,7 @@ public class AppKeyVisitorLogin extends BaseController {
 
             Visitor visitor = appKeyService.getVisitor(re, ar, customer.getLoginUsername(), customer.getToken());
 
-            boolean isExist = conversationService.isExist(customer.getId(), visitor.getId());
 
-            if (isExist) {
-                logger.info(" user {}, room {} isExist", customer.getId(), visitor.getId());
-            } else {
-                logger.info(" user {}, room {} notExist", customer.getId(), visitor.getId());
-
-                ConversationMsg msgConversation = msgService.getNewWebJoines(visitor, customer.getId());
-                logger.info(JSONUtil.toJson(msgConversation));
-                // msgSendControl.sendMsg(msgConversation);
-            }
             visitor.setCustomer(customer);
             request.getSession().setAttribute(Common.USER_KEY, visitor);
             boolean flag = customerOnline(customer.getId());

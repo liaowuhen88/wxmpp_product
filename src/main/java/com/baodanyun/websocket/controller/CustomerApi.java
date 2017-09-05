@@ -6,6 +6,7 @@ import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
+import com.baodanyun.websocket.model.Ofmucroom;
 import com.baodanyun.websocket.model.PageModel;
 import com.baodanyun.websocket.model.Transferlog;
 import com.baodanyun.websocket.model.UserModel;
@@ -52,6 +53,9 @@ public class CustomerApi extends BaseController {
 
     @Autowired
     private ConversationService conversationService;
+
+    @Autowired
+    private OfmucroomService ofmucroomService;
 
     @Autowired
     @Qualifier("wcUserLifeCycleService")
@@ -316,7 +320,15 @@ public class CustomerApi extends BaseController {
                 response.setData(cm);
                 response.setSuccess(true);
             } else {
-                response.setSuccess(false);
+                ConversationMsg conversation;
+                if (XMPPUtil.isRoom(from)) {
+                    Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(from));
+                    conversation = msgService.getNewRoomJoines(from, ofmucroom, cu.getId());
+                } else {
+                    conversation = msgService.getNewPersionalJoines(from, cu);
+                }
+                response.setData(conversation);
+                response.setSuccess(true);
             }
 
         } catch (Exception e) {
@@ -383,8 +395,8 @@ public class CustomerApi extends BaseController {
     public void onlineCustomerList(PageModel model, HttpServletResponse httpServletResponse) {
         Response response = new Response();
         try {
-            Collection<AbstractUser> freeCustomerNodeList = userServer.getCustomers().values();
-            response.setData(freeCustomerNodeList);
+           /* Collection<AbstractUser> freeCustomerNodeList = userServer.getCustomers().values();
+            response.setData(freeCustomerNodeList);*/
             response.setSuccess(true);
         } catch (Exception e) {
             logger.error("error", e);

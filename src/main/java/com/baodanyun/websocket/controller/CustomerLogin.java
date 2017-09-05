@@ -92,7 +92,7 @@ public class CustomerLogin extends BaseController {
         customer.setUserName(user.getUsername());
         customer.setLoginUsername(user.getUsername());
         customer.setId(XMPPUtil.nameToJid(user.getUsername()));
-
+        customer.setAppkey(user.getAppkey());
         return customer;
     }
 

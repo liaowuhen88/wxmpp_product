@@ -24,6 +24,8 @@
     <script src="<%=request.getContextPath()%>/resouces/scripts/history.js"></script>
     <script src="<%=request.getContextPath()%>/resouces/scripts/set.js"></script>
     <script src="<%=request.getContextPath()%>/resouces/scripts/leaveMessage.js"></script>
+    <script src="<%=request.getContextPath()%>/resouces/scripts/friendAndGroup.js"></script>
+
     <script>
         $(function () {
             window.user = ${user};
@@ -38,6 +40,9 @@
             history.init();
             //set.init();
             leaveMessage.init();
+
+            var friendAndGroup = new FriendAndGroup();
+            friendAndGroup.init();
         });
     </script>
 </head>
@@ -47,6 +52,10 @@
 <jsp:include page="history.jsp"/>
 <%-- 个人中心设置 --%>
 <jsp:include page="set.jsp"/>
+
+<%-- 好友 --%>
+<jsp:include page="friendAndGroup.jsp"/>
+
 <%-- 离线消息 --%>
 <jsp:include page="leaveMessage.jsp"/>
 <%-- 等待列表 --%>

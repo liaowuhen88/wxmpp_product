@@ -39,13 +39,7 @@ public class MsgSendControl {
     public UserCacheServer userCacheServer;
 
     public boolean sendMsg(Msg msg) throws InterruptedException {
-
-
-        if (webSocketService.isConnected(msg.getTo())) {
-            webSocketService.produce(msg);
-        } else {
-            logger.info("msg.getTo[" + msg.getTo() + "] is closed");
-        }
+        webSocketService.produce(msg);
         return true;
     }
 

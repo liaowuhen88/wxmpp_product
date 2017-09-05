@@ -4,11 +4,14 @@ import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.service.UserLifeCycleService;
 import com.baodanyun.websocket.service.WebSocketService;
+import com.baodanyun.websocket.util.CommonConfig;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.SpringContextUtil;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.io.IOException;
 
 /**
  * 进入当前处理器后
@@ -20,10 +23,19 @@ public class VisitorWebSocketHandler extends AbstractWebSocketHandler {
     UserLifeCycleService userLifeCycleService = SpringContextUtil.getBean("wvUserLifeCycleService", UserLifeCycleService.class);
 
     @Override
+    protected void saveWebSocketSession(String cid, WebSocketSession session) {
+        webSocketService.saveSession(cid, CommonConfig.PC_CUSTOMER, session);
+    }
+
+    @Override
+    protected boolean isClosededWebSocketSession(String cid) throws IOException, InterruptedException {
+        return webSocketService.isCloseded(cid, CommonConfig.PC_CUSTOMER);
+    }
+
+    @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Visitor visitor = (Visitor) session.getHandshakeAttributes().get(Common.USER_KEY);
-        webSocketService.saveSession(visitor.getId(), session);
-
+        saveWebSocketSession(visitor.getId(), session);
         logger.info("ip:[" + session.getLocalAddress() + "]------visitorId:[" + visitor.getId() + "]--------+nickName:[" + visitor.getNickName() + "]  ---- sessionId:[" + session.getId() + "]  session is open");
 
         userLifeCycleService.online(visitor);
@@ -50,7 +62,7 @@ public class VisitorWebSocketHandler extends AbstractWebSocketHandler {
         Visitor visitor = (Visitor) session.getHandshakeAttributes().get(Common.USER_KEY);
         logger.info("ip:[" + session.getLocalAddress() + "]------visitorId:[" + visitor.getId() + "]--------+nickName:[" + visitor.getNickName() + "] ---- sessionId:[" + session.getId() + "]   session is closed");
         // webSocketService.closed(visitor.getId());
-        boolean flag = webSocketService.isCloseded(visitor.getId());
+        boolean flag = isClosededWebSocketSession(visitor.getId());
         if(flag){
             logger.info("userLifeCycleService.logout(visitor)------visitorId:[" + visitor.getId() + "]--------+nickName:[" + visitor.getNickName() + "] ---- status:[" +status + "]   session is closed");
             userLifeCycleService.logout(visitor);

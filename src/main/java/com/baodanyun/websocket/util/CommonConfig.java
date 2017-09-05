@@ -34,4 +34,8 @@ public class CommonConfig {
     public static final String USER_CONTRACT_KEY = "USER_CONTRACT_KEY_";//合同信息
     public static final String USER_OPENID_KEY = "USER_OPENID_KEY";//openId
 
+    public static final String PC_CUSTOMER = "pc_customer";//openId
+    public static final String MOBILE_CUSTOMER = "mobile_customer";//openId
+
+
 }

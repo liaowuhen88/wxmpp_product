@@ -15,6 +15,7 @@ var Chat = function (options) {
         holdListBtn: '#holdListBtn',
         turnBtn: '#turnBtn',
         historyBtn: '#historyBtn',
+        friendAndGroupBtn: '#friendAndGroupBtn',
         examReportBtn: '#examReportBtn',
         chatClaimsBtn: '#chatClaimsBtn',
         chatContractsBtn: '#chatContractsBtn',
@@ -49,7 +50,8 @@ Chat.prototype = {
     signOut: function () {
         //退出登录
         var self = this;
-        window.location.href =self.interface.signOut;
+        window.close();
+        //window.location.href =self.interface.signOut;
       /*  myUtils.load(self.interface.signOut, 'post', function () {
             //window.location.href = window.base + "/customerlogin";
         }, {});*/
@@ -65,6 +67,7 @@ Chat.prototype = {
         $(this.controls.holdListBtn).modal();
         $(this.controls.turnBtn).modal();
         $(this.controls.historyBtn).modal();
+        $(this.controls.friendAndGroupBtn).modal();
         $(this.controls.examReportBtn).modal();
         $(this.controls.chatClaimsBtn).modal();
         $(this.controls.chatContractsBtn).modal();

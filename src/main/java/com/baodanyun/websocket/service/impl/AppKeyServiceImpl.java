@@ -88,7 +88,8 @@ public class AppKeyServiceImpl implements AppKeyService {
         au.setOssUrl(url + "/api/fileUpload/" + re.getcName());
         au.setToken(UUID.randomUUID().toString());
         au.setLoginTime(System.currentTimeMillis());
-
+        au.setSkin(re.getSkin());
+        au.setWebsite_icon(re.getWebsite_icon());
         return au;
 
     }

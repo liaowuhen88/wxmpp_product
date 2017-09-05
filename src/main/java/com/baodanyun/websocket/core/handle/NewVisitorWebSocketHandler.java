@@ -1,10 +1,14 @@
 package com.baodanyun.websocket.core.handle;
 
 
+import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.AppKeyService;
+import com.baodanyun.websocket.service.ConversationService;
+import com.baodanyun.websocket.service.MsgService;
+import com.baodanyun.websocket.util.CommonConfig;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.SpringContextUtil;
 import org.apache.commons.lang.StringUtils;
@@ -27,8 +31,19 @@ public class NewVisitorWebSocketHandler extends VisitorWebSocketHandler {
     //   sessionId  token
     private static Map<String, String> sessions = new ConcurrentHashMap<>();
     AppKeyService appKeyService = SpringContextUtil.getBean("appKeyServiceImpl", AppKeyService.class);
+    MsgService msgService = SpringContextUtil.getBean("msgServiceImpl", MsgService.class);
+    ConversationService conversationService = SpringContextUtil.getBean("conversationService", ConversationService.class);
 
-    private void init(String sendToken, Visitor visitor, WebSocketSession session) throws BusinessException, InterruptedException, XMPPException, IOException, SmackException {
+    protected void saveWebSocketSession(String cid, WebSocketSession session) {
+        webSocketService.saveSession(cid, CommonConfig.PC_CUSTOMER, session);
+    }
+
+    @Override
+    protected boolean isClosededWebSocketSession(String cid) throws IOException, InterruptedException {
+        return webSocketService.isCloseded(cid, CommonConfig.PC_CUSTOMER);
+    }
+
+    private void init(String sendToken, String to, Visitor visitor, WebSocketSession session) throws BusinessException, InterruptedException, XMPPException, IOException, SmackException {
         String token = sessions.get(session.getId());
         logger.info("session[" + session.getId() + "]  token {} cachetoken{}", sendToken, token);
 
@@ -42,7 +57,18 @@ public class NewVisitorWebSocketHandler extends VisitorWebSocketHandler {
                 userLifeCycleService.online(visitor);
             }
             sessions.put(session.getId(), sendToken);
-            webSocketService.saveSession(visitor.getId(), session);
+            saveWebSocketSession(visitor.getId(), session);
+        }
+
+        boolean isExist = conversationService.isExist(to, visitor.getId());
+        if (isExist) {
+            logger.info(" user {}, room {} isExist", to, visitor.getId());
+        } else {
+            logger.info(" user {}, room {} notExist", to, visitor.getId());
+
+            ConversationMsg msgConversation = msgService.getNewWebJoines(visitor, to);
+            logger.info(JSONUtil.toJson(msgConversation));
+            // msgSendControl.sendMsg(msgConversation);
         }
 
     }
@@ -64,7 +90,7 @@ public class NewVisitorWebSocketHandler extends VisitorWebSocketHandler {
                 Msg msg = Msg.handelMsg(content);
                 if (!StringUtils.isEmpty(msg.getToken())) {
                     au = appKeyService.getVisitorByToken(msg.getToken());
-                    init(msg.getToken(), au, session);
+                    init(msg.getToken(), msg.getTo(), au, session);
                 } else {
                     logger.info("token is null");
                 }

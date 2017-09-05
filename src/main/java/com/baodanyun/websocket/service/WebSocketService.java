@@ -1,6 +1,7 @@
 package com.baodanyun.websocket.service;
 
 import com.baodanyun.websocket.bean.msg.Msg;
+import com.baodanyun.websocket.util.CommonConfig;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.slf4j.Logger;
@@ -8,12 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,13 +24,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Service
 public class WebSocketService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    // jid-- pc/mobile
     private final Map<String, Map<String, WebSocketSession>> WEB_SOCKET_SESSION_MAP = new ConcurrentHashMap<>();
     BlockingQueue<Msg> basket = new LinkedBlockingQueue<>(100);
     /**
      * key 为用户id
      */
-    @Autowired
-    private XmppService xmppService;
     @Autowired
     private MessageFiterService messageFiterService;
 
@@ -40,8 +39,8 @@ public class WebSocketService {
         if (null != msg) {
             //basket.put(msg);
             boolean flag = send(msg.getTo(), msg);
-            logger.info("msg---" + JSONUtil.toJson(msg) + "send to webSocket --->:"+flag);
-        }else {
+            logger.info("msg---" + JSONUtil.toJson(msg) + "send to webSocket --->:" + flag);
+        } else {
             logger.info("msg is null");
         }
     }
@@ -55,26 +54,30 @@ public class WebSocketService {
     public boolean sendToWebSocket() throws InterruptedException {
         Msg msg = consume();
         boolean flag = send(msg.getTo(), msg);
-        logger.info("msg---" + JSONUtil.toJson(msg) + "send to webSocket --->:"+flag);
+        logger.info("msg---" + JSONUtil.toJson(msg) + "send to webSocket --->:" + flag);
         return flag;
     }
 
-    public void saveSession(String jid, WebSocketSession webSocketSession) {
+    public void saveSession(String jid, String type, WebSocketSession webSocketSession) {
+        WebSocketSession ws = getWebSocketSession(jid, CommonConfig.PC_CUSTOMER);
+        if (null != ws && !ws.getId().equals(webSocketSession.getId()) && ws.isOpen()) {
+            try {
+                WebSocketMessage wm = new TextMessage("notHeartBeat");
+                ws.sendMessage(wm);
+            } catch (IOException e) {
+                logger.error("error", e);
+            }
+            logger.info("不是当前窗口，忽略");
+        }
+
         Map<String, WebSocketSession> map = WEB_SOCKET_SESSION_MAP.get(jid);
         if (null == map) {
             map = new HashMap<>();
             WEB_SOCKET_SESSION_MAP.put(jid, map);
         }
-        map.put(webSocketSession.getId(), webSocketSession);
+        map.put(type, webSocketSession);
     }
 
-    public void removeSession(String jid, WebSocketSession webSocketSession) {
-        Map<String, WebSocketSession> map = WEB_SOCKET_SESSION_MAP.get(jid);
-        if (null != map) {
-            map.remove(webSocketSession.getId());
-        }
-
-    }
 
     public Collection<WebSocketSession> getWebSocketSession(String jid) {
         if (null != WEB_SOCKET_SESSION_MAP.get(jid)) {
@@ -83,23 +86,43 @@ public class WebSocketService {
         return null;
     }
 
-    public boolean isConnected(String jid) {
-        Collection<WebSocketSession> webSocketSessions = getWebSocketSession(jid);
-        boolean flag = false;
-        if (null != webSocketSessions && webSocketSessions.size() > 0) {
-            for (WebSocketSession ws : webSocketSessions) {
+    public synchronized boolean isConnected(String jid) {
+        Map<String, WebSocketSession> map = WEB_SOCKET_SESSION_MAP.get(jid);
+        if (null != map) {
+            Set<Map.Entry<String, WebSocketSession>> set = map.entrySet();
+            Iterator<Map.Entry<String, WebSocketSession>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, WebSocketSession> entry = it.next();
+                WebSocketSession ws = entry.getValue();
                 if (ws.isOpen()) {
                     return true;
                 } else {
-                    removeSession(jid, ws);
+                    it.remove();
                 }
             }
-        } else {
-            logger.info("jid:[" + jid + "] session is null");
-            return false;
         }
+        return false;
+    }
 
-        return flag;
+
+    public synchronized boolean isConnected(String jid, String type) {
+        WebSocketSession ws = getWebSocketSession(jid, type);
+        if (null != ws && ws.isOpen()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public synchronized WebSocketSession getWebSocketSession(String jid, String type) {
+        Map<String, WebSocketSession> map = WEB_SOCKET_SESSION_MAP.get(jid);
+        if (null != map) {
+            WebSocketSession ws = map.get(type);
+            if (null != ws) {
+                return ws;
+            }
+        }
+        return null;
     }
 
     /**
@@ -143,8 +166,28 @@ public class WebSocketService {
 
             return true;
         }
+    }
+
+    /**
+     * @param jid
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public boolean isCloseded(String jid, String type) throws IOException, InterruptedException {
+        // 为了防止刷新 需要延迟关闭
+        Thread.sleep(1000);
+
+        if (isConnected(jid)) {
+            logger.info("fresh ignore closed");
+            return false;
+        } else {
+
+            return true;
+        }
 
     }
+
 
     public boolean closed(String jid) throws IOException {
         Collection<WebSocketSession> webSocketSessions = getWebSocketSession(jid);
@@ -160,15 +203,11 @@ public class WebSocketService {
     }
 
     private boolean send(String jid, Msg msg) {
-
         try {
-
-
             if (Msg.Type.msg.toString().equals(msg.getType())) {
-                    messageFiterService.filter(jid, msg);
-                }
-
-                String content = XMPPUtil.buildJson(msg);
+                messageFiterService.filter(jid, msg);
+            }
+            String content = XMPPUtil.buildJson(msg);
             Collection<WebSocketSession> webSocketSessions = getWebSocketSession(jid);
             if (null != webSocketSessions && webSocketSessions.size() > 0) {
                 for (WebSocketSession ws : webSocketSessions) {
@@ -177,9 +216,7 @@ public class WebSocketService {
                     }
                 }
             }
-
-
-                return true;
+            return true;
 
         } catch (Exception e) {
             logger.error("webSocketSession send error", e);

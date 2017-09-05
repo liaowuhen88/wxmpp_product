@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 public class Response {
     private boolean success;
     private int code;
+    private String status;
     private String msg;
     private String message;
     private Object data;
@@ -53,5 +54,13 @@ public class Response {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
