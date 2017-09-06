@@ -112,7 +112,7 @@ public class InitChatMessageListener implements ChatMessageListener {
                     // 为了解决系统发送的群消息
                     if (XMPPUtil.isRoom(sendMsg.getFrom())) {
                         Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(sendMsg.getFrom()));
-                        conversation = msgService.getNewRoomJoines(sendMsg.getFrom(), ofmucroom, user.getId());
+                        conversation = msgService.getNewRoomJoines(sendMsg.getFrom(), ofmucroom, user.getId(), user.getAppkey());
                     } else {
                         conversation = msgService.getNewPersionalJoines(sendMsg.getFrom(), user);
                     }

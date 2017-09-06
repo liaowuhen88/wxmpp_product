@@ -12,7 +12,7 @@ import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 public interface MsgService {
     ConversationMsg getNewWebJoines(AbstractUser user, String to);
 
-    ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to);
+    ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to, String appKey);
 
     ConversationMsg getNewPersionalJoines(String realFrom, AbstractUser user);
 

@@ -26,7 +26,6 @@ import java.util.Map;
 @Service
 public class FriendAndGroupServiceImpl implements FriendAndGroupService {
     protected static Logger logger = LoggerFactory.getLogger(FriendAndGroupServiceImpl.class);
-
     @Override
     public List<FriendAndGroupResponse> get(String appkey, String nickName) throws Exception {
         Map<String, String> content = new HashMap<>();

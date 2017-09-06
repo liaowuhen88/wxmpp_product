@@ -32,6 +32,7 @@ public class AbstractUser implements Serializable {
     private String desc;  // 详细信息
     private String remark;  // 备注信息
     private String workNumber;
+    private String appkey;
 
     public String getId() {
         return id;
@@ -199,7 +200,16 @@ public class AbstractUser implements Serializable {
         return XMPPUtil.nameToJid(getLoginUsername());
     }
 
+    public String getAppkey() {
+        return appkey;
+    }
+
+    public void setAppkey(String appkey) {
+        this.appkey = appkey;
+    }
+
     public enum UserType {
         visitor, customer
     }
+
 }

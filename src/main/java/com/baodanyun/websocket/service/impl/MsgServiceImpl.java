@@ -4,6 +4,7 @@ import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
+import com.baodanyun.websocket.bean.user.GroupUser;
 import com.baodanyun.websocket.model.Ofmucroom;
 import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.JSONUtil;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by liaowuhen on 2017/5/11.
@@ -35,6 +37,8 @@ public class MsgServiceImpl implements MsgService {
 
     @Autowired
     private ConversationService conversationService;
+    @Autowired
+    private FriendAndGroupService friendAndGroupService;
 
     public static void main(String[] args) {
         String room = "xvql187@conference.126xmpp/\u003cspan class\u003d\"emoji emoji1f4a2\"\u003e\u003c/span\u003e          导演\u003cspan class\u003d\"emoji emojiae\"\u003e\u003c/span\u003e";
@@ -73,7 +77,7 @@ public class MsgServiceImpl implements MsgService {
     }
 
     @Override
-    public ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to) {
+    public ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to, String appKey) {
         String realRoom = XMPPUtil.removeRoomSource(room);
         ConversationMsg sm = new ConversationMsg();
         sm.setKey(realRoom);
@@ -97,6 +101,21 @@ public class MsgServiceImpl implements MsgService {
         } else {
             sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
         }
+
+        // 初始化群成员
+        try {
+            if (StringUtils.isNotEmpty(appKey)) {
+                List<GroupUser> list = friendAndGroupService.getGroupUsers(appKey, XMPPUtil.jidToName(realRoom));
+                if (null != list) {
+                    for (GroupUser gu : list) {
+                        sm.getGroupUserMap().put(XMPPUtil.jidToName(gu.getJid()), gu);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("error", e);
+        }
+
         filter(sm);
         conversationService.addConversations(to, sm);
         return sm;

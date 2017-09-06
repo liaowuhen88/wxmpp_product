@@ -388,10 +388,11 @@ public class XMPPConnectionClientTest {
          *   用户必须是假的，不能注册过
          */
 
-        JoinMultiUserChat("真实用户XX", realName1, group);
-        JoinMultiUserChat("真实用户YY", realName2, group);
-        JoinMultiUserChat("真实用户RR", realName3, group);
-        JoinMultiUserChat("真实用户TT", realName4, group);
+        JoinMultiUserChat(name1 + "真实用户XX", realName1, group);
+        JoinMultiUserChat(name2 + "真实用户YY", realName2, group);
+        JoinMultiUserChat(name3 + "真实用户RR", realName3, group);
+        JoinMultiUserChat(name4 + "真实用户TT", realName4, group);
+
         /*createRoom(realName,group,"nickname");*/
 
         MessageListener messageListener = new UcMessageListener(null, new Visitor(), null, null, null);
@@ -411,12 +412,12 @@ public class XMPPConnectionClientTest {
                 //msg1.setStanzaId("000001");
                 conn.sendStanza(msg1);
 
-            /*  Message msg2 = new Message();
+                Message msg2 = new Message();
                 msg2.setType(Message.Type.groupchat);
                 msg2.setBody("msg2-------" + get());
                 msg2.setTo(group);
                 msg2.setFrom(realName2);
-                conn.sendStanza(msg2);*/
+                conn.sendStanza(msg2);
 
                 Message msg3 = new Message();
                 msg3.setType(Message.Type.groupchat);

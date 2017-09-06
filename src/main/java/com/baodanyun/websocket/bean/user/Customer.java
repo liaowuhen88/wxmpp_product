@@ -8,17 +8,10 @@ import java.io.Serializable;
  */
 public class Customer extends AbstractUser implements Serializable {
 
-    private String appkey;
 
     public Customer() {
         setUserType(UserType.customer);
     }
 
-    public String getAppkey() {
-        return appkey;
-    }
 
-    public void setAppkey(String appkey) {
-        this.appkey = appkey;
-    }
 }

@@ -65,7 +65,7 @@ public class UcMessageListener implements MessageListener {
             } else {
                 logger.info(" user {}, room {} notExist", user.getId(), realRoom);
                 Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(realRoom));
-                conversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId());
+                conversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId(), user.getAppkey());
                 logger.info(JSONUtil.toJson(conversation));
                 // msgSendControl.sendMsg(msgConversation);
             }
@@ -76,10 +76,20 @@ public class UcMessageListener implements MessageListener {
                     // 客服自己发送的群消息，不发送到前端
                     return;
                 }
-                sendMsg.setFromName(realFrom);
+                String[] keys = realFrom.split("__");
+                if (null != keys && keys.length == 2) {
+                    sendMsg.setFromName(keys[1]);
+                    String key = keys[0];
+                    if (null != conversation.getGroupUserMap().get(key)) {
+                        sendMsg.setIcon(conversation.getGroupUserMap().get(key).getIcon());
+                    } else {
+                        logger.info("key {} is null", key);
+                    }
+                }
             } else {
-                sendMsg.setFromName(msg.getFrom());
+                logger.info("no resource");
             }
+
 
             if (null != sendMsg) {
                 // 手机app端发送过来的数据subject 为空
@@ -110,5 +120,6 @@ public class UcMessageListener implements MessageListener {
         UcMessageListener e = (UcMessageListener) obj;
         return e.getUser().equals(this.getUser());
     }
+
 
 }

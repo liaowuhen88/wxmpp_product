@@ -62,7 +62,7 @@ public class ConversationRoomEventBusListenerImpl extends AbstarctEventBusListen
                             }
                         }
 
-                        Msg msg = msgService.getNewRoomJoines(joinRoomEvent.getRoom(), subject, joinRoomEvent.getUser().getId());
+                        Msg msg = msgService.getNewRoomJoines(joinRoomEvent.getRoom(), subject, joinRoomEvent.getUser().getId(), joinRoomEvent.getUser().getAppkey());
                         logger.info(JSONUtil.toJson(msg));
                         msgSendControl.sendMsg(msg);
 

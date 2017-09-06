@@ -323,7 +323,7 @@ public class CustomerApi extends BaseController {
                 ConversationMsg conversation;
                 if (XMPPUtil.isRoom(from)) {
                     Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(from));
-                    conversation = msgService.getNewRoomJoines(from, ofmucroom, cu.getId());
+                    conversation = msgService.getNewRoomJoines(from, ofmucroom, cu.getId(), cu.getAppkey());
                 } else {
                     conversation = msgService.getNewPersionalJoines(from, cu);
                 }
