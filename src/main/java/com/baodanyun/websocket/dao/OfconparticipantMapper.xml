@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baodanyun.websocket.dao.OfconparticipantMapper">
+    <resultMap id="BaseResultMap" type="com.baodanyun.websocket.model.Ofconparticipant">
+        <result column="conversationID" jdbcType="BIGINT" property="conversationid"/>
+        <result column="joinedDate" jdbcType="BIGINT" property="joineddate"/>
+        <result column="leftDate" jdbcType="BIGINT" property="leftdate"/>
+        <result column="bareJID" jdbcType="VARCHAR" property="barejid"/>
+        <result column="jidResource" jdbcType="VARCHAR" property="jidresource"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.baodanyun.websocket.model.Ofconparticipant">
+    insert into ofconparticipant (conversationID, joinedDate, leftDate, 
+      bareJID, jidResource, nickname
+      )
+    values (#{conversationid,jdbcType=BIGINT}, #{joineddate,jdbcType=BIGINT}, #{leftdate,jdbcType=BIGINT}, 
+      #{barejid,jdbcType=VARCHAR}, #{jidresource,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.baodanyun.websocket.model.Ofconparticipant">
+        insert into ofconparticipant
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="conversationid != null">
+                conversationID,
+            </if>
+            <if test="joineddate != null">
+                joinedDate,
+            </if>
+            <if test="leftdate != null">
+                leftDate,
+            </if>
+            <if test="barejid != null">
+                bareJID,
+            </if>
+            <if test="jidresource != null">
+                jidResource,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="conversationid != null">
+                #{conversationid,jdbcType=BIGINT},
+            </if>
+            <if test="joineddate != null">
+                #{joineddate,jdbcType=BIGINT},
+            </if>
+            <if test="leftdate != null">
+                #{leftdate,jdbcType=BIGINT},
+            </if>
+            <if test="barejid != null">
+                #{barejid,jdbcType=VARCHAR},
+            </if>
+            <if test="jidresource != null">
+                #{jidresource,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getLeftdate" resultType="java.lang.Long"
+            parameterType="java.lang.String">
+
+   SELECT MAX(leftDate) FROM ofconparticipant WHERE bareJID = #{bareJID,jdbcType=VARCHAR}  ;
+
+  </select>
+
+</mapper>

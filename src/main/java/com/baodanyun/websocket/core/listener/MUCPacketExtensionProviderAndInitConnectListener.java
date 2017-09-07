@@ -6,11 +6,11 @@ import com.baodanyun.websocket.service.DoubaoFriendsService;
 import com.baodanyun.websocket.service.MsgSendControl;
 import com.baodanyun.websocket.service.WebSocketService;
 import com.baodanyun.websocket.service.XmppService;
-import com.baodanyun.websocket.util.EventBusUtils;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Element;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,12 +53,19 @@ public class MUCPacketExtensionProviderAndInitConnectListener extends IQProvider
     public void authenticated(XMPPConnection xmppConnection, boolean b) {
         xmppService.saveXMPPConnection(user.getRealFrom(), xmppConnection);
 
-        if (null != rooms) {
+        Presence presence = new Presence(Presence.Type.available);
+        try {
+            xmppConnection.sendStanza(presence);
+        } catch (SmackException.NotConnectedException e) {
+            logger.error("error", e);
+        }
+
+       /* if (null != rooms) {
             for (JoinRoomEvent room : rooms) {
                 EventBusUtils.post(room);
             }
             rooms = null;
-        }
+        }*/
 
         logger.info("authenticated");
     }

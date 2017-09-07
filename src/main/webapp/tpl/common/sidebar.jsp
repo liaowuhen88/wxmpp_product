@@ -34,11 +34,11 @@
         </ul>
     </nav>
     <ul class="tools">
-        <li data-toggle="tooltip" data-placement="top" title="设置" id="set">
-            <a class="tools-icon icon-set" href="javascript:void(0);">设置</a>
-        </li>
-        <li data-toggle="tooltip" data-placement="top" title="退出">
+        <%-- <li data-toggle="tooltip" data-placement="top" title="设置" id="set">
+             <a class="tools-icon icon-set" href="javascript:void(0);">设置</a>
+         </li>--%>
+        <%--<li data-toggle="tooltip" data-placement="top" title="退出">
             <a class="tools-icon icon-signout signOut" href="javascript:void(0);">退出</a>
-        </li>
+        </li>--%>
     </ul>
 </header>

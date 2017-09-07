@@ -4,13 +4,12 @@ import com.baodanyun.websocket.bean.XmppAdapter;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.core.listener.*;
+import com.baodanyun.websocket.dao.OfconparticipantMapper;
 import com.baodanyun.websocket.dao.OfuserMapper;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.Ofuser;
 import com.baodanyun.websocket.service.*;
-import com.baodanyun.websocket.util.Config;
-import com.baodanyun.websocket.util.JSONUtil;
-import com.baodanyun.websocket.util.XMPPUtil;
+import com.baodanyun.websocket.util.*;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
@@ -34,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,6 +69,9 @@ public class XmppServiceImpl implements XmppService {
     private OfmucroomService ofmucroomService;
     @Autowired
     private MsgService msgService;
+
+    @Autowired
+    private OfconparticipantMapper ofconparticipantMapper;
 
 
     public boolean isAuthenticated(String jid) {
@@ -381,8 +384,11 @@ public class XmppServiceImpl implements XmppService {
         if (!room.isJoined()) {
 
             DiscussionHistory history = new DiscussionHistory();
-            history.setMaxStanzas(0);
-
+            Long leftdate = ofconparticipantMapper.getLeftdate(user.getId());
+            if (null != leftdate) {
+                Date date = new Date(leftdate);
+                history.setSince(date);
+            }
             room.addParticipantStatusListener(new UcParticipantStatus());
             // 增加 uc 消息监听器
             UcMessageListener messageListener = new UcMessageListener(msgSendControl, user, conversationService, ofmucroomService, msgService);
