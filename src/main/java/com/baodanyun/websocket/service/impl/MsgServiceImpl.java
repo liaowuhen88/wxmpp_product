@@ -5,12 +5,12 @@ import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.GroupUser;
+import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.Ofmucroom;
+import com.baodanyun.websocket.model.Ofvcard;
 import com.baodanyun.websocket.service.*;
-import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,10 +134,15 @@ public class MsgServiceImpl implements MsgService {
         sm.setFromType(Msg.fromType.personal);
         sm.setFrom(realFrom);
 
-        sm.setFromName(realFrom);
-        sm.setLoginUsername(realFrom);
+        //sm.setFromName(realFrom);
+        //sm.setLoginUsername(realFrom);
 
-        VCard vCard = vcardService.loadVcard(user.getId(), realFrom);
+        Ofvcard vCard = null;
+        try {
+            vCard = vcardService.loadVcard(XMPPUtil.jidToName(realFrom));
+        } catch (BusinessException e) {
+            logger.error("error", e);
+        }
 
         initByVCard(sm, vCard);
 
@@ -156,16 +161,19 @@ public class MsgServiceImpl implements MsgService {
     }
 
     @Override
-    public void initByVCard(ConversationMsg conversationMsg, VCard vCard) {
-        logger.info(JSONUtil.toJson(vCard));
+    public void initByVCard(ConversationMsg conversationMsg, Ofvcard vCard) {
         if (null != vCard) {
-            conversationMsg.setFromName(vCard.getNickName());
-            conversationMsg.setLoginUsername(vCard.getField("FN"));
-            byte[] avatar = vCard.getAvatar();
+            //logger.info(JSONUtil.toJson(vCard));
+            conversationMsg.setFromName(vCard.getUser().getNickName());
+            conversationMsg.setLoginUsername(vCard.getUser().getFn());
+            //byte[] avatar = vCard.getUser().getAvatar();
+            String avatar = vCard.getUser().getAvatar();
             if (null != avatar) {
-                String image = new sun.misc.BASE64Encoder().encode(avatar);
-                conversationMsg.setIcon("data:image/jpeg;base64," + image);
+                //String image = new sun.misc.BASE64Encoder().encode(avatar);
+                conversationMsg.setIcon("data:image/jpeg;base64," + avatar);
             }
+        } else {
+            logger.info("vCard is null");
         }
     }
 

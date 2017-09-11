@@ -1,7 +1,6 @@
 package com.baodanyun.websocket.controller;
 
 import com.baodanyun.websocket.bean.Response;
-import com.baodanyun.websocket.bean.Tags;
 import com.baodanyun.websocket.bean.user.Customer;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.bean.userInterface.PersonalDetail;
@@ -16,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,7 +59,7 @@ public class VisitorApi extends BaseController {
         Response response = new Response();
         try {
             Visitor user = userServer.getUserVisitor(vjid);
-             if (null != user) {
+            if (null != user) {
                 response.setSuccess(true);
                 response.setData(user);
             } else {
@@ -88,9 +85,7 @@ public class VisitorApi extends BaseController {
 
         try {
             if (!StringUtils.isEmpty(id)) {
-                Visitor vCard = vcardService.getBaseVCard(Common.userVcard, id, customer.getId(), Visitor.class);
                 Map<String, Object> map = new HashMap<>();
-                map.put("vCard", vCard);
 
                 if (!StringUtils.isEmpty(openid)) {
                     try {
@@ -158,24 +153,6 @@ public class VisitorApi extends BaseController {
                 response.setSuccess(false);
                 response.setMsg("参数cjid不能为空");
             } else {
-                Visitor vCard = vcardService.getBaseVCard(Common.userVcard, user.getCjid(), Visitor.class);
-
-                if (!StringUtils.isEmpty(user.getDesc())) {
-                    vCard.setDesc(user.getDesc().trim());
-                }
-
-                if (!StringUtils.isEmpty(user.getTags())) {
-                    List<Tags> li = JSONUtil.toObject(List.class, user.getTags());
-                    if (!CollectionUtils.isEmpty(li)) {
-                        vCard.setTags(li);
-                    }
-                }
-
-                if (!StringUtils.isEmpty(user.getRemark())) {
-                    vCard.setRemark(user.getRemark().trim());
-                }
-                Visitor u = vcardService.updateBaseVCard(user.getCjid(), Common.userVcard, vCard);
-                response.setData(u);
                 response.setSuccess(true);
             }
 

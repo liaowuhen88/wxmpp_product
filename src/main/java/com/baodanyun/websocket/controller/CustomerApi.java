@@ -6,10 +6,7 @@ import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Visitor;
 import com.baodanyun.websocket.core.common.Common;
-import com.baodanyun.websocket.model.Ofmucroom;
-import com.baodanyun.websocket.model.PageModel;
-import com.baodanyun.websocket.model.Transferlog;
-import com.baodanyun.websocket.model.UserModel;
+import com.baodanyun.websocket.model.*;
 import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.service.impl.JedisServiceImpl;
 import com.baodanyun.websocket.util.JSONUtil;
@@ -17,7 +14,6 @@ import com.baodanyun.websocket.util.Render;
 import com.baodanyun.websocket.util.XMPPUtil;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +105,7 @@ public class CustomerApi extends BaseController {
         Response response = new Response();
         try {
             AbstractUser user = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
-            VCard vCard = vcardService.loadVcard(user.getId(), user.getId());
+            Ofvcard vCard = vcardService.loadVcard(XMPPUtil.jidToName(user.getId()));
             ConversationMsg sm = new ConversationMsg();
             msgService.initByVCard(sm, vCard);
             response.setData(sm);

@@ -93,6 +93,7 @@ public class CustomerLogin extends BaseController {
         customer.setLoginUsername(user.getUsername());
         customer.setId(XMPPUtil.nameToJid(user.getUsername()));
         customer.setAppkey(user.getAppkey());
+
         return customer;
     }
 

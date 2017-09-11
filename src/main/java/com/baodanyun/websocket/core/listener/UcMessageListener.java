@@ -36,6 +36,20 @@ public class UcMessageListener implements MessageListener {
         this.msgService = msgService;
     }
 
+    public static void main(String[] args) {
+        String from = "xvql1048@conference.126xmpp/xvjq64_g197001__A\\u003cspan class\\u003d\\\"emoji emoji1f4a7\\\"\\u003e\\u003c/span\\u003e妤婷";
+
+        if (!StringUtils.isEmpty(from) && from.contains("/")) {
+            String realFrom = from.split("/")[1];
+            String[] keys = realFrom.split("__");
+            if (null != keys && keys.length == 2) {
+                String key = keys[0];
+                logger.info("key {} is null", key);
+            }
+        }
+
+    }
+
     public AbstractUser getUser() {
         return user;
     }
@@ -101,7 +115,6 @@ public class UcMessageListener implements MessageListener {
         }
 
     }
-
 
     @Override
     public int hashCode() {

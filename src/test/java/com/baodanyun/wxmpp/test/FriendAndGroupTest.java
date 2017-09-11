@@ -1,10 +1,15 @@
 package com.baodanyun.wxmpp.test;
 
 import com.baodanyun.websocket.bean.bootstrap.Node;
+import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.response.FriendAndGroupResponse;
+import com.baodanyun.websocket.bean.user.GroupUser;
 import com.baodanyun.websocket.service.FriendAndGroupService;
 import com.baodanyun.websocket.util.JSONUtil;
+import com.baodanyun.websocket.util.XMPPUtil;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -13,6 +18,9 @@ import java.util.List;
  * Created by liaowuhen on 2017/8/31.
  */
 public class FriendAndGroupTest extends BaseTest {
+    protected static final Logger logger = LoggerFactory.getLogger(FriendAndGroupTest.class);
+
+    private static String appKey = "xQPwDNa6B2A8G9jy3zprEJV3gnZ4vW5O";
     @Autowired
     private FriendAndGroupService friendAndGroupService;
 
@@ -23,6 +31,20 @@ public class FriendAndGroupTest extends BaseTest {
         List<Node> nodes = friendAndGroupService.adapter(list);
         System.out.println(JSONUtil.toJson(nodes));
 
+    }
+
+    @Test
+    public void getGroupUsers() throws Exception {
+        String room = "xvql1048@126xmpp";
+        ConversationMsg sm = new ConversationMsg();
+        List<GroupUser> list = friendAndGroupService.getGroupUsers(appKey, XMPPUtil.jidToName(room));
+        if (null != list) {
+            for (GroupUser gu : list) {
+                sm.getGroupUserMap().put(XMPPUtil.jidToName(gu.getJid()), gu);
+            }
+        }
+
+        logger.info(JSONUtil.toJson(sm.getGroupUserMap()));
     }
 
 }

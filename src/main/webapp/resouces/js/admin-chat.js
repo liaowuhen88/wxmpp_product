@@ -93,10 +93,10 @@ xchat.initSuccessQueueStatusHandelEvent = function () {
     this.holdListEventBind();    //接入列表事件绑定
     this.closeEventBind();  //关闭对话事件绑定
     this.callInEventBind(); //接入对话事件绑定
-    this.turnEventBind();   //转接事件绑定
+    //this.turnEventBind();   //转接事件绑定
     this.getCustomerList();     //获取客服列表
-    this.setUserInfoEventBind();    //设置用户详情事件绑定
-    this.customerListEventBind();//转接按钮事件
+    //this.setUserInfoEventBind();    //设置用户详情事件绑定
+    //this.customerListEventBind();//转接按钮事件
     this.library_init();// 加载素材库
     this.setting_allEventBind();//转接按钮事件
 
@@ -112,12 +112,11 @@ xchat.loginErrorStatusHandelEvent = function () {
 //客服个人信息设置
 xchat.setCustomerProfileEventBind = function () {
     myUtils.load(window.base + "/api/getVcard", 'get', function (response) {
-        var $customer = $('#customerInfo').find('img').eq(0);
         customerInfo = response.data;
         if (customerInfo.icon !== null && customerInfo.icon !== '' && customerInfo.icon !== 'ic') {
-            $customer.attr('src', customerInfo.icon);
+            //window.user.icon = customerInfo.icon;
         }
-        $customer.attr('alt', customerInfo.username);
+        //window.user.username = customerInfo.username;
     }, {});
 };
 /*=====================================================================================初始化=====================================================================================*/
@@ -182,6 +181,7 @@ xchat.initConversation = function (json) {
             url: _this.interface.getConversation + "?from=" + json.from,
             type: 'GET',
             timeout: 3000,
+            async: false,
             success: function (res) {
                 if (res.success) {
                     var li = document.getElementById(json.from);
@@ -507,6 +507,7 @@ xchat.loadChatList = function () {
                         friend.icon = _this.controls.defaultAvatar;
                     }
                     friend.time = myUtils.formatDate(friend.loginTime);
+
                     if (friend.onlineStatus == 'online' || friend.onlineStatus == 'encrypt') {
                         myUtils.renderDivAdd('onlinefriendListTpl', friend, 'friendList');
                     } else if (friend.onlineStatus == 'backup') {
@@ -1146,9 +1147,9 @@ xchat.setting_allConfirm = function (destJid) {
 xchat.turnComb = function (data) {
     var html = '';
     /* data.map(function (val) {
-        if (val.id !== window.currentId) {
-            html += '<li data-id="' + val.id + '">' + val.loginUsername + '<span class="chooseBtn">分配</span></li>';
-        }
+     if (val.id !== window.currentId) {
+     html += '<li data-id="' + val.id + '">' + val.loginUsername + '<span class="chooseBtn">分配</span></li>';
+     }
      });*/
     $('#turn-list').html(html);
 };

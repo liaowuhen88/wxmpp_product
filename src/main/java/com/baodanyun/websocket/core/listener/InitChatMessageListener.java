@@ -3,11 +3,10 @@ package com.baodanyun.websocket.core.listener;
 import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
+import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.Ofmucroom;
-import com.baodanyun.websocket.service.ConversationService;
-import com.baodanyun.websocket.service.MsgSendControl;
-import com.baodanyun.websocket.service.MsgService;
-import com.baodanyun.websocket.service.OfmucroomService;
+import com.baodanyun.websocket.model.Ofvcard;
+import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.SpringContextUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
@@ -28,6 +27,7 @@ public class InitChatMessageListener implements ChatMessageListener {
     ConversationService conversationService = SpringContextUtil.getBean("conversationService", ConversationService.class);
     MsgService msgService = SpringContextUtil.getBean("msgServiceImpl", MsgService.class);
     OfmucroomService ofmucroomService = SpringContextUtil.getBean("ofmucroomServiceImpl", OfmucroomService.class);
+    VcardService vcardService = SpringContextUtil.getBean("vcardService", VcardService.class);
     private MsgSendControl msgSendControl;
     private AbstractUser user;
 
@@ -169,36 +169,27 @@ public class InitChatMessageListener implements ChatMessageListener {
         if (null != ffs && ffs.length > 1 && ffs[0].startsWith("system")) {
 
             String realFrom = ffs[1];
-            String machine = ffs[2];
+            //String machine = ffs[2];
             String type = ffs[3];
             sendMsg.setFrom(XMPPUtil.removeRoomSource(realFrom));
             sendMsg.setFromType(Msg.fromType.system);
 
-            ConversationMsg conversation = null;
-            String json = null;
+            Ofvcard vCard = null;
             try {
-                json = conversationService.get(user.getId(), sendMsg.getFrom());
-                if (StringUtils.isNotEmpty(json)) {
-                    conversation = JSONUtil.toObject(ConversationMsg.class, json);
-                } else {
-                    conversation = msgService.getNewPersionalJoines(machine, user);
-                }
-
-            } catch (Exception e) {
+                vCard = vcardService.loadVcard(XMPPUtil.jidToName(sendMsg.getTo()));
+            } catch (BusinessException e) {
                 logger.error("error", e);
             }
+            ConversationMsg conversation = new ConversationMsg();
+            msgService.initByVCard(conversation, vCard);
 
             if (null != conversation) {
-                if (StringUtils.isEmpty(sendMsg.getFromName())) {
                     sendMsg.setFromName(conversation.getFromName() + "【" + getTypeName(type) + "】");
-                }
             } else {
                 if (StringUtils.isEmpty(sendMsg.getFromName())) {
                     sendMsg.setFromName("系统消息【" + getTypeName(type) + "】");
                 }
             }
-
-
             return true;
         }
 

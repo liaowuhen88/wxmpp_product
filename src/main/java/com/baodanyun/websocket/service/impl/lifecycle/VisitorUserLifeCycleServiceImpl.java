@@ -32,7 +32,6 @@ public abstract class VisitorUserLifeCycleServiceImpl extends UserLifeCycleServi
         if(flag){
             String customerJid = visitor.getCustomer().getId();
             xmppService.roster(visitor.getId(), customerJid);
-            vcardService.InitVisitor(visitor);
             return true;
         }
         return false;

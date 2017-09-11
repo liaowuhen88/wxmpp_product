@@ -61,9 +61,9 @@ public class HttpUtils {
             }
             uri += buffer.substring(0, buffer.length() - 1);
         }
-        logger.info(uri);
+        logger.debug(uri);
         String result = get(uri);
-        logger.info(result);
+        logger.debug(result);
         return result;
     }
 
