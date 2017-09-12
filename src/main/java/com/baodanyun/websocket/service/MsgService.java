@@ -3,6 +3,7 @@ package com.baodanyun.websocket.service;
 
 import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
+import com.baodanyun.websocket.bean.user.PublicUser;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.Ofmucroom;
 import com.baodanyun.websocket.model.Ofvcard;
@@ -11,6 +12,15 @@ import com.baodanyun.websocket.model.Ofvcard;
  * Created by liaowuhen on 2017/5/11.
  */
 public interface MsgService {
+    /**
+     * 获取公账号
+     *
+     * @param pu
+     * @param to
+     * @return
+     */
+    ConversationMsg getNewPublic(PublicUser pu, String to);
+
     ConversationMsg getNewWebJoines(AbstractUser user, String to);
 
     ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to, String appKey);

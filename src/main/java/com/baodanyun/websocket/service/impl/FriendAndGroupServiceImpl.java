@@ -4,6 +4,7 @@ import com.baodanyun.websocket.bean.Response;
 import com.baodanyun.websocket.bean.bootstrap.Node;
 import com.baodanyun.websocket.bean.response.FriendAndGroupResponse;
 import com.baodanyun.websocket.bean.user.GroupUser;
+import com.baodanyun.websocket.bean.user.PublicUser;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.FriendAndGroupService;
 import com.baodanyun.websocket.util.Config;
@@ -26,17 +27,11 @@ import java.util.Map;
 @Service
 public class FriendAndGroupServiceImpl implements FriendAndGroupService {
     protected static Logger logger = LoggerFactory.getLogger(FriendAndGroupServiceImpl.class);
+
     @Override
     public List<FriendAndGroupResponse> get(String appkey, String nickName) throws Exception {
-        Map<String, String> content = new HashMap<>();
-        if (StringUtils.isEmpty(nickName)) {
-            content.put("nickName", nickName);
-        } else {
-            content.put("nickName", nickName.trim());
-        }
 
-        Response response = get(appkey, "searchfriendqungroup", content);
-        ;
+        Response response = get(appkey, "searchfriendqungroup", "nickName", nickName);
 
         java.lang.reflect.Type fs = new TypeToken<List<FriendAndGroupResponse>>() {
         }.getType();
@@ -47,14 +42,8 @@ public class FriendAndGroupServiceImpl implements FriendAndGroupService {
 
     @Override
     public List<GroupUser> getGroupUsers(String appkey, String username) throws Exception {
-        Map<String, String> content = new HashMap<>();
-        if (StringUtils.isEmpty(username)) {
-            content.put("username", username);
-        } else {
-            content.put("username", username.trim());
-        }
 
-        Response response = get(appkey, "getqunmemberlist", content);
+        Response response = get(appkey, "getqunmemberlist", "username", username);
 
         java.lang.reflect.Type fs = new TypeToken<List<GroupUser>>() {
         }.getType();
@@ -63,8 +52,24 @@ public class FriendAndGroupServiceImpl implements FriendAndGroupService {
 
     }
 
+    @Override
+    public PublicUser getPublicUser(String appkey, String username) throws Exception {
 
-    public Response get(String appkey, String action, Map<String, String> content) throws Exception {
+        Response response = get(appkey, "getfollowinfo", "username", username);
+
+
+        return JSONUtil.toObject(PublicUser.class, JSONUtil.toJson(response.getData()));
+    }
+
+
+    public Response get(String appkey, String action, String key, String value) throws Exception {
+        Map<String, String> content = new HashMap<>();
+        if (StringUtils.isEmpty(value)) {
+            content.put(key, value);
+        } else {
+            content.put(key, value.trim());
+        }
+
         Map<String, String> query = new HashMap<>();
         query.put("action", action);
         query.put("appkey", appkey);
@@ -76,7 +81,7 @@ public class FriendAndGroupServiceImpl implements FriendAndGroupService {
             throw new BusinessException("查询结构为空");
         }
         Response response = JSONUtil.toObject(Response.class, result);
-        if (!"1".equals(response.getStatus())) {
+        if (!"1".equals(response.getStatus()) && !response.isSuccess()) {
             throw new BusinessException(response.getMessage());
         }
 

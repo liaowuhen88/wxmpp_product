@@ -3,6 +3,7 @@ package com.baodanyun.websocket.service;
 import com.baodanyun.websocket.bean.bootstrap.Node;
 import com.baodanyun.websocket.bean.response.FriendAndGroupResponse;
 import com.baodanyun.websocket.bean.user.GroupUser;
+import com.baodanyun.websocket.bean.user.PublicUser;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ public interface FriendAndGroupService {
      * @return
      */
     List<GroupUser> getGroupUsers(String appkey, String username) throws Exception;
+
+    PublicUser getPublicUser(String appkey, String username) throws Exception;
 
     List<Node> adapter(List<FriendAndGroupResponse> list);
 }

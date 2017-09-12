@@ -162,21 +162,15 @@ xchat.recvMsgEvent = function (json) {
             //_this.recvMsg.push(json.from);
             //$(_this.controls.waitReplyPerson).html(_this.recvMsg.length);
         }
-
         _this.initConversation(json);
-
     }
-
 
 };
 
 xchat.initConversation = function (json) {
     var _this = this;
-    var li = document.getElementById(json.from);
-    if (li) {
-        console.log("exit");
-        _this.changeNewMessageStatus(json);
-    } else {
+    var flag = _this.changeNewMessageStatus(json);
+    if (!flag) {
         $.ajax({
             url: _this.interface.getConversation + "?from=" + json.from,
             type: 'GET',
@@ -203,28 +197,37 @@ xchat.initConversation = function (json) {
 
 xchat.changeNewMessageStatus = function (json) {
     // 新消息移动到表头
-    $('#friendList').find('li').each(function () {
-        if ($(this).attr('id') === json.from) {
-            $('#friendList').prepend($(this));
+    var li = document.getElementById(json.from);
+    if (li) {
+        console.log("exit");
+        $('#friendList').find('li').each(function () {
+            if ($(this).attr('id') === json.from) {
+                $('#friendList').prepend($(this));
+            }
+        });
+        // 单个用户
+        if (json.encrypt) {
+            $(document.getElementById('m' + json.from)).attr("class", "new-message encrypt");
+        } else {
+            $(document.getElementById('m' + json.from)).attr("class", "new-message");
+
         }
-    });
-    // 单个用户
-    if (json.encrypt) {
-        $(document.getElementById('m' + json.from)).attr("class", "new-message encrypt");
-    } else {
-        $(document.getElementById('m' + json.from)).attr("class", "new-message");
+        var from = json.from;
 
-    }
-    var from = json.from;
-
-    var count = parseInt(myUtils.get_unread(from));
-    if (count) {
-        count = count + 1;
+        var count = parseInt(myUtils.get_unread(from));
+        if (count) {
+            count = count + 1;
+        } else {
+            count = 1;
+        }
+        myUtils.storage_unread(from, count);
+        $(document.getElementById('m' + from)).html(count);
+        return true;
     } else {
-        count = 1;
+        return false;
     }
-    myUtils.storage_unread(from, count);
-    $(document.getElementById('m' + from)).html(count);
+
+
 }
 
 //接收到文本消息
@@ -392,6 +395,8 @@ xchat.sendMsgHandelEvent = function (data) {
         myUtils.renderDivAdd('audioRight', data, 'chatMsgContainer');
     } else if (data.contentType == 'video') {
         myUtils.renderDivAdd('videoRight', data, 'chatMsgContainer');
+    } else if (data.contentType == 'attachment') {
+        myUtils.renderDivAdd('attachmentRight', data, 'chatMsgContainer');
     } else {
         myUtils.renderDivAdd('mright', data, 'chatMsgContainer');
     }
@@ -421,18 +426,24 @@ xchat.sendEventBind = function () {
 //线上队列
 xchat.onlineQueueSuccessStatusHandelEvent = function (json) {
     var _this = this;
-    //myUtils.renderQueue(json.from, 'waitfriendList', 'down');
-    //myUtils.renderQueue(json.from, 'backupfriendList', 'down');
-    //myUtils.renderQueue(json.from, 'friendList', 'down');
-    myUtils.renderQueue(json.from, 'historyFriendList', 'remove');
-    json.name = json.fromName;
-    json.nickname = json.fromName;
-    json.icon = json.icon || _this.controls.defaultAvatar;
-    json.time = myUtils.formatDate(json.loginTime);
+    var li = document.getElementById(json.from);
+    if (li) {
+        console.log("exit");
+    } else {
+        //myUtils.renderQueue(json.from, 'waitfriendList', 'down');
+        //myUtils.renderQueue(json.from, 'backupfriendList', 'down');
+        //myUtils.renderQueue(json.from, 'friendList', 'down');
+        myUtils.renderQueue(json.from, 'historyFriendList', 'remove');
+        json.name = json.fromName;
+        json.nickname = json.fromName;
+        json.icon = json.icon || _this.controls.defaultAvatar;
+        json.time = myUtils.formatDate(json.loginTime);
 
-    myUtils.renderQueue(json.from, 'friendList', 'up', function () {
-        myUtils.renderDivPrepend('onlinefriendListTpl', json, 'friendList');
-    })
+        myUtils.renderQueue(json.from, 'friendList', 'up', function () {
+            myUtils.renderDivPrepend('onlinefriendListTpl', json, 'friendList');
+        })
+    }
+
 
 };
 //等待队列
@@ -497,7 +508,6 @@ xchat.backUpStatusHandelEvent = function (json) {
 xchat.loadChatList = function () {
     var _this = this;
     var friendList = $(_this.controls.friendList);
-    var backupfriendList = $(_this.controls.backupfriendList);
     $.get(_this.interface.loadChatList, {}, function (json) {
         if (json.success) {
             if (json.data) {
@@ -507,23 +517,23 @@ xchat.loadChatList = function () {
                         friend.icon = _this.controls.defaultAvatar;
                     }
                     friend.time = myUtils.formatDate(friend.loginTime);
-
-                    if (friend.onlineStatus == 'online' || friend.onlineStatus == 'encrypt') {
-                        myUtils.renderDivAdd('onlinefriendListTpl', friend, 'friendList');
-                    } else if (friend.onlineStatus == 'backup') {
-                        //backup状态也算是线上状态
-                        myUtils.renderDivAdd('backupfriendListTpl', friend, 'backupFriendList');
-                    } else if (friend.onlineStatus == 'history') {
-                        myUtils.renderDivAdd('onlinefriendListTpl', friend, 'historyFriendList');
+                    var li = document.getElementById(friend.from);
+                    if (!li) {
+                        if (friend.onlineStatus == 'online' || friend.onlineStatus == 'encrypt') {
+                            myUtils.renderDivAdd('onlinefriendListTpl', friend, 'friendList');
+                        } else if (friend.onlineStatus == 'backup') {
+                            //backup状态也算是线上状态
+                            myUtils.renderDivAdd('backupfriendListTpl', friend, 'backupFriendList');
+                        } else if (friend.onlineStatus == 'history') {
+                            myUtils.renderDivAdd('onlinefriendListTpl', friend, 'historyFriendList');
+                        }
+                        var count = myUtils.get_unread(friend.from);
+                        if (count && count != 0) {
+                            // 单个用户
+                            $(document.getElementById('m' + friend.from)).attr("class", "new-message");
+                            $(document.getElementById('m' + friend.from)).html(count);
+                        }
                     }
-
-                    var count = myUtils.get_unread(friend.from);
-                    if (count && count != 0) {
-                        // 单个用户
-                        $(document.getElementById('m' + friend.from)).attr("class", "new-message");
-                        $(document.getElementById('m' + friend.from)).html(count);
-                    }
-
                 }
             }
         }

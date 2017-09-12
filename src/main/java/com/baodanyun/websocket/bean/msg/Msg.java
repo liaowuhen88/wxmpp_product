@@ -37,11 +37,15 @@ public class Msg implements Serializable{
     private String type;
     private boolean isRead;//TODO 是否已经被回执
     private Long readCt;//阅读时间
+    // 是否需要设置代理
+    private boolean agency;
+
     public Msg(String content) {
         this.content = content;
         this.ct = System.currentTimeMillis();
         this.type = Type.msg.toString();
     }
+
     public Msg() {
     }
 
@@ -80,6 +84,14 @@ public class Msg implements Serializable{
             logger.error("parseMsg msg error" + e.getMessage());
         }
         return msg;
+    }
+
+    public boolean isAgency() {
+        return agency;
+    }
+
+    public void setAgency(boolean agency) {
+        this.agency = agency;
     }
 
     public Msg.fromType getFromType() {
@@ -241,7 +253,7 @@ public class Msg implements Serializable{
     }
 
     public enum fromType {
-        personal, group, system, synchronize
+        personal, group, system, synchronize,publicSignal
     }
 
     /**

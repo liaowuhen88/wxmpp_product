@@ -43,7 +43,7 @@ public class NewVisitorWebSocketHandler extends VisitorWebSocketHandler {
         return webSocketService.isCloseded(cid, CommonConfig.PC_CUSTOMER);
     }
 
-    private void init(String sendToken, String to, Visitor visitor, WebSocketSession session) throws BusinessException, InterruptedException, XMPPException, IOException, SmackException {
+    private void init(String sendToken, String jid, Visitor visitor, WebSocketSession session) throws BusinessException, InterruptedException, XMPPException, IOException, SmackException {
         String token = sessions.get(session.getId());
         logger.info("session[" + session.getId() + "]  token {} cachetoken{}", sendToken, token);
 
@@ -60,15 +60,14 @@ public class NewVisitorWebSocketHandler extends VisitorWebSocketHandler {
             saveWebSocketSession(visitor.getId(), session);
         }
 
-        boolean isExist = conversationService.isExist(to, visitor.getId());
+        boolean isExist = conversationService.isExist(jid, visitor.getId());
         if (isExist) {
-            logger.info(" user {}, room {} isExist", to, visitor.getId());
+            logger.info(" user {}, room {} isExist", jid, visitor.getId());
         } else {
-            logger.info(" user {}, room {} notExist", to, visitor.getId());
+            logger.info(" user {}, room {} notExist", jid, visitor.getId());
 
-            ConversationMsg msgConversation = msgService.getNewWebJoines(visitor, to);
+            ConversationMsg msgConversation = msgService.getNewWebJoines(visitor, jid);
             logger.info(JSONUtil.toJson(msgConversation));
-            // msgSendControl.sendMsg(msgConversation);
         }
 
     }

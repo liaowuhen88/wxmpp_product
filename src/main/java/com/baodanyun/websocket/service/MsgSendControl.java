@@ -3,6 +3,7 @@ package com.baodanyun.websocket.service;
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Visitor;
+import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.util.Config;
 import com.baodanyun.websocket.util.EmojiUtil;
 import com.baodanyun.websocket.util.JSONUtil;
@@ -43,7 +44,7 @@ public class MsgSendControl {
         return true;
     }
 
-    public Msg getMsg(Message msg) {
+    public Msg getMsg(Message msg) throws BusinessException {
         Msg sendMsg = null;
         String body = msg.getBody();
         if (StringUtils.isNotBlank(body)) {
@@ -65,8 +66,6 @@ public class MsgSendControl {
             }
             sendMsg.setId(UUID.randomUUID().toString());
             //sendMsg.setId(msg.getStanzaId());
-        }else {
-            logger.info("body is null");
         }
         return sendMsg;
     }

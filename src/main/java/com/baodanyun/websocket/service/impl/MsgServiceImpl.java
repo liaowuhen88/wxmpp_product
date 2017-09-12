@@ -5,6 +5,7 @@ import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.GroupUser;
+import com.baodanyun.websocket.bean.user.PublicUser;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.Ofmucroom;
 import com.baodanyun.websocket.model.Ofvcard;
@@ -44,6 +45,34 @@ public class MsgServiceImpl implements MsgService {
         String room = "xvql187@conference.126xmpp/\u003cspan class\u003d\"emoji emoji1f4a2\"\u003e\u003c/span\u003e          导演\u003cspan class\u003d\"emoji emojiae\"\u003e\u003c/span\u003e";
         String realRoom = XMPPUtil.removeRoomSource(room);
         System.out.println(realRoom);
+    }
+
+    @Override
+    public ConversationMsg getNewPublic(PublicUser pu, String to) {
+        ConversationMsg sm = new ConversationMsg();
+        sm.setKey(pu.getRealFrom());
+        sm.setStatus(StatusMsg.Status.onlineQueueSuccess);
+        sm.setType(Msg.Type.status.toString());
+        sm.setLoginTime(System.currentTimeMillis());
+        sm.setCt(System.currentTimeMillis());
+        sm.setTo(to);
+        sm.setFromType(Msg.fromType.publicSignal);
+        sm.setFrom(pu.getRealFrom());
+
+        sm.setFromName(pu.getNickname());
+        sm.setLoginUsername("公众号[" + pu.getPublic_name() + "]");
+        sm.setIcon(pu.getIcon());
+        boolean isEncrypt = messageFiterService.isEncrypt(pu.getUid(), pu.getRealFrom());
+        if (isEncrypt) {
+            sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
+        } else {
+            sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
+        }
+
+        filter(sm);
+
+        conversationService.addConversations(pu.getUid(), sm);
+        return sm;
     }
 
     @Override

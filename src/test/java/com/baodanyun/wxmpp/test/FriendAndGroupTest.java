@@ -4,6 +4,7 @@ import com.baodanyun.websocket.bean.bootstrap.Node;
 import com.baodanyun.websocket.bean.msg.ConversationMsg;
 import com.baodanyun.websocket.bean.response.FriendAndGroupResponse;
 import com.baodanyun.websocket.bean.user.GroupUser;
+import com.baodanyun.websocket.bean.user.PublicUser;
 import com.baodanyun.websocket.service.FriendAndGroupService;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.XMPPUtil;
@@ -30,6 +31,14 @@ public class FriendAndGroupTest extends BaseTest {
         System.out.println(JSONUtil.toJson(list));
         List<Node> nodes = friendAndGroupService.adapter(list);
         System.out.println(JSONUtil.toJson(nodes));
+
+    }
+
+    @Test
+    public void getPublicUser() throws Exception {
+        PublicUser list = friendAndGroupService.getPublicUser("xQPwDNa6B2A8G9jy3zprEJV3gnZ4vW5O", "public_7");
+        System.out.println(JSONUtil.toJson(list));
+
 
     }
 
