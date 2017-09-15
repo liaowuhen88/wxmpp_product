@@ -57,7 +57,7 @@
     <div class="chat-screen">
         <div class="chat-title">
             <span class="close" id="offSession">结束对话</span>
-            <span class="turn" id="setting_all">设置</span>
+            <%-- <span class="turn" id="setting_all">设置</span>--%>
             <%--<span class="turn" id="turnBtn">转接</span>--%>
             <div id="currentChatId" data-id=""></div>
         </div>

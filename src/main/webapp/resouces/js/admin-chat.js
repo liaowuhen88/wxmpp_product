@@ -158,9 +158,10 @@ xchat.recvMsgEvent = function (json) {
     var _this = this;
     if (json.from != window.destJid) {
         // 未打开当前窗口
+        // 统计有多少用户未回
         if (jQuery.inArray(json.from, this.recvMsg) == -1) {
-            //_this.recvMsg.push(json.from);
-            //$(_this.controls.waitReplyPerson).html(_this.recvMsg.length);
+            _this.recvMsg.push(json.from);
+            $(_this.controls.waitReplyPerson).html(_this.recvMsg.length);
         }
         _this.initConversation(json);
     }
@@ -318,7 +319,22 @@ xchat.recvVideoMsgHandelEvent = function (json) {
     xchat.goBottom();
 };
 
-
+//接收到视频信息
+xchat.recvFileMsgHandelEvent = function (json) {
+    document.getElementById("msgTipAudio").play();
+    json.src = json.from;
+    json.icon = json.icon || this.controls.defaultAvatar;
+    json.time = myUtils.formatDate(new Date(json.ct));
+    if (json.from == window.destJid) {
+        if ("system" == json.fromType || "synchronize" == json.fromType) {
+            myUtils.renderDivAdd('attachmentRight', json, 'chatMsgContainer');
+        } else {
+            myUtils.renderDivAdd('attachmentLeft', json, 'chatMsgContainer');
+        }
+    }
+    myUtils.storage(json);
+    xchat.goBottom();
+};
 /*=====================================================================================接收消息=====================================================================================*/
 /*=====================================================================================发送信息=====================================================================================*/
 xchat.sendImgEventBind = function () {
@@ -1215,10 +1231,10 @@ xchat.library_getData = function ($library, val, index) {
                             '<div class="cont" hidden>' + value.url + '</div>' +
                             '<image class="cont" src="' + value.url + '" style="width: 50px;height: 40px"></image>' +
                             '</li>';
-                    } else if (value.type == 'audio') {
-                        html += '<li class="item" value="' + value.type + '">' +
+                    } else if (value.type == 'audio' || value.type == 'voice') {
+                        html += '<li class="item" value="audio">' +
                             '<div class="cont" hidden>' + value.url + '</div>' +
-                            '<audio class="cont" src="' + value.url + '"></audio>' +
+                            '<audio class="cont" src="' + value.url + '" controls="controls"></audio>' +
                             '</li>';
                     } else if (value.type == 'video') {
                         html += '<li class="item" value="' + value.type + '">' +

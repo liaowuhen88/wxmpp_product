@@ -154,6 +154,8 @@ Utils = (function () {
                         commentTpl = $('#videoLeft').html();
                     } else if (item.contentType == 'url') {
                         commentTpl = $('#wx_share_Left').html();
+                    } else if (item.contentType == 'attachment') {
+                        commentTpl = $('#attachmentLeft').html();
                     } else {
                         commentTpl = $('#mleft').html();
                     }

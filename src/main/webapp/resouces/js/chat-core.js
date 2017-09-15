@@ -490,6 +490,7 @@ var xChat = function (options) {
                 {"text": _this.recvTextMsgHandelEvent},
                 {"video": _this.recvVideoMsgHandelEvent},
                 {"file": _this.recvFileMsgHandelEvent},
+                {"attachment": _this.recvFileMsgHandelEvent},
                 {"audio": _this.recvAudioMsgHandelEvent},
                 {"image": _this.recvImageMsgHandelEvent},
                 {"url": _this.recvWxShareHandelEvent}

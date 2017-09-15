@@ -1,8 +1,6 @@
 package com.baodanyun.websocket.bean.msg;
 
-import com.baodanyun.websocket.bean.msg.msg.ImgMsg;
-import com.baodanyun.websocket.bean.msg.msg.ReceiptMsg;
-import com.baodanyun.websocket.bean.msg.msg.TextMsg;
+import com.baodanyun.websocket.bean.msg.msg.*;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.core.common.Common;
 import com.google.gson.Gson;
@@ -60,11 +58,11 @@ public class Msg implements Serializable{
                     if (Msg.MsgContentType.text.toString().equals(abstractMsg.getContentType())) {
                         return gson.fromJson(bodyMsg, TextMsg.class);
                     } else if (Msg.MsgContentType.audio.toString().equals(abstractMsg.getContentType())) {
-
+                        return gson.fromJson(bodyMsg, AudioMsg.class);
                     } else if (Msg.MsgContentType.file.toString().equals(abstractMsg.getContentType())) {
 
                     } else if (Msg.MsgContentType.video.toString().equals(abstractMsg.getContentType())) {
-
+                        return gson.fromJson(bodyMsg, VideoMsg.class);
                     } else if (Msg.MsgContentType.image.toString().equals(abstractMsg.getContentType())) {
                         return gson.fromJson(bodyMsg, ImgMsg.class);
                     } else if (MsgContentType.attachment.toString().equals(abstractMsg.getContentType())) {
