@@ -182,7 +182,7 @@
             <div class="modal_header">
                 <span class="modal_close">X</span>好友列表
             </div>
-            <div id="v-contacts">
+            <div id="v-contacts" style="overflow:auto">
                 <div class="v-contacts" :loading="loading">
                     <div class="search">
                         <input placeholder="搜索" v-model="form.nickName" @input="query(500)"/>
