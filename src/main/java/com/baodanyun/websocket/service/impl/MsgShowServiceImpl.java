@@ -64,7 +64,7 @@ public class MsgShowServiceImpl implements MsgShowService {
             if ("text".equals(re.getType())) {
                 action = "gettextlist";
             } else if ("img".equals(re.getType())) {
-                action = "getallpicturelist";
+                action = "getpicturelist";
             } else if ("video".equals(re.getType())) {
                 action = "getvideolist";
             } else if ("audio".equals(re.getType())) {

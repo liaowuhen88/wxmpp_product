@@ -121,61 +121,8 @@ var FriendAndGroup = function (options) {
 FriendAndGroup.prototype = {
     /*=====================================================================================初始化=====================================================================================*/
     init: function () {
-        this.getFriendAndGroupEventBind();     //绑定获取好友
-        this.searchFriendAndGroupEventBind();
+        this.initVue();     //绑定获取好友
     },
-//获取历史记录事件绑定
-    getFriendAndGroupEventBind: function () {
-        var _this = this;
-        $(_this.friendAndGroupBtn).on('click', function () {
-            //_this.getFriendAndGroupList('');
-        });
-        _this.initVue();
-
-
-    },
-    //获取历史记录
-    getFriendAndGroupList: function (nickName) {
-        var _this = this;
-        $.ajax({
-            url: _this.interface.getFriendAndGroup + '?nickName=' + nickName,
-            type: 'POST',
-            success: function (res) {
-                if (res.success) {
-                    //console.log(res.data);
-                    //console.log(_this.opts);
-                    _this.opts.data = res.data;
-                    $('#friendAndGroupree').treeview(_this.opts);
-                } else {
-                    alert('查询好友失败，请重试');
-                }
-            },
-            error: function () {
-                alert('查询好友失败，请重试');
-            }
-        });
-    },
-
-    //搜索历史记录事件绑定
-    searchFriendAndGroupEventBind: function () {
-        var _this = this;
-
-        /*this.searchFriendAndGroupBtn.on('click', function () {
-         var nickName = _this.searchfriendAndGroupInput.val();
-         $('#friendAndGroupree').treeview('search', [ nickName, {
-         ignoreCase: true,     // case insensitive
-         exactMatch: false,    // like or equals
-         revealResults: true,  // reveal matching nodes
-         }]);
-         });*/
-
-        _this.searchFriendAndGroupBtn.on('click', function () {
-            var nickName = _this.searchfriendAndGroupInput.val();
-            _this.getFriendAndGroupList(nickName)
-        });
-    },
-    /*=====================================================================================历史记录=====================================================================================*/
-
     initVue: function () {
         function _toConsumableArray(arr) {
             if (Array.isArray(arr)) {

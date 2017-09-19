@@ -66,6 +66,10 @@ public class CustomerApi extends BaseController {
     @Autowired
     private MessageFiterService messageFiterService;
 
+    @Autowired
+    private FriendAndGroupService friendAndGroupService;
+
+
     /**
      * 获取客服的信息
      *
@@ -333,6 +337,25 @@ public class CustomerApi extends BaseController {
         }
         Render.r(httpServletResponse, JSONUtil.toJson(response));
     }
+    /**
+     * @param httpServletResponse
+     */
+
+    /*@RequestMapping(value = "getGroupUsers")
+    public void getGroupUsers(String from, HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        Response response = new Response();
+        try {
+            AbstractUser cu = (AbstractUser) request.getSession().getAttribute(Common.USER_KEY);
+            List<GroupUser> list = friendAndGroupService.getGroupUsers(cu.getAppkey(), XMPPUtil.jidToName(from));
+            response.setSuccess(true);
+            response.setData(list);
+        } catch (Exception e) {
+            logger.error("error", e);
+            response.setSuccess(false);
+        }
+        Render.r(httpServletResponse, JSONUtil.toJson(response));
+    }*/
+
 
 
     /**

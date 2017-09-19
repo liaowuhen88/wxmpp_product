@@ -109,7 +109,7 @@
     <%-- chat-window --%>
     <jsp:include page="window/chat-window.jsp"/>
     <%-- chat-detail --%>
-    <jsp:include page="right/chat-detail.jsp"/>
+    <jsp:include page="right/chat-detail-vue.jsp"/>
 </div>
 </body>
 

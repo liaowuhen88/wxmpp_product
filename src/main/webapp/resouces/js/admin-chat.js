@@ -26,6 +26,7 @@ xchat.controls = {
     chatTimeline: 'chatTimeline',
     holdListCont: '#holdListCont',
     defaultAvatar: window.base + '/resouces/images/default-avatar.jpg',
+    defaultThumburl: window.base + '/resouces/images/no_cover.png',
     friendList: '#friendList',
     historyFriendList: '#historyFriendList',
     backupfriendList: '#backupfriendList',
@@ -274,6 +275,9 @@ xchat.recvWxShareHandelEvent = function (json) {
     json.icon = json.icon || this.controls.defaultAvatar;
     json.time = myUtils.formatDate(new Date(json.ct));
     json.content = eval('(' + json.content + ')');
+    if (!json.content.thumburl) {
+        json.content.thumburl = this.controls.defaultThumburl;
+    }
     if (json.from == window.destJid) {
         if ("system" == json.fromType || "synchronize" == json.fromType) {
             myUtils.renderDivAdd('wx_share_Left', json, 'chatMsgContainer');
@@ -361,7 +365,8 @@ xchat.sendAttachmentEventBind = function () {
 
 xchat.searchConversationEventBind = function () {
     var _this = this;
-    $(_this.controls.searchConversationInput).blur(function () {
+
+    $(_this.controls.searchConversationInput).bind('input propertychange', function () {
         var searchName = $(this).val().trim();
         if (searchName) {
             $('#friendList').find('li').each(function () {
@@ -1220,7 +1225,7 @@ xchat.library_getData = function ($library, val, index) {
         success: function (res) {
             if (res.success) {
                 var html = '';
-                $.each(res.data, function (index, value) {
+                $.each(res.data.data, function (index, value) {
                     if (value.type == 'text') {
                         html += '<li class="item" value="' + value.type + '">' +
                             '<h3 class="title">' + value.title + '</h3>' +

@@ -101,6 +101,7 @@ public class SysMsgHandleImpl extends AbstractMsgHandleService {
 
         if (null != conversation) {
             sendMsg.setFromName(conversation.getFromName() + "【" + getTypeName(type) + "】");
+            sendMsg.setIcon(conversation.getIcon());
         } else {
             if (StringUtils.isEmpty(sendMsg.getFromName())) {
                 sendMsg.setFromName("系统消息【" + getTypeName(type) + "】");
