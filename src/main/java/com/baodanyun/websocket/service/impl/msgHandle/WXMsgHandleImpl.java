@@ -56,9 +56,9 @@ public class WXMsgHandleImpl extends AbstractMsgHandleService {
                 Ofmucroom ofmucroom;
                 try {
                     ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(sendMsg.getFrom()));
-                    conversation = msgService.getNewRoomJoines(sendMsg.getFrom(), ofmucroom, user.getId(), user.getAppkey());
+                    conversation = msgService.getNewRoomJoines(sendMsg.getFrom(), ofmucroom, user.getId(), user.getAppkey(), user);
 
-                } catch (BusinessException e) {
+                } catch (Exception e) {
                     logger.error("error", e);
                 }
             } else {

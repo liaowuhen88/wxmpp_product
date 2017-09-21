@@ -19,10 +19,7 @@ import org.jivesoftware.smack.roster.RosterGroup;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.iqregister.AccountManager;
-import org.jivesoftware.smackx.muc.DiscussionHistory;
-import org.jivesoftware.smackx.muc.HostedRoom;
-import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.jivesoftware.smackx.muc.MultiUserChatManager;
+import org.jivesoftware.smackx.muc.*;
 import org.jivesoftware.smackx.muc.packet.MUCInitialPresence;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.Form;
@@ -398,6 +395,9 @@ public class XMPPConnectionClientTest {
         MessageListener messageListener = new UcMessageListener(null, new Visitor(), null, null, null);
         muc.addMessageListener(messageListener);
 
+        List<Affiliate> list = muc.getAdmins();
+        //List<Affiliate> list = muc.getMembers();
+        logger.info(list.size() + "");
         while (true) {
             try {
                 Thread.sleep(10000);

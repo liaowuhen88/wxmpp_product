@@ -2,10 +2,8 @@ package com.baodanyun.websocket.service.impl.lifecycle;
 
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
-import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.service.MsgSendService;
 import com.baodanyun.websocket.service.UserLifeCycleService;
-import org.jivesoftware.smack.SmackException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -44,12 +42,6 @@ public class WebSocketCustomerUserLifeCycleServiceImpl extends CustomerUserLifeC
             }
         }*/
 
-    }
-
-    @Override
-    public Msg receiveMessage(AbstractUser user, String content) throws InterruptedException, SmackException.NotConnectedException, BusinessException {
-        Msg msg = super.receiveMessage(user,content);
-        return msg;
     }
 
     @Override

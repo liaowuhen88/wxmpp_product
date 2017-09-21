@@ -29,6 +29,8 @@
     <script>
         $(function () {
             window.user = ${user};
+            // 更新头像
+            $('#zx_icon').attr("src", window.user.icon);
             window.currentId = window.user.id;
             var chat = new Chat();
             var history = new History();

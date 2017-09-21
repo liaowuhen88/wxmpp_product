@@ -43,6 +43,14 @@ public class FriendAndGroupTest extends BaseTest {
     }
 
     @Test
+    public void getRobotJid() throws Exception {
+        String list = friendAndGroupService.getRobotJid("46bfb9709ab760e727d8ffe1b2ffb59e", "xvql518");
+        System.out.println(list);
+
+
+    }
+
+    @Test
     public void getGroupUsers() throws Exception {
         String room = "xvql1048@126xmpp";
         ConversationMsg sm = new ConversationMsg();

@@ -21,6 +21,7 @@ import java.util.Map;
 public class JedisServiceImpl implements JedisService {
     public static final String displayStatus = "displayStatus";
     public static final String ENCRYPTCOUNT = "encryptCount";
+    public static final String ZX_INFO = "zx_info";
 
     private static Logger logger = LoggerFactory.getLogger(JedisServiceImpl.class);
     @Autowired

@@ -55,28 +55,36 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
             logger.info("webSocket receive message:" + JSONUtil.toJson(message));
             String content = message.getPayload();
             if ("HeartBeat".equals(content)) {
-                WebSocketSession ws = webSocketService.getWebSocketSession(customer.getId(), CommonConfig.PC_CUSTOMER);
-                if (ws.getId().equals(session.getId())) {
-                    WebSocketMessage wm = new TextMessage("HeartBeat");
-                    session.sendMessage(wm);
-                } else {
-                    WebSocketMessage wm = new TextMessage("notHeartBeat");
-                    session.sendMessage(wm);
-                    logger.info("不是当前窗口，忽略");
-                }
+                heartBeat(session, customer);
                 return;
             }
             Msg msg = userLifeCycleService.receiveMessage(customer, content);
-            Msg clone = (Msg) SerializationUtils.clone(msg);
-            clone.setFrom(msg.getTo());
-            clone.setTo(msg.getFrom());
-            clone.setFromType(Msg.fromType.synchronize);
-            webSocketService.synchronousMsg(session.getId(), customer.getId(), clone);
-
+            synchronousMsg(session, customer, msg);
         } catch (Exception e) {
             logger.info("", e);
         }
 
+
+    }
+
+    private void heartBeat(WebSocketSession session, Customer customer) throws IOException {
+        WebSocketSession ws = webSocketService.getWebSocketSession(customer.getId(), CommonConfig.PC_CUSTOMER);
+        if (ws.getId().equals(session.getId())) {
+            WebSocketMessage wm = new TextMessage("HeartBeat");
+            session.sendMessage(wm);
+        } else {
+            WebSocketMessage wm = new TextMessage("notHeartBeat");
+            session.sendMessage(wm);
+            logger.info("不是当前窗口，忽略");
+        }
+    }
+
+    private void synchronousMsg(WebSocketSession session, Customer customer, Msg msg) throws IOException {
+        Msg clone = (Msg) SerializationUtils.clone(msg);
+        clone.setFrom(msg.getTo());
+        clone.setTo(msg.getFrom());
+        clone.setFromType(Msg.fromType.synchronize);
+        webSocketService.synchronousMsg(session.getId(), customer.getId(), clone);
 
     }
 

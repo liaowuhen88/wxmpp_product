@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <header class="sidebar">
     <div class="sidebar-user">
-        <div class="user-photo" id="customerInfo"><img src="<%=request.getContextPath()%>/resouces/images/89hi.jpg" alt=""></div>
+        <div class="user-photo" id="customerInfo"><img src="<%=request.getContextPath()%>" alt="" id="zx_icon"></div>
         <div class="status status-icon icon-online" data-toggle="dropdown"></div>
         <ul class="status-list dropdown-menu">
             <li><i class="status-icon icon-online"></i>在线</li>

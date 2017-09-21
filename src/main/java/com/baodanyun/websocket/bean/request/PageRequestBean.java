@@ -5,7 +5,8 @@ package com.baodanyun.websocket.bean.request;
  */
 public class PageRequestBean {
     private Integer offset;
-    private Integer limit;
+    private Integer limit = 10;
+    private Integer page;
 
     public Integer getOffset() {
         return offset;
@@ -21,5 +22,16 @@ public class PageRequestBean {
 
     public void setLimit(Integer limit) {
         this.limit = limit;
+    }
+
+    public Integer getPage() {
+        return page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+        if (null == offset || 0 == offset) {
+            offset = getLimit() * (getPage() - 1);
+        }
     }
 }

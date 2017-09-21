@@ -114,6 +114,13 @@ public class FriendAndGroupServiceImpl implements FriendAndGroupService {
         return node_wx_list;
     }
 
+    @Override
+    public String getRobotJid(String appkey, String username) throws Exception {
+        Response response = get(appkey, "getrobotjid", "username", username);
+
+        return response.getData().toString();
+    }
+
     private void init(List<Node> node_friendAndType, List<FriendAndGroupResponse.BasicNode> basicNodes, String text) {
         if (null != basicNodes) {
             Node nodeGroupRoot = new Node();

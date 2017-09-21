@@ -2,10 +2,7 @@ package com.baodanyun.websocket.core.listener;
 
 import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
-import com.baodanyun.websocket.service.ConversationService;
 import com.baodanyun.websocket.service.MsgSendControl;
-import com.baodanyun.websocket.service.MsgService;
-import com.baodanyun.websocket.service.OfmucroomService;
 import com.baodanyun.websocket.service.impl.msgHandle.MsgHandelList;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.SpringContextUtil;
@@ -21,9 +18,6 @@ import org.slf4j.LoggerFactory;
 public class InitChatMessageListener implements ChatMessageListener {
     protected static Logger logger = LoggerFactory.getLogger(InitChatMessageListener.class);
 
-    ConversationService conversationService = SpringContextUtil.getBean("conversationService", ConversationService.class);
-    MsgService msgService = SpringContextUtil.getBean("msgServiceImpl", MsgService.class);
-    OfmucroomService ofmucroomService = SpringContextUtil.getBean("ofmucroomServiceImpl", OfmucroomService.class);
     MsgHandelList msgHandelList = SpringContextUtil.getBean("msgHandelList", MsgHandelList.class);
 
     private MsgSendControl msgSendControl;

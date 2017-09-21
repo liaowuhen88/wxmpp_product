@@ -59,6 +59,10 @@ public class Msg implements Serializable{
                         return gson.fromJson(bodyMsg, TextMsg.class);
                     } else if (Msg.MsgContentType.audio.toString().equals(abstractMsg.getContentType())) {
                         return gson.fromJson(bodyMsg, AudioMsg.class);
+                    } else if (MsgContentType.voice.toString().equals(abstractMsg.getContentType())) {
+                        AudioMsg am = gson.fromJson(bodyMsg, AudioMsg.class);
+                        am.setContentType(Msg.MsgContentType.audio.toString());
+                        return am;
                     } else if (Msg.MsgContentType.file.toString().equals(abstractMsg.getContentType())) {
 
                     } else if (Msg.MsgContentType.video.toString().equals(abstractMsg.getContentType())) {
@@ -246,8 +250,9 @@ public class Msg implements Serializable{
     //receiptMsg 回执消息
     //Url微信分享
     //{"title":"xxx","des":"xxx","thumburl":"dd.com/kkk.jpg"，"url":"ddd.com/jj.html "}
+    //voice 语音
     public enum MsgContentType {
-        text, video, file, audio, image, receiptMsg, attachment, url
+        text, video, file, audio, voice, image, receiptMsg, attachment, url
     }
 
     public enum fromType {

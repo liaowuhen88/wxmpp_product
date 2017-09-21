@@ -399,7 +399,7 @@ public class XmppServiceImpl implements XmppService {
 
             logger.info(user.getLoginUsername() + "加入房间[" + room.getRoom() + "]");
         } else {
-            logger.info(user.getLoginUsername() + "已经加入房间");
+            logger.info(user.getLoginUsername() + "已经加入房间 {}", room.getRoom());
         }
     }
 
@@ -424,8 +424,14 @@ public class XmppServiceImpl implements XmppService {
 
     @Override
     public MultiUserChat getRoom(AbstractUser user, String room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+
+        return getRoom(user.getId(), room);
+    }
+
+    @Override
+    public MultiUserChat getRoom(String jid, String room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
         // 为了性能，延时加载
-        XMPPConnection conn = this.getXMPPConnection(user.getId());
+        XMPPConnection conn = this.getXMPPConnection(jid);
         final MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(conn);
 
         //String room = roomsName + "@conference." + conn.getServiceName();

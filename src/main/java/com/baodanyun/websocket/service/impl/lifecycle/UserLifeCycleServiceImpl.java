@@ -7,12 +7,14 @@ import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.listener.VisitorListener;
 import com.baodanyun.websocket.service.*;
+import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.offline.OfflineMessageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,10 @@ public abstract class UserLifeCycleServiceImpl implements UserLifeCycleService {
     protected VcardService vcardService;
     @Autowired
     protected UserCacheServer userCacheServer;
+
+    @Autowired
+    protected FriendAndGroupService friendAndGroupService;
+
 
     @Override
     public boolean login(AbstractUser user) throws IOException, XMPPException, SmackException, BusinessException, InterruptedException {
@@ -108,9 +114,24 @@ public abstract class UserLifeCycleServiceImpl implements UserLifeCycleService {
     }
 
     @Override
-    public Msg receiveMessage(AbstractUser user, String content) throws InterruptedException, SmackException.NotConnectedException, BusinessException {
+    public Msg receiveMessage(AbstractUser user, String content) throws Exception {
         Msg msg = getMsg(user,content);
         if(null != msg){
+            // TODO
+            if (XMPPUtil.isRoom(msg.getTo())) {
+                // 加入群
+                String realRoom = XMPPUtil.removeRoomSource(msg.getTo());
+                MultiUserChat muc = xmppService.getRoom(user.getId(), realRoom);
+                if (null == muc) {
+                    logger.error("room [{}] is null  ", realRoom);
+                } else {
+                    xmppService.joinRoom(muc, user);
+                }
+                String to = friendAndGroupService.getRobotJid(user.getAppkey(), XMPPUtil.jidToName(realRoom));
+                logger.info(to);
+                muc.invite(to, "插件入群");
+                //mc.getMembers()
+            }
             xmppService.sendMessage(msg );
         }
         return msg;

@@ -79,7 +79,7 @@ public class UcMessageListener implements MessageListener {
             } else {
                 logger.info(" user {}, room {} notExist", user.getId(), realRoom);
                 Ofmucroom ofmucroom = ofmucroomService.selectByPrimaryKey((long) 1, XMPPUtil.getRoomName(realRoom));
-                conversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId(), user.getAppkey());
+                conversation = msgService.getNewRoomJoines(realRoom, ofmucroom, user.getId(), user.getAppkey(), user);
                 //logger.info(JSONUtil.toJson(conversation));
                 // msgSendControl.sendMsg(msgConversation);
             }

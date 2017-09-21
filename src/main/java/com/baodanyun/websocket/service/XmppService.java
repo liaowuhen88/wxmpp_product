@@ -106,4 +106,7 @@ public interface XmppService {
 
     MultiUserChat getRoom(AbstractUser user, String room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException;
 
+    MultiUserChat getRoom(String jid, String room) throws BusinessException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException;
+
+
 }

@@ -1,12 +1,15 @@
 package com.baodanyun.websocket.controller;
 
 import com.baodanyun.websocket.bean.Response;
+import com.baodanyun.websocket.bean.redis.ZxInfo;
 import com.baodanyun.websocket.bean.user.AbstractUser;
 import com.baodanyun.websocket.bean.user.Customer;
 import com.baodanyun.websocket.core.common.Common;
 import com.baodanyun.websocket.exception.BusinessException;
 import com.baodanyun.websocket.model.LoginModel;
+import com.baodanyun.websocket.service.JedisService;
 import com.baodanyun.websocket.service.OfuserService;
+import com.baodanyun.websocket.service.impl.JedisServiceImpl;
 import com.baodanyun.websocket.util.AccessControlAllowUtils;
 import com.baodanyun.websocket.util.JSONUtil;
 import com.baodanyun.websocket.util.Render;
@@ -33,6 +36,18 @@ public class CustomerLogin extends BaseController {
     @Autowired
     private OfuserService ofuserService;
 
+    @Autowired
+    private JedisService jedisService;
+
+    public static void main(String[] args) {
+        String m = "{\"icon\":\"http://vipkefu.oss-cn-shanghai.aliyuncs.com/uploadfile/2017-09-21/picture/c0538.jpg?x-oss-process\u003dimage/resize,m_fill,h_200,w_200\"}";
+        try {
+            ZxInfo zi = JSONUtil.toObject(ZxInfo.class, m);
+            System.out.print(zi.getIcon());
+        } catch (Exception e) {
+            logger.error("error", e);
+        }
+    }
     @RequestMapping(value = "customerLogin")
     public ModelAndView customerLogin(LoginModel user, HttpServletRequest request, HttpServletResponse response) {
         //客服必须填写用户名 和 密码
@@ -41,6 +56,16 @@ public class CustomerLogin extends BaseController {
         try {
             AbstractUser customer = customerInit(user);
             ofuserService.checkOfUser(customer.getLoginUsername(), customer.getPassWord());
+            String info = jedisService.getFromMap(JedisServiceImpl.ZX_INFO, customer.getId());
+            logger.info("info" + JSONUtil.toJson(info));
+            if (StringUtils.isNotEmpty(info)) {
+                try {
+                    ZxInfo zi = JSONUtil.toObject(ZxInfo.class, info);
+                    customer.setIcon(zi.getIcon());
+                } catch (Exception e) {
+                    logger.error("error", e);
+                }
+            }
             request.getSession().setAttribute(Common.USER_KEY, customer);
             request.getSession().setAttribute(Common.APPKEY, user.getAppkey());
             mv.addObject("user", JSONUtil.toJson(customer));

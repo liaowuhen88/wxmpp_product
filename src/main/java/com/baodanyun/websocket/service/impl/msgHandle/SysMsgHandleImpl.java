@@ -59,6 +59,9 @@ public class SysMsgHandleImpl extends AbstractMsgHandleService {
 
     @Override
     public boolean canHandel(Message msg, Msg sendMsg) {
+        //system@126xmpp/__xvjq48_8497@126xmpp__xvjq48@126xmpp_1
+        //system@126xmpp/__xvjq48_8497@conference.126xmpp/昵称__xvjq48@126xmpp_1
+
         String from = msg.getFrom();
         String[] ffs = from.split("__");
         if (null != ffs && ffs.length > 2 && ffs[0].startsWith("system")) {
@@ -69,8 +72,6 @@ public class SysMsgHandleImpl extends AbstractMsgHandleService {
 
     @Override
     public void handel(AbstractUser user, Message msg, Msg sendMsg) {
-        //system@126xmpp/__xvjq48_8497@126xmpp__xvjq48@126xmpp_1
-        //system@126xmpp/__xvjq48_8497@conference.126xmpp/昵称__xvjq48@126xmpp_1
 
         String from = msg.getFrom();
         String[] ffs = from.split("__");

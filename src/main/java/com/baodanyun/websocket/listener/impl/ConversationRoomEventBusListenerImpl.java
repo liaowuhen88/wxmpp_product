@@ -1,7 +1,6 @@
 package com.baodanyun.websocket.listener.impl;
 
 
-import com.baodanyun.websocket.bean.msg.Msg;
 import com.baodanyun.websocket.event.ConversationRoomEvent;
 import com.baodanyun.websocket.listener.EventBusListener;
 import com.baodanyun.websocket.model.Ofmucroom;
@@ -62,9 +61,9 @@ public class ConversationRoomEventBusListenerImpl extends AbstarctEventBusListen
                             }
                         }
 
-                        Msg msg = msgService.getNewRoomJoines(joinRoomEvent.getRoom(), subject, joinRoomEvent.getUser().getId(), joinRoomEvent.getUser().getAppkey());
-                        logger.info(JSONUtil.toJson(msg));
-                        msgSendControl.sendMsg(msg);
+                        //Msg msg = msgService.getNewRoomJoines(joinRoomEvent.getRoom(), subject, joinRoomEvent.getUser().getId(), joinRoomEvent.getUser().getAppkey());
+                        //logger.info(JSONUtil.toJson(msg));
+                        //msgSendControl.sendMsg(msg);
 
                     }
                 } catch (Exception e) {

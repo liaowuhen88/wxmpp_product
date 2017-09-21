@@ -24,4 +24,6 @@ public interface FriendAndGroupService {
     PublicUser getPublicUser(String appkey, String username) throws Exception;
 
     List<Node> adapter(List<FriendAndGroupResponse> list);
+
+    String getRobotJid(String appkey, String username) throws Exception;
 }

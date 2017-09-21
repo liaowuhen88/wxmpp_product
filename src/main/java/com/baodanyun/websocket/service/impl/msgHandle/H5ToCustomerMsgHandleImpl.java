@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 public class H5ToCustomerMsgHandleImpl extends AbstractMsgHandleService {
     @Override
     public boolean canHandel(Message msg, Msg sendMsg) {
-        String from = msg.getFrom();
         //to":"xvsh7@126xmpp","from":"xvsh7-web_3903276471@126xmpp"
+        String from = msg.getFrom();
         if (from.contains("-web_")) {
             return true;
         }

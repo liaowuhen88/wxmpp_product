@@ -134,7 +134,7 @@ Utils = (function () {
                 if (item.from == currentId || "system" == item.fromType || "synchronize" == item.fromType) {
                     if (item.contentType == 'image' || item.contentType == 'img') {
                         commentTpl = $('#imgRight').html();
-                    } else if (item.contentType == 'audio') {
+                    } else if (item.contentType == 'audio' || item.contentType == 'voice') {
                         commentTpl = $('#audioRight').html();
                     } else if (item.contentType == 'video') {
                         commentTpl = $('#videoRight').html();

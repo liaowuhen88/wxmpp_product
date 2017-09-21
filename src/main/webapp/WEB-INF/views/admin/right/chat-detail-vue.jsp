@@ -4,7 +4,6 @@
 <style>
     #v-material {
         margin: 0px;
-        width: 100%;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -150,7 +149,7 @@
     .v-material > .list > .item.image,
     .v-material > .list > .item.audio,
     .v-material > .list > .item.video {
-        width: 110px;
+        width: 41%;
         height: 110px;
         display: inline-block;
     }
@@ -265,13 +264,13 @@
                     <div class="content" :title="item.content" v-text="item.content"></div>
                 </div>
                 <div v-else-if="tabIndex==1">
-                    <div class="img" :style="{backgroundImage:`url(${item.url})`}" :title="item.title"></div>
+                    <div class="img" :style="{backgroundImage:'url('+item.url+')'}" :title="item.title"></div>
                 </div>
                 <div v-else-if="tabIndex==2">
                     <div class="img" :title="item.title" :duration="item.longtime"></div>
                 </div>
                 <div v-else-if="tabIndex==3">
-                    <div class="img" :style="{backgroundImage:`url(${item.thumbnail})`}" :title="item.title"
+                    <div class="img" :style="{backgroundImage:'url('+item.thumbnail+')'}" :title="item.title"
                          :duration="item.longtime"></div>
                 </div>
             </div>
@@ -396,8 +395,8 @@
                 this.timer = setTimeout(function () {
                     _this.loading = true;
                     $.post(_this.url, _defineProperty({
-                        type: ['text', 'img', 'video', 'audio'][_this.tabIndex],
-                        content: encodeURIComponent(JSON.stringify(Object.assign(_defineProperty({}, _this.paging.size, _this.size), _this.form)))
+                        type: ['text', 'img', 'audio', 'video'][_this.tabIndex],
+                        content: JSON.stringify(Object.assign(_defineProperty({}, _this.paging.size, _this.size), _this.form))
                     }, _this.paging.index, _this.index), function (res) {
                         _this.list = res.data[_this.paging.list];
                         _this.total = res.data[_this.paging.total];
@@ -412,6 +411,14 @@
                 }
             },
             select: function select(item) {
+                var contentType = item.type;
+                var content;
+                if (contentType == 'text') {
+                    content = item.content;
+                } else {
+                    content = item.url;
+                }
+                xchat.sendEvent(content, contentType);
                 /*------------------------------------------------*/
                 console.log('选中的数据', item);
                 /*------------------------------------------------*/

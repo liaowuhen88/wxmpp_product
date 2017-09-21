@@ -5,13 +5,13 @@ package com.baodanyun.websocket.bean.user;
  */
 public class GroupUser extends CommonUser {
 
-    private String is_friend;
+    private Byte is_friend;
 
-    public String getIs_friend() {
+    public Byte getIs_friend() {
         return is_friend;
     }
 
-    public void setIs_friend(String is_friend) {
+    public void setIs_friend(Byte is_friend) {
         this.is_friend = is_friend;
     }
 }

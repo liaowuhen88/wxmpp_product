@@ -39,7 +39,7 @@ public class JoinRoomEventBusListenerImpl extends AbstarctEventBusListener<JoinR
                 try {
                     if (null != joinRoomEvent.getRoom()) {
 
-                        xmppService.joinRoom(joinRoomEvent.getUser(), joinRoomEvent.getRoom());
+                        //xmppService.joinRoom(joinRoomEvent.getUser(), joinRoomEvent.getRoom());
 
                        /* Msg msg = msgService.getNewRoomJoines(joinRoomEvent.getRoom(), joinRoomEvent.getUser().getId());
                         msgSendControl.sendMsg(msg);*/

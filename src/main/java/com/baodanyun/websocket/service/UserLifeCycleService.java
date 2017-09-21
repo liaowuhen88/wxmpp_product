@@ -44,7 +44,7 @@ public interface UserLifeCycleService {
      * @throws SmackException.NotConnectedException
      * @throws BusinessException
      */
-    Msg receiveMessage(AbstractUser user,String content) throws InterruptedException, SmackException.NotConnectedException, BusinessException;
+    Msg receiveMessage(AbstractUser user, String content) throws Exception;
 
     boolean joinQueue(AbstractUser user) throws InterruptedException;
 

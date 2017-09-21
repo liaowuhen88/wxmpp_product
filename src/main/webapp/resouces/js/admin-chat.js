@@ -62,6 +62,7 @@ xchat.interface = {
     loadChatList: base + '/api/queue/1',
     userInfo: base + '/api/visitorDetail',
     getCustomerList: base + '/api/onlineCustomerList',
+    getGroupUsers: base + '/api/getGroupUsers',
     turn: base + '/api/changeVisitorTo',
     updateUserInfo: base + '/api/upVisitorInfo',
     getTagsAll: base + '/api/getTagsAll',
@@ -98,8 +99,9 @@ xchat.initSuccessQueueStatusHandelEvent = function () {
     this.getCustomerList();     //获取客服列表
     //this.setUserInfoEventBind();    //设置用户详情事件绑定
     //this.customerListEventBind();//转接按钮事件
-    this.library_init();// 加载素材库
-    this.setting_allEventBind();//转接按钮事件
+    //this.library_init();// 加载素材库
+    this.groupSearchBind();//群搜索事件绑定
+    this.setting_allEventBind();//扣费设置按钮
 
 };
 //初始化失败
@@ -412,7 +414,7 @@ xchat.sendMsgHandelEvent = function (data) {
         myUtils.renderDivAdd('imgRight', data, 'chatMsgContainer');
     } else if (data.contentType == 'audio') {
         myUtils.renderDivAdd('audioRight', data, 'chatMsgContainer');
-    } else if (data.contentType == 'audio') {
+    } else if (data.contentType == 'voice') {
         myUtils.renderDivAdd('audioRight', data, 'chatMsgContainer');
     } else if (data.contentType == 'video') {
         myUtils.renderDivAdd('videoRight', data, 'chatMsgContainer');
@@ -728,6 +730,13 @@ xchat.openFriendWindow = function (isOnline, id, nickname, openId, fromType) {
     $("#noChat").hide();  //中间位置消失
     $("#hasChat").show();   //把聊天窗口显示出来
     $(".chat-detail").show();   //把用户详情显示出来
+    if (id.indexOf("@conference") > 0) {
+        $("#groupSearch").attr("value", id);   //如果是群，显示群查看
+        $("#groupSearch").show();   //如果是群，显示群查看
+    } else {
+        $("#groupSearch").hide();   //如果是群，显示群查看
+    }
+
     $(_this.controls.msgContainer).empty(); //清空当前的聊天容器内容
     // 判断是否在线，是否开启聊天窗口
     if (isOnline >= 0) {
@@ -1020,6 +1029,27 @@ xchat.customerListEventBind = function () {
         _this.getCustomerList();
     });
 };
+xchat.groupSearchBind = function () {
+    var _this = this;
+    $('#groupSearch').on('click', function () {
+        var value = $('#groupSearch').attr("value");
+        //value= 'xvql518';
+        $.ajax({
+            url: _this.interface.getGroupUsers + "?username=" + value,
+            type: 'GET',
+            success: function (res) {
+                console.log(res);
+            },
+            error: function () {
+                document.getElementById(_this.controls.turnList).innerHTML = '查询失败';
+            }
+        })
+
+        alert("查看群成员" + value);
+    });
+};
+
+
 xchat.setting_allEventBind = function () {
     var _this = this;
     var setting_all = $(_this.controls.settingAll);

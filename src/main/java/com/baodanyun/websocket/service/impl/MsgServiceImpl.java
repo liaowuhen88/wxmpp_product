@@ -12,6 +12,8 @@ import com.baodanyun.websocket.model.Ofvcard;
 import com.baodanyun.websocket.service.*;
 import com.baodanyun.websocket.util.XMPPUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,8 +107,22 @@ public class MsgServiceImpl implements MsgService {
         return sm;
     }
 
+    /**
+     * 当前需要加入群的用户
+     *
+     * @param room
+     * @param ofmucroom
+     * @param to
+     * @param appKey
+     * @param user
+     * @return
+     * @throws XMPPException.XMPPErrorException
+     * @throws SmackException.NoResponseException
+     * @throws SmackException.NotConnectedException
+     * @throws BusinessException
+     */
     @Override
-    public ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to, String appKey) {
+    public ConversationMsg getNewRoomJoines(String room, Ofmucroom ofmucroom, String to, String appKey, AbstractUser user) throws XMPPException.XMPPErrorException, SmackException.NoResponseException, SmackException.NotConnectedException, BusinessException {
         String realRoom = XMPPUtil.removeRoomSource(room);
         ConversationMsg sm = new ConversationMsg();
         sm.setKey(realRoom);
