@@ -59,7 +59,10 @@ public class CustomerWebSocketHandler extends AbstractWebSocketHandler {
                 return;
             }
             Msg msg = userLifeCycleService.receiveMessage(customer, content);
-            synchronousMsg(session, customer, msg);
+
+            if (!msg.getContentType().equals(Msg.MsgContentType.addfriend.toString())) {
+                synchronousMsg(session, customer, msg);
+            }
         } catch (Exception e) {
             logger.info("", e);
         }

@@ -58,6 +58,9 @@
 <%-- 好友 --%>
 <jsp:include page="friendAndGroup.jsp"/>
 
+<%-- 好友 --%>
+<jsp:include page="groupList.jsp"/>
+
 <%-- 离线消息 --%>
 <jsp:include page="leaveMessage.jsp"/>
 <%-- 等待列表 --%>

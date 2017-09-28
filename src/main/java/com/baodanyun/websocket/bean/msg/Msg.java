@@ -3,6 +3,7 @@ package com.baodanyun.websocket.bean.msg;
 import com.baodanyun.websocket.bean.msg.msg.*;
 import com.baodanyun.websocket.bean.msg.status.StatusMsg;
 import com.baodanyun.websocket.core.common.Common;
+import com.baodanyun.websocket.util.XMPPUtil;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,13 @@ public class Msg implements Serializable{
                         return am;
                     } else if (Msg.MsgContentType.file.toString().equals(abstractMsg.getContentType())) {
 
+                    } else if (MsgContentType.addfriend.toString().equals(abstractMsg.getContentType())) {
+                        // 添加好友
+                        AddFriendMsg am = gson.fromJson(bodyMsg, AddFriendMsg.class);
+                        String[] friend = am.getFriend().split("_");
+                        String to = XMPPUtil.nameToJid(friend[0]);
+                        am.setTo(to);
+                        return am;
                     } else if (Msg.MsgContentType.video.toString().equals(abstractMsg.getContentType())) {
                         return gson.fromJson(bodyMsg, VideoMsg.class);
                     } else if (Msg.MsgContentType.image.toString().equals(abstractMsg.getContentType())) {
@@ -252,7 +260,7 @@ public class Msg implements Serializable{
     //{"title":"xxx","des":"xxx","thumburl":"dd.com/kkk.jpg"，"url":"ddd.com/jj.html "}
     //voice 语音
     public enum MsgContentType {
-        text, video, file, audio, voice, image, receiptMsg, attachment, url
+        text, video, file, audio, voice, image, receiptMsg, attachment, url, addfriend
     }
 
     public enum fromType {

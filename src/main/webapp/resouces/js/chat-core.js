@@ -61,6 +61,9 @@ var xChat = function (options) {
     //客服在线
     this.customerOnlineStatusHandelEvent = function () {
     };
+    // 接收到位置消息
+    this.recvLocationHandelEvent = function () {
+    };
     //客服离线
     this.customerOfflineStatusHandelEvent = function () {
     };
@@ -90,6 +93,20 @@ var xChat = function (options) {
     //客服发出了移动指令 从一个客服移动到另一个客服
     this.moveMsgHandelEvent = function (json) {
     };
+
+    this.addFriend = function (jid) {
+        var msg = {
+            "content": "addfriend",
+            "friend": jid,
+            "type": "msg",
+            "from": window.currentId,
+            "contentType": "addfriend"
+        };
+        _ws.send(JSON.stringify(msg));
+        alert("申请已发送");
+        console.log("addFriend" + msg);
+
+    }
     //发送消息管理器
     var SenderFactory = function (o) {
         var _this = o;
@@ -267,7 +284,7 @@ var xChat = function (options) {
                                 //网络异常不会执行此方法，正常情况下 上传成功后 赋值消息内容为图片地址 并且调用发送回调
                                 function (file, response) {
                                     console.log(file);
-                                    msg.content = response.src;
+                                    msg.content.url = response.src;
                                     //更新之前填好的预览图
                                     if (window.user) {
                                         msg.icon = window.user.icon;
@@ -279,7 +296,7 @@ var xChat = function (options) {
                                     msg.src = msg.to;
                                     send();
                                     myUtils.storage(msg);
-                                    myUtils.updateAttachmentSrc(msg.id, msg.content);
+                                    myUtils.updateAttachmentSrc(msg.id, msg.content.url);
 
                                 },
                                 function () {
@@ -290,11 +307,12 @@ var xChat = function (options) {
                                     //选择文件的动作之后开始计时，一定会执行
                                     _timeOutCheck(msg);
                                     //生成一个预览图 并且渲染界面
-                                    msg.name = file.name;
-                                    msg.size = file.size;
+                                    var content = {};
+                                    content.filesize = file.size;
+                                    content.filename = file.name;
                                     msg.to = destJid;
                                     msg.from = window.currentId;
-                                    msg.content = 'javascript:';
+                                    msg.content = content;
                                     _this.sendMsgHandelEvent(msg);
                                 }
                             );
@@ -493,7 +511,10 @@ var xChat = function (options) {
                 {"attachment": _this.recvFileMsgHandelEvent},
                 {"audio": _this.recvAudioMsgHandelEvent},
                 {"image": _this.recvImageMsgHandelEvent},
-                {"url": _this.recvWxShareHandelEvent}
+                {"url": _this.recvWxShareHandelEvent},
+                {"location": _this.recvLocationHandelEvent},
+
+
             ],
             active: [
                 {"move": _this.moveMsgHandelEvent}

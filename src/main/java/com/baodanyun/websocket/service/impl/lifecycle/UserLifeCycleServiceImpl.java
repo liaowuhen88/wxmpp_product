@@ -1,6 +1,7 @@
 package com.baodanyun.websocket.service.impl.lifecycle;
 
 import com.baodanyun.websocket.bean.msg.Msg;
+import com.baodanyun.websocket.bean.msg.msg.AddFriendMsg;
 import com.baodanyun.websocket.bean.msg.msg.ImgMsg;
 import com.baodanyun.websocket.bean.msg.msg.TextMsg;
 import com.baodanyun.websocket.bean.user.AbstractUser;
@@ -132,7 +133,22 @@ public abstract class UserLifeCycleServiceImpl implements UserLifeCycleService {
                 muc.invite(to, "插件入群");
                 //mc.getMembers()
             }
-            xmppService.sendMessage(msg );
+
+            if (msg.getContentType().equals(Msg.MsgContentType.addfriend.toString())) {
+                AddFriendMsg am = (AddFriendMsg) msg;
+
+                String realFrom = am.getFrom();
+                String from = realFrom + "/" + am.getFriend();
+
+
+                am.setFrom(from);
+
+                xmppService.sendMessageAgent(am, realFrom);
+            } else {
+                xmppService.sendMessage(msg);
+
+            }
+
         }
         return msg;
     }

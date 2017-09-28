@@ -106,11 +106,9 @@ xchat.initSuccessQueueStatusHandelEvent = function () {
 };
 //初始化失败
 xchat.initErrorStatusHandelEvent = function () {
-    //window.location.href = window.base + "/customer/chat";
 };
 //登录失败
 xchat.loginErrorStatusHandelEvent = function () {
-    //window.location.href = window.base + "/customerlogin";
 };
 //客服个人信息设置
 xchat.setCustomerProfileEventBind = function () {
@@ -308,6 +306,20 @@ xchat.recvAudioMsgHandelEvent = function (json) {
     xchat.goBottom();
 };
 
+//接收到位置消息
+xchat.recvLocationHandelEvent = function (json) {
+    document.getElementById("msgTipAudio").play();
+    json.src = json.from;
+    json.icon = json.icon || this.controls.defaultAvatar;
+    json.time = myUtils.formatDate(new Date(json.ct));
+    json.content = eval('(' + json.content + ')');
+    if (json.from == window.destJid) {
+        myUtils.renderDivAdd('wx_location_right', json, 'chatMsgContainer');
+    }
+    myUtils.storage(json);
+    xchat.goBottom();
+};
+
 //接收到视频信息
 xchat.recvVideoMsgHandelEvent = function (json) {
     document.getElementById("msgTipAudio").play();
@@ -325,12 +337,13 @@ xchat.recvVideoMsgHandelEvent = function (json) {
     xchat.goBottom();
 };
 
-//接收到视频信息
+//接收到文件信息
 xchat.recvFileMsgHandelEvent = function (json) {
     document.getElementById("msgTipAudio").play();
     json.src = json.from;
     json.icon = json.icon || this.controls.defaultAvatar;
     json.time = myUtils.formatDate(new Date(json.ct));
+    json.content = eval('(' + json.content + ')');
     if (json.from == window.destJid) {
         if ("system" == json.fromType || "synchronize" == json.fromType) {
             myUtils.renderDivAdd('attachmentRight', json, 'chatMsgContainer');
@@ -731,10 +744,10 @@ xchat.openFriendWindow = function (isOnline, id, nickname, openId, fromType) {
     $("#hasChat").show();   //把聊天窗口显示出来
     $(".chat-detail").show();   //把用户详情显示出来
     if (id.indexOf("@conference") > 0) {
-        $("#groupSearch").attr("value", id);   //如果是群，显示群查看
-        $("#groupSearch").show();   //如果是群，显示群查看
+        $("#groupListBtn").attr("value", id);   //如果是群，显示群查看
+        $("#groupListBtn").show();   //如果是群，显示群查看
     } else {
-        $("#groupSearch").hide();   //如果是群，显示群查看
+        $("#groupListBtn").hide();   //如果是群，显示群查看
     }
 
     $(_this.controls.msgContainer).empty(); //清空当前的聊天容器内容
@@ -754,7 +767,6 @@ xchat.openFriendWindow = function (isOnline, id, nickname, openId, fromType) {
     this.recvMsg.splice(jQuery.inArray(id, this.recvMsg), 1);
     $(this.controls.waitReplyPerson).html(this.recvMsg.length);
 
-    _this.getUserLabel();
     _this.conversationInit(id);
 
 };
@@ -1031,9 +1043,14 @@ xchat.customerListEventBind = function () {
 };
 xchat.groupSearchBind = function () {
     var _this = this;
-    $('#groupSearch').on('click', function () {
-        var value = $('#groupSearch').attr("value");
-        //value= 'xvql518';
+
+    $('#groupListBtn').on('click', function () {
+        var value = $('#groupListBtn').attr("value");
+        console.log(value);
+        $.post(window.base + "/api/getGroupUsers", {username: decodeURIComponent(value)}, function (res) {
+            vGroup.list = res.data;
+        }, 'json');
+        /*$('[data-target="groupListBtn"]').show();        //value= 'xvql518';
         $.ajax({
             url: _this.interface.getGroupUsers + "?username=" + value,
             type: 'GET',
@@ -1043,9 +1060,9 @@ xchat.groupSearchBind = function () {
             error: function () {
                 document.getElementById(_this.controls.turnList).innerHTML = '查询失败';
             }
-        })
+         })*/
 
-        alert("查看群成员" + value);
+        //alert("查看群成员" + value);
     });
 };
 

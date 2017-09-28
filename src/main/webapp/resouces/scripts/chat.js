@@ -16,6 +16,7 @@ var Chat = function (options) {
         turnBtn: '#turnBtn',
         historyBtn: '#historyBtn',
         friendAndGroupBtn: '#friendAndGroupBtn',
+        groupListBtn: '#groupListBtn',
         examReportBtn: '#examReportBtn',
         chatClaimsBtn: '#chatClaimsBtn',
         chatContractsBtn: '#chatContractsBtn',
@@ -68,6 +69,7 @@ Chat.prototype = {
         $(this.controls.turnBtn).modal();
         $(this.controls.historyBtn).modal();
         $(this.controls.friendAndGroupBtn).modal();
+        $(this.controls.groupListBtn).modal();
         $(this.controls.examReportBtn).modal();
         $(this.controls.chatClaimsBtn).modal();
         $(this.controls.chatContractsBtn).modal();

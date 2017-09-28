@@ -43,7 +43,7 @@ public class FriendAndGroupServiceImpl implements FriendAndGroupService {
     @Override
     public List<GroupUser> getGroupUsers(String appkey, String username) throws Exception {
 
-        Response response = get(appkey, "getqunmemberlist", "username", username);
+        Response response = get(appkey, "getQunmemberList", "username", username);
 
         java.lang.reflect.Type fs = new TypeToken<List<GroupUser>>() {
         }.getType();
@@ -76,7 +76,7 @@ public class FriendAndGroupServiceImpl implements FriendAndGroupService {
         query.put("content", JSONUtil.toJson(content));
 
         String result = HttpUtils.get(Config.appKeyUrl, query);
-        //logger.info(result);
+        logger.info(JSONUtil.toJson(result));
         if (StringUtils.isEmpty(result)) {
             throw new BusinessException("查询结构为空");
         }
