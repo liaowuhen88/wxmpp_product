@@ -168,7 +168,7 @@
     }
 
     .v-contacts .content {
-        overflow: hidden;
+        overflow: auto;
         transition: 300ms;
         -moz-transition: 300ms;
         -webkit-transition: 300ms;
