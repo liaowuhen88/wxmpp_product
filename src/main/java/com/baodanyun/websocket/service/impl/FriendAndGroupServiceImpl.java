@@ -76,7 +76,7 @@ public class FriendAndGroupServiceImpl implements FriendAndGroupService {
         query.put("content", JSONUtil.toJson(content));
 
         String result = HttpUtils.get(Config.appKeyUrl, query);
-        logger.info(JSONUtil.toJson(result));
+        //logger.info(JSONUtil.toJson(result));
         if (StringUtils.isEmpty(result)) {
             throw new BusinessException("查询结构为空");
         }

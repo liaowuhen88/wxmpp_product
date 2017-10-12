@@ -69,20 +69,18 @@ public class MessageFiterServiceImpl implements MessageFiterService {
 
 
     @Override
-    public List<ConversationMsg> initCollections(String jid, List<ConversationMsg> collections) {
+    public List<ConversationMsg> initCollections(String appKey, String jid, List<ConversationMsg> collections) {
         // 是否加密
+
         if (null != collections && collections.size() > 0) {
             List<ConversationMsg> list = new ArrayList<>();
             String statue1 = jedisService.getValue(SWITCH);
             String status2 = jedisService.getValue(jid);
 
             for (ConversationMsg cm : collections) {
+
                 boolean isEncrypt = isEncrypt(statue1, status2, jid, cm.getFrom());
-                if (isEncrypt) {
-                    cm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
-                } else {
-                    cm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
-                }
+                cm.setEncrypt(isEncrypt);
             }
 
             return list;

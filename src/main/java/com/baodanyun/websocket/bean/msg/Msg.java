@@ -18,6 +18,7 @@ public class Msg implements Serializable{
     private static final Logger logger = LoggerFactory.getLogger(Msg.class);
     // 表示用户从那个入口接入
     //  0 默认h5客服端   1 微信直接聊天入口
+    // 消息是否加密   true 加密  false 不加密
     private boolean encrypt;
     private Integer toType;
     private String token;

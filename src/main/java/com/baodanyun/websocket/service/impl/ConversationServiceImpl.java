@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,6 +63,17 @@ public class ConversationServiceImpl implements ConversationService {
             map.remove(key);
         }
     }
+
+    @Override
+    public boolean isOnline(String appKey, String cjid, String jid) {
+        return false;
+    }
+
+    @Override
+    public void isOnline(String appKey, String cjid, List<ConversationMsg> cms) throws Exception {
+
+    }
+
 
     @Override
     public boolean isExist(String cJid, String key) {

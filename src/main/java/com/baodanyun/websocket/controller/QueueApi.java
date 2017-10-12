@@ -56,7 +56,8 @@ public class QueueApi extends BaseController {
                         collections.add(cm);
                     }
 
-                    messageFiterService.initCollections(customer.getId(), collections);
+                    messageFiterService.initCollections(customer.getAppkey(), customer.getId(), collections);
+                    conversationService.isOnline(customer.getAppkey(), customer.getId(), collections);
 
                     ComparatorConversationMsg comparator = new ComparatorConversationMsg();
                     Collections.sort(collections, comparator);

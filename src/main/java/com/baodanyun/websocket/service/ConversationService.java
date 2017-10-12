@@ -2,6 +2,7 @@ package com.baodanyun.websocket.service;
 
 import com.baodanyun.websocket.bean.msg.ConversationMsg;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +29,10 @@ public interface ConversationService {
     void addConversations(String cJid, ConversationMsg cm);
 
     void removeConversations(String cJid, String vJid);
+
+    boolean isOnline(String appKey, String cjid, String jid);
+
+    void isOnline(String appKey, String cjid, List<ConversationMsg> cms) throws Exception;
 
     boolean isExist(String cJid, String vJid);
 

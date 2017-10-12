@@ -23,7 +23,7 @@ public interface MessageFiterService {
 
     boolean isEncrypt(String statue1, String status2, String jid, String from);
 
-    List<ConversationMsg> initCollections(String jid, List<ConversationMsg> collections);
+    List<ConversationMsg> initCollections(String appKey, String jid, List<ConversationMsg> collections);
 
     boolean computationalCosts(String jid, Msg msg);
 

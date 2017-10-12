@@ -37,5 +37,7 @@ public class CommonConfig {
     public static final String PC_CUSTOMER = "pc_customer";//openId
     public static final String MOBILE_CUSTOMER = "mobile_customer";//openId
 
+    public static final String ZX_CJ_INFO = "zx_cj_info";//坐席插件是否在线的key
+
 
 }

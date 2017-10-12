@@ -65,11 +65,8 @@ public class MsgServiceImpl implements MsgService {
         sm.setLoginUsername("公众号[" + pu.getPublic_name() + "]");
         sm.setIcon(pu.getIcon());
         boolean isEncrypt = messageFiterService.isEncrypt(pu.getUid(), pu.getRealFrom());
-        if (isEncrypt) {
-            sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
-        } else {
-            sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
-        }
+        sm.setEncrypt(isEncrypt);
+        sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
 
         filter(sm);
 
@@ -96,11 +93,8 @@ public class MsgServiceImpl implements MsgService {
         sm.setLoginUsername(user.getNickName());
 
         boolean isEncrypt = messageFiterService.isEncrypt(to, realJid);
-        if (isEncrypt) {
-            sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
-        } else {
-            sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
-        }
+        sm.setEncrypt(isEncrypt);
+        sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
         filter(sm);
 
         conversationService.addConversations(to, sm);
@@ -141,11 +135,8 @@ public class MsgServiceImpl implements MsgService {
             sm.setLoginUsername(ofmucroom.getDescription());
         }
         boolean isEncrypt = messageFiterService.isEncrypt(to, realRoom);
-        if (isEncrypt) {
-            sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
-        } else {
-            sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
-        }
+        sm.setEncrypt(isEncrypt);
+        sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
 
         // 初始化群成员
         try {
@@ -192,12 +183,8 @@ public class MsgServiceImpl implements MsgService {
         initByVCard(sm, vCard);
 
         boolean isEncrypt = messageFiterService.isEncrypt(user.getId(), realFrom);
-        if (isEncrypt) {
-            sm.setOnlineStatus(ConversationMsg.OnlineStatus.encrypt);
-        } else {
-            sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
-        }
-
+        sm.setEncrypt(isEncrypt);
+        sm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
         filter(sm);
 
         conversationService.addConversations(user.getId(), sm);

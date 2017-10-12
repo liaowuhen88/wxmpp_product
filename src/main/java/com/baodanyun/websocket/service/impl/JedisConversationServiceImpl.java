@@ -1,14 +1,18 @@
 package com.baodanyun.websocket.service.impl;
 
 import com.baodanyun.websocket.bean.msg.ConversationMsg;
+import com.baodanyun.websocket.bean.response.FriendAndGroupResponse;
 import com.baodanyun.websocket.service.ConversationService;
+import com.baodanyun.websocket.service.FriendAndGroupService;
 import com.baodanyun.websocket.service.JedisService;
+import com.baodanyun.websocket.util.CommonConfig;
 import com.baodanyun.websocket.util.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +29,8 @@ public class JedisConversationServiceImpl implements ConversationService {
 
     @Autowired
     private JedisService jedisService;
+    @Autowired
+    private FriendAndGroupService friendAndGroupService;
 
     @Override
     public void clear(String cJid) {
@@ -52,6 +58,83 @@ public class JedisConversationServiceImpl implements ConversationService {
     public void removeConversations(String cJid, String key) {
         logger.info("cJid--[{}]**********key[{}]", cJid, key);
         jedisService.removeFromMap(getRealKey(cJid), key);
+    }
+
+    /**
+     * jid 为群或者个人的jid
+     *
+     * @param appKey
+     * @param jid
+     * @return
+     */
+    @Override
+    public boolean isOnline(String appKey, String cjid, String jid) {
+        try {
+            String jids = jedisService.getFromMap(CommonConfig.ZX_CJ_INFO, cjid);
+            Map<String, String> maps = JSONUtil.toObject(Map.class, jids);
+            List<FriendAndGroupResponse> fgrs = friendAndGroupService.get(appKey, "");
+
+            return isOnline(fgrs, maps, jid);
+
+        } catch (Exception e) {
+            logger.error("error", e);
+        }
+
+        return false;
+    }
+
+    public boolean isOnline(List<FriendAndGroupResponse> fgrs, Map maps, String jid) {
+        FriendAndGroupResponse fgrSearch = new FriendAndGroupResponse();
+        FriendAndGroupResponse.BasicNode bn = fgrSearch.new BasicNode();
+        bn.setJid(jid);
+        for (FriendAndGroupResponse fgr : fgrs) {
+            boolean flag = fgr.getFriend().contains(bn);
+            if (!flag) {
+                flag = fgr.getQungroup().contains(bn);
+            }
+
+            if (flag) {
+                Object id = maps.get(fgr.getUsername());
+                Integer redi = null;
+                if (id instanceof String) {
+                    redi = (new Double((String) id)).intValue();
+                } else if (id instanceof Double) {
+                    redi = ((Double) id).intValue();
+                } else if (id instanceof Integer) {
+                    redi = (Integer) id;
+                }
+
+                logger.info("id:{} *** redi:{}", id, redi);
+
+                if (null != maps && null != redi) {
+                    return redi.equals(1);
+                }
+            } else {
+                logger.info("not jid{}", jid);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void isOnline(String appKey, String cjid, List<ConversationMsg> cms) throws Exception {
+        String jids = jedisService.getFromMap(CommonConfig.ZX_CJ_INFO, cjid);
+        Map<String, String> maps = JSONUtil.toObject(Map.class, jids);
+
+        List<FriendAndGroupResponse> fgrs = friendAndGroupService.get(appKey, "");
+        logger.info(JSONUtil.toJson(maps));
+        logger.info(JSONUtil.toJson(fgrs));
+
+        if (null != cms) {
+            for (ConversationMsg cm : cms) {
+                boolean isOnline = isOnline(fgrs, maps, cm.getKey());
+                if (isOnline) {
+                    cm.setOnlineStatus(ConversationMsg.OnlineStatus.online);
+                } else {
+                    cm.setOnlineStatus(ConversationMsg.OnlineStatus.history);
+                }
+            }
+        }
     }
 
     @Override

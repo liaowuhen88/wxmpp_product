@@ -555,7 +555,7 @@ xchat.loadChatList = function () {
                     friend.time = myUtils.formatDate(friend.loginTime);
                     var li = document.getElementById(friend.from);
                     if (!li) {
-                        if (friend.onlineStatus == 'online' || friend.onlineStatus == 'encrypt') {
+                        if (friend.onlineStatus == 'online') {
                             myUtils.renderDivAdd('onlinefriendListTpl', friend, 'friendList');
                         } else if (friend.onlineStatus == 'backup') {
                             //backup状态也算是线上状态
@@ -755,7 +755,7 @@ xchat.openFriendWindow = function (isOnline, id, nickname, openId, fromType) {
     if (isOnline >= 0) {
         $('#chatInput').removeClass('chat-input-disabled');
     } else {
-        //$('#chatInput').addClass('chat-input-disabled');
+        $('#chatInput').addClass('chat-input-disabled');
     }
     _this.getLocalHistory(id);
     $(document.getElementById('m' + id)).attr("class", "");     //清空有新消息的提示
