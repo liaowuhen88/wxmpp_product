@@ -5,6 +5,7 @@ import com.baodanyun.websocket.bean.response.FriendAndGroupResponse;
 import com.baodanyun.websocket.service.ConversationService;
 import com.baodanyun.websocket.service.FriendAndGroupService;
 import com.baodanyun.websocket.service.JedisService;
+import com.baodanyun.websocket.util.BaseUtil;
 import com.baodanyun.websocket.util.CommonConfig;
 import com.baodanyun.websocket.util.JSONUtil;
 import org.slf4j.Logger;
@@ -87,32 +88,30 @@ public class JedisConversationServiceImpl implements ConversationService {
         FriendAndGroupResponse fgrSearch = new FriendAndGroupResponse();
         FriendAndGroupResponse.BasicNode bn = fgrSearch.new BasicNode();
         bn.setJid(jid);
-        for (FriendAndGroupResponse fgr : fgrs) {
-            boolean flag = fgr.getFriend().contains(bn);
-            if (!flag) {
-                flag = fgr.getQungroup().contains(bn);
-            }
-
-            if (flag) {
-                Object id = maps.get(fgr.getUsername());
-                Integer redi = null;
-                if (id instanceof String) {
-                    redi = (new Double((String) id)).intValue();
-                } else if (id instanceof Double) {
-                    redi = ((Double) id).intValue();
-                } else if (id instanceof Integer) {
-                    redi = (Integer) id;
+        if (null != fgrs) {
+            for (FriendAndGroupResponse fgr : fgrs) {
+                boolean flag = fgr.getFriend().contains(bn);
+                if (!flag) {
+                    flag = fgr.getQungroup().contains(bn);
                 }
 
-                logger.info("id:{} *** redi:{}", id, redi);
+                if (flag) {
+                    Object id = maps.get(fgr.getUsername());
+                    Integer redi = BaseUtil.ObjectToInt(id);
 
-                if (null != maps && null != redi) {
-                    return redi.equals(1);
+                    logger.info("id:{} *** redi:{}", id, redi);
+
+                    if (null != maps && null != redi) {
+                        return redi.equals(1);
+                    }
+                } else {
+                    logger.info("not jid{}", jid);
                 }
-            } else {
-                logger.info("not jid{}", jid);
             }
+        } else {
+            logger.info("fgrs is null");
         }
+
         return false;
     }
 
@@ -120,8 +119,13 @@ public class JedisConversationServiceImpl implements ConversationService {
     public void isOnline(String appKey, String cjid, List<ConversationMsg> cms) throws Exception {
         String jids = jedisService.getFromMap(CommonConfig.ZX_CJ_INFO, cjid);
         Map<String, String> maps = JSONUtil.toObject(Map.class, jids);
+        List<FriendAndGroupResponse> fgrs = null;
+        try {
+            fgrs = friendAndGroupService.get(appKey, "");
+        } catch (Exception e) {
+            logger.error("error", e);
+        }
 
-        List<FriendAndGroupResponse> fgrs = friendAndGroupService.get(appKey, "");
         logger.info(JSONUtil.toJson(maps));
         logger.info(JSONUtil.toJson(fgrs));
 

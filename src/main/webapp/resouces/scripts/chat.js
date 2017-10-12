@@ -26,6 +26,7 @@ var Chat = function (options) {
 
     this.interface = {
         keepOnlineApi: window.base + '/api/keepOnline',
+        pluginOnlineApi: window.base + '/api/pluginOnline',
         quickReplyGet: window.base + '/api/updateQuickReply',
         quickReplyUpdate: window.base + '/api/updateQuickReply',
         quickReplyDelete: window.base + '/api/deleteQuickReply',
@@ -44,6 +45,8 @@ Chat.prototype = {
         this.tooltipEventBind();
         // 十分钟调用一次接口
         this.keepOnline();
+        //插件心跳接口
+        this.pluginOnline();
         this.modalBind();
         this.signOutEventBind();
 
@@ -107,6 +110,33 @@ Chat.prototype = {
 
         // 十分钟调用一次接口   防止掉线
         setInterval(keep, 1000 * 60 * 5);// 注意函数名没有引号和括弧！
+    },
+
+    // 定时刷新，防止客服掉线
+    pluginOnline: function () {
+        var _this = this;
+
+        function keep() {
+            $.ajax({
+                url: _this.interface.pluginOnlineApi,
+                type: 'POST',
+                success: function (res) {
+                    if (res.success) {
+                        console.log("keepOnline success", res);
+                        if (res.data) {
+                            alert("托管微信插件状态变化，请刷新");
+                            window.location.reload();
+                        }
+                    }
+                },
+                error: function (e) {
+                    console.log("keepOnline error", e)
+                }
+            });
+        }
+
+        // 十分钟调用一次接口   防止掉线
+        setInterval(keep, 1000 * 5);// 注意函数名没有引号和括弧！
     },
 
 
