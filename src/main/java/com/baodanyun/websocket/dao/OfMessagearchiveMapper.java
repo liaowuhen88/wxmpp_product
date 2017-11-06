@@ -11,4 +11,6 @@ public interface OfMessagearchiveMapper {
     List<OfMessagearchiveWithBLOBs> select(@Param("jid") String jid);
 
     int insertSelective(OfMessagearchiveWithBLOBs record);
+
+    Long getGroupMessageCount(@Param("start") Long start, @Param("end") Long end);
 }

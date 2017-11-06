@@ -9,4 +9,7 @@ import com.github.pagehelper.PageInfo;
  */
 public interface OfMessagearchiveService {
     PageInfo<OfMessagearchiveWithBLOBs> select(OfMessagearchiveSearchPage page);
+
+    Long getGroupMessageCount(String date);
+
 }

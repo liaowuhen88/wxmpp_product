@@ -4,8 +4,10 @@ import com.baodanyun.websocket.bean.pageSearch.OfMessagearchiveSearchPage;
 import com.baodanyun.websocket.dao.OfMessagearchiveMapper;
 import com.baodanyun.websocket.model.OfMessagearchiveWithBLOBs;
 import com.baodanyun.websocket.service.OfMessagearchiveService;
+import com.baodanyun.websocket.util.DateUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,4 +36,17 @@ public class OfMessagearchiveServiceImpl implements OfMessagearchiveService {
 
         return page;
     }
+
+    @Override
+    public Long getGroupMessageCount(String date) {
+        Long start = null;
+        Long end = null;
+        if (StringUtils.isNotEmpty(date)) {
+            start = DateUtils.dateToUnixTimestamp(date + " 00:00:00");
+            end = DateUtils.dateToUnixTimestamp(date + " 23:56:56");
+        }
+
+        return ofMessagearchiveMapper.getGroupMessageCount(start, end);
+    }
+
 }

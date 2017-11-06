@@ -32,13 +32,24 @@ public class OfMessagearchiveConTroller extends BaseController {
         Response response = new Response();
         page.setJid("xvql1127@conference.126xmpp");
         PageInfo<OfMessagearchiveWithBLOBs> li = ofMessagearchiveService.select(page);
-
         response.setData(li);
         response.setSuccess(true);
-
 
         Render.r(httpServletResponse, JSONUtil.toJson(response));
 
     }
+
+    @RequestMapping(value = "getGroupMessageCount")
+    public void getByJid(String date, HttpServletResponse httpServletResponse) {
+        //客服必须填写用户名 和 密码
+        Response response = new Response();
+        Long count = ofMessagearchiveService.getGroupMessageCount(date);
+        response.setData(count);
+        response.setSuccess(true);
+
+        Render.r(httpServletResponse, JSONUtil.toJson(response));
+
+    }
+
 
 }

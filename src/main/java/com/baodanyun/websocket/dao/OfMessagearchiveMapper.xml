@@ -104,4 +104,13 @@
             </if>
         </trim>
     </insert>
+
+    <select id="getGroupMessageCount" resultType="java.lang.Long">
+        SELECT COUNT(messageID) FROM ofmessagearchive
+        WHERE toJID LIKE '%conference%'
+        <if test="start != null">
+            AND sentDate BETWEEN #{start} AND #{end} ;
+        </if>
+    </select>
+
 </mapper>

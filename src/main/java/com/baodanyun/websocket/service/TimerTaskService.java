@@ -1,5 +1,11 @@
 package com.baodanyun.websocket.service;
 
+import com.baodanyun.websocket.bean.apiBean.ExpandMsg;
+import com.baodanyun.websocket.event.UCMessageEvent;
+import com.baodanyun.websocket.util.Config;
+import com.baodanyun.websocket.util.EventBusUtils;
+import com.baodanyun.websocket.util.HttpUtils;
+import com.baodanyun.websocket.util.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +46,25 @@ public class TimerTaskService {
             logger.error("操作失败", e);
         }
     }
+
+
+    /**
+     * 消息超时处理
+     */
+    @Scheduled(cron = "0/5 * * * * ?")
+    //需要注意@Scheduled这个注解，它可配置多个属性：cron\fixedDelay\fixedRate
+    public void get() {
+        try {
+            String json = HttpUtils.get("http://" + Config.xmppurl + ":9090/getExpandMsg");
+            ExpandMsg em = JSONUtil.toObject(ExpandMsg.class, json);
+            UCMessageEvent ue = new UCMessageEvent();
+            ue.setExpandMsg(em);
+            EventBusUtils.post(ue);
+        } catch (Exception e) {
+            logger.error("操作失败", e);
+        }
+    }
+
 
     /**
      * 启动消息处理线程
